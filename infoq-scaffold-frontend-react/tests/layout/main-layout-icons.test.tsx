@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { ConfigProvider, theme } from 'antd';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import MainLayout from '@/layouts/MainLayout';
@@ -80,7 +80,7 @@ describe('layouts/main-layout-icons', () => {
   });
 
   it('renders logo and copied svg icons in the layout', async () => {
-    render(
+    const { container } = render(
       <MemoryRouter initialEntries={['/monitor/cache']}>
         <Routes>
           <Route path="/" element={<MainLayout />}>
@@ -96,9 +96,12 @@ describe('layouts/main-layout-icons', () => {
     expect(screen.getByRole('img', { name: 'fullscreen' })).toBeInTheDocument();
     expect(within(screen.getByTestId('tags-view-bar')).getByText('首页')).toBeInTheDocument();
 
-    const menuElement = screen.getAllByRole('menu')[0];
-    fireEvent.click(within(menuElement).getByText('系统监控'));
-    expect(await screen.findByRole('img', { name: 'redis' })).toBeInTheDocument();
+    const sidebarMenu = container.querySelector('.sidebar-menu');
+    expect(sidebarMenu).not.toBeNull();
+    fireEvent.click(within(sidebarMenu as HTMLElement).getByText('系统监控'));
+    await waitFor(() => {
+      expect(within(sidebarMenu as HTMLElement).getByRole('img', { name: 'redis' })).toBeInTheDocument();
+    });
   });
 
   it('renders breadcrumb titles from route meta instead of raw path segments', () => {

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { notification } from 'antd';
 import { useNoticeStore } from '@/store/modules/notice';
 import { closeSSE, initSSE } from '@/utils/sse';
@@ -59,6 +59,14 @@ describe('utils/realtime', () => {
         then: undefined
       } as never;
     });
+  });
+
+  afterEach(() => {
+    closeSSE();
+    closeWebSocket();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it('initializes SSE and records notice messages', () => {

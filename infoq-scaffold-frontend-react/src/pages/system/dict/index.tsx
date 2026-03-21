@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Card, Col, DatePicker, Form, Input, Modal, Row, Space, Table, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -43,7 +43,7 @@ export default function DictTypePage() {
   const [form] = Form.useForm<DictTypeForm>();
   const dictId = Form.useWatch('dictId', form);
 
-  const loadList = async (nextQuery: DictTypeQuery = query, nextRange: [Dayjs, Dayjs] | null = dateRange) => {
+  const loadList = useCallback(async (nextQuery: DictTypeQuery, nextRange: [Dayjs, Dayjs] | null) => {
     setLoading(true);
     try {
       const response = await listType(addDateRange({ ...nextQuery }, formatRange(nextRange)));
@@ -52,62 +52,59 @@ export default function DictTypePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadList(initialQuery, null);
-  }, []);
+  }, [loadList]);
 
-  const columns = useMemo<ColumnsType<DictTypeVO>>(
-    () => [
-      {
-        title: '字典名称',
-        dataIndex: 'dictName',
-        align: 'center',
-        ellipsis: true
-      },
-      {
-        title: '字典类型',
-        dataIndex: 'dictType',
-        align: 'center',
-        ellipsis: true,
-        render: (_value: string, record) => (
-          <Button type="link" onClick={() => navigate(`/system/dict-data/index/${record.dictId}`)}>
-            {record.dictType}
-          </Button>
-        )
-      },
-      {
-        title: '备注',
-        dataIndex: 'remark',
-        align: 'center',
-        ellipsis: true
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'createTime',
-        width: 180,
-        align: 'center'
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 160,
-        align: 'center',
-        render: (_, record) => (
-          <Space size={4}>
-            <Tooltip title="修改">
-              <Button className="table-action-link" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.dictId)} />
-            </Tooltip>
-            <Tooltip title="删除">
-              <Button className="table-action-link" type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.dictId)} />
-            </Tooltip>
-          </Space>
-        )
-      }
-    ],
-    []
-  );
+  const columns: ColumnsType<DictTypeVO> = [
+    {
+      title: '字典名称',
+      dataIndex: 'dictName',
+      align: 'center',
+      ellipsis: true
+    },
+    {
+      title: '字典类型',
+      dataIndex: 'dictType',
+      align: 'center',
+      ellipsis: true,
+      render: (_value: string, record) => (
+        <Button type="link" onClick={() => navigate(`/system/dict-data/index/${record.dictId}`)}>
+          {record.dictType}
+        </Button>
+      )
+    },
+    {
+      title: '备注',
+      dataIndex: 'remark',
+      align: 'center',
+      ellipsis: true
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      width: 180,
+      align: 'center'
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 160,
+      align: 'center',
+      render: (_, record) => (
+        <Space size={4}>
+          <Tooltip title="修改">
+            <Button className="table-action-link" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.dictId)} />
+          </Tooltip>
+          <Tooltip title="删除">
+            <Button className="table-action-link" type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.dictId)} />
+          </Tooltip>
+        </Space>
+      )
+    }
+  ];
 
   const handleSearch = () => {
     const next = { ...query, pageNum: 1 };
@@ -148,7 +145,7 @@ export default function DictTypePage() {
     await delType(target);
     modal.msgSuccess('删除成功');
     setSelectedIds([]);
-    loadList();
+    loadList(query, dateRange);
   };
 
   const handleSubmit = async () => {
@@ -162,7 +159,7 @@ export default function DictTypePage() {
       }
       modal.msgSuccess('操作成功');
       setDialogOpen(false);
-      loadList();
+      loadList(query, dateRange);
     } finally {
       setSubmitting(false);
     }
@@ -255,7 +252,7 @@ export default function DictTypePage() {
             </Button>
           </Space>
           <div className="right-toolbar-wrap">
-            <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList()} />
+            <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList(query, dateRange)} />
           </div>
         </div>
 

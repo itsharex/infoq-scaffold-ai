@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DeleteOutlined, EditOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, Modal, Radio, Row, Select, Space, Switch, Table, Tag, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -48,7 +48,7 @@ export default function OssConfigPage() {
   const protocolPrefix = isHttps === 'Y' ? 'https://' : 'http://';
   const dict = useDictOptions('sys_yes_no');
 
-  const loadList = async (nextQuery: OssConfigQuery = query) => {
+  const loadList = useCallback(async (nextQuery: OssConfigQuery) => {
     setLoading(true);
     try {
       const response = await listOssConfig(nextQuery);
@@ -57,96 +57,93 @@ export default function OssConfigPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadList(initialQuery);
-  }, []);
+  }, [loadList]);
 
-  const columns = useMemo<ColumnsType<OssConfigVO>>(
-    () => [
-      {
-        title: '配置Key',
-        dataIndex: 'configKey',
-        align: 'center'
-      },
-      {
-        title: '访问站点',
-        dataIndex: 'endpoint',
-        width: 180,
-        align: 'center'
-      },
-      {
-        title: '自定义域名',
-        dataIndex: 'domain',
-        width: 180,
-        align: 'center'
-      },
-      {
-        title: '桶名称',
-        dataIndex: 'bucketName',
-        align: 'center'
-      },
-      {
-        title: '前缀',
-        dataIndex: 'prefix',
-        width: 120,
-        align: 'center'
-      },
-      {
-        title: '域',
-        dataIndex: 'region',
-        width: 120,
-        align: 'center'
-      },
-      {
-        title: '桶权限',
-        dataIndex: 'accessPolicy',
-        width: 120,
-        align: 'center',
-        render: (value: string) =>
-          value === '0' ? <Tag color="warning">private</Tag> : value === '1' ? <Tag color="success">public</Tag> : <Tag>custom</Tag>
-      },
-      {
-        title: '是否默认',
-        dataIndex: 'status',
-        width: 120,
-        align: 'center',
-        render: (value: string, record) => (
-          <Switch
-            checked={value === '0'}
-            onChange={async (checked) => {
-              const nextStatus = checked ? '0' : '1';
-              const confirmed = await modal.confirm(`确认要${nextStatus === '0' ? '启用' : '停用'} "${record.configKey}" 配置吗？`);
-              if (!confirmed) {
-                return;
-              }
-              await changeOssConfigStatus(record.ossConfigId, nextStatus, record.configKey);
-              modal.msgSuccess('状态修改成功');
-              loadList();
-            }}
-          />
-        )
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 160,
-        align: 'center',
-        render: (_, record) => (
-          <Space size={4}>
-            <Tooltip title="修改">
-              <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.ossConfigId)} />
-            </Tooltip>
-            <Tooltip title="删除">
-              <Button danger type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.ossConfigId)} />
-            </Tooltip>
-          </Space>
-        )
-      }
-    ],
-    []
-  );
+  const columns: ColumnsType<OssConfigVO> = [
+    {
+      title: '配置Key',
+      dataIndex: 'configKey',
+      align: 'center'
+    },
+    {
+      title: '访问站点',
+      dataIndex: 'endpoint',
+      width: 180,
+      align: 'center'
+    },
+    {
+      title: '自定义域名',
+      dataIndex: 'domain',
+      width: 180,
+      align: 'center'
+    },
+    {
+      title: '桶名称',
+      dataIndex: 'bucketName',
+      align: 'center'
+    },
+    {
+      title: '前缀',
+      dataIndex: 'prefix',
+      width: 120,
+      align: 'center'
+    },
+    {
+      title: '域',
+      dataIndex: 'region',
+      width: 120,
+      align: 'center'
+    },
+    {
+      title: '桶权限',
+      dataIndex: 'accessPolicy',
+      width: 120,
+      align: 'center',
+      render: (value: string) =>
+        value === '0' ? <Tag color="warning">private</Tag> : value === '1' ? <Tag color="success">public</Tag> : <Tag>custom</Tag>
+    },
+    {
+      title: '是否默认',
+      dataIndex: 'status',
+      width: 120,
+      align: 'center',
+      render: (value: string, record) => (
+        <Switch
+          checked={value === '0'}
+          onChange={async (checked) => {
+            const nextStatus = checked ? '0' : '1';
+            const confirmed = await modal.confirm(`确认要${nextStatus === '0' ? '启用' : '停用'} "${record.configKey}" 配置吗？`);
+            if (!confirmed) {
+              return;
+            }
+            await changeOssConfigStatus(record.ossConfigId, nextStatus, record.configKey);
+            modal.msgSuccess('状态修改成功');
+            loadList(query);
+          }}
+        />
+      )
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 160,
+      align: 'center',
+      render: (_, record) => (
+        <Space size={4}>
+          <Tooltip title="修改">
+            <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.ossConfigId)} />
+          </Tooltip>
+          <Tooltip title="删除">
+            <Button danger type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.ossConfigId)} />
+          </Tooltip>
+        </Space>
+      )
+    }
+  ];
 
   const handleEdit = async (ossConfigId?: string | number) => {
     if (!ossConfigId) {
@@ -170,7 +167,7 @@ export default function OssConfigPage() {
     await delOssConfig(target);
     modal.msgSuccess('删除成功');
     setSelectedIds([]);
-    loadList();
+    loadList(query);
   };
 
   const handleSubmit = async () => {
@@ -184,7 +181,7 @@ export default function OssConfigPage() {
       }
       modal.msgSuccess('操作成功');
       setDialogOpen(false);
-      loadList();
+      loadList(query);
     } finally {
       setSubmitting(false);
     }
@@ -292,7 +289,7 @@ export default function OssConfigPage() {
               删除
             </Button>
           </Space>
-          <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList()} />
+          <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList(query)} />
         </div>
 
         <Table<OssConfigVO>

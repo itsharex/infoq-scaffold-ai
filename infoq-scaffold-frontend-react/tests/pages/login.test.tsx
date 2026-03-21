@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import type { LoginData } from '@/api/types';
 import { useUserStore } from '@/store/modules/user';
 
 vi.mock('@/api/login', () => ({
@@ -16,10 +17,13 @@ vi.mock('@/api/login', () => ({
 const { default: LoginPage } = await import('@/pages/login');
 
 describe('pages/login', () => {
+  let loginMock = vi.fn<(userInfo: LoginData) => Promise<void>>(async () => undefined);
+
   beforeEach(() => {
     localStorage.clear();
+    loginMock = vi.fn<(userInfo: LoginData) => Promise<void>>(async () => undefined);
     useUserStore.setState({
-      login: vi.fn().mockResolvedValue(undefined) as unknown as (payload: unknown) => Promise<void>
+      login: loginMock
     });
   });
 
@@ -47,9 +51,8 @@ describe('pages/login', () => {
     fireEvent.click(screen.getByRole('button', { name: /登\s*录/ }));
 
     await waitFor(() => {
-      const login = useUserStore.getState().login as unknown as ReturnType<typeof vi.fn>;
-      expect(login).toHaveBeenCalled();
-      expect(login).toHaveBeenCalledWith(
+      expect(loginMock).toHaveBeenCalled();
+      expect(loginMock).toHaveBeenCalledWith(
         expect.objectContaining({
           username: 'admin',
           password: '123456'

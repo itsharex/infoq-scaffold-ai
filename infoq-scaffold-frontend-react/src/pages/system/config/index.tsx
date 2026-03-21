@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Card, Col, DatePicker, Form, Input, Modal, Radio, Row, Select, Space, Table, Tooltip } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
@@ -47,7 +47,7 @@ export default function ConfigPage() {
   const configId = Form.useWatch('configId', form);
   const dict = useDictOptions('sys_yes_no');
 
-  const loadList = async (nextQuery: ConfigQuery = query, nextRange: [Dayjs, Dayjs] | null = dateRange) => {
+  const loadList = useCallback(async (nextQuery: ConfigQuery, nextRange: [Dayjs, Dayjs] | null) => {
     setLoading(true);
     try {
       const response = await listConfig(addDateRange({ ...nextQuery }, formatRange(nextRange)));
@@ -56,70 +56,67 @@ export default function ConfigPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadList(initialQuery, null);
-  }, []);
+  }, [loadList]);
 
-  const columns = useMemo<ColumnsType<ConfigVO>>(
-    () => [
-      {
-        title: '参数名称',
-        dataIndex: 'configName',
-        align: 'center',
-        ellipsis: true
-      },
-      {
-        title: '参数键名',
-        dataIndex: 'configKey',
-        align: 'center',
-        ellipsis: true
-      },
-      {
-        title: '参数键值',
-        dataIndex: 'configValue',
-        align: 'center',
-        ellipsis: true
-      },
-      {
-        title: '系统内置',
-        dataIndex: 'configType',
-        width: 120,
-        align: 'center',
-        render: (value: string) => <DictTag options={dict.sys_yes_no || []} value={value} />
-      },
-      {
-        title: '备注',
-        dataIndex: 'remark',
-        align: 'center',
-        ellipsis: true
-      },
-      {
-        title: '创建时间',
-        dataIndex: 'createTime',
-        width: 180,
-        align: 'center'
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 160,
-        align: 'center',
-        render: (_, record) => (
-          <Space size={4}>
-            <Tooltip title="修改">
-              <Button className="table-action-link" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.configId)} />
-            </Tooltip>
-            <Tooltip title="删除">
-              <Button className="table-action-link" type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.configId)} />
-            </Tooltip>
-          </Space>
-        )
-      }
-    ],
-    [dict.sys_yes_no]
-  );
+  const columns: ColumnsType<ConfigVO> = [
+    {
+      title: '参数名称',
+      dataIndex: 'configName',
+      align: 'center',
+      ellipsis: true
+    },
+    {
+      title: '参数键名',
+      dataIndex: 'configKey',
+      align: 'center',
+      ellipsis: true
+    },
+    {
+      title: '参数键值',
+      dataIndex: 'configValue',
+      align: 'center',
+      ellipsis: true
+    },
+    {
+      title: '系统内置',
+      dataIndex: 'configType',
+      width: 120,
+      align: 'center',
+      render: (value: string) => <DictTag options={dict.sys_yes_no || []} value={value} />
+    },
+    {
+      title: '备注',
+      dataIndex: 'remark',
+      align: 'center',
+      ellipsis: true
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      width: 180,
+      align: 'center'
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 160,
+      align: 'center',
+      render: (_, record) => (
+        <Space size={4}>
+          <Tooltip title="修改">
+            <Button className="table-action-link" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.configId)} />
+          </Tooltip>
+          <Tooltip title="删除">
+            <Button className="table-action-link" type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.configId)} />
+          </Tooltip>
+        </Space>
+      )
+    }
+  ];
 
   const handleSearch = () => {
     const next = { ...query, pageNum: 1 };
@@ -157,7 +154,7 @@ export default function ConfigPage() {
     await delConfig(target);
     modal.msgSuccess('删除成功');
     setSelectedIds([]);
-    loadList();
+    loadList(query, dateRange);
   };
 
   const handleSubmit = async () => {
@@ -172,7 +169,7 @@ export default function ConfigPage() {
       modal.msgSuccess('操作成功');
       setDialogOpen(false);
       form.resetFields();
-      loadList();
+      loadList(query, dateRange);
     } finally {
       setSubmitting(false);
     }
@@ -277,7 +274,7 @@ export default function ConfigPage() {
             </Button>
           </Space>
           <div className="right-toolbar-wrap">
-            <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList()} />
+            <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList(query, dateRange)} />
           </div>
         </div>
 

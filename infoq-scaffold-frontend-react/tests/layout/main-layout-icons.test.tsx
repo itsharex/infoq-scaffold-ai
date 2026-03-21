@@ -11,6 +11,8 @@ import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
 
 describe('layouts/main-layout-icons', () => {
+  let logoutMock = vi.fn<() => Promise<void>>(async () => undefined);
+
   beforeEach(() => {
     localStorage.clear();
 
@@ -35,10 +37,11 @@ describe('layouts/main-layout-icons', () => {
     useNoticeStore.setState({
       notices: [{ message: '系统通知', read: false, time: '2026-03-11 09:00:00' }]
     });
+    logoutMock = vi.fn<() => Promise<void>>(async () => undefined);
     useUserStore.setState({
       nickname: '管理员',
       avatar: '',
-      logout: vi.fn().mockResolvedValue(undefined) as unknown as () => Promise<void>
+      logout: logoutMock
     });
     const monitorRoutes = [
       {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeleteOutlined, DownloadOutlined, EditOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, Input, InputNumber, Modal, Radio, Row, Select, Space, Table, Tooltip, Tree, TreeSelect } from 'antd';
 import type { DataNode } from 'antd/es/tree';
@@ -88,12 +88,12 @@ export default function PostPage() {
   const dict = useDictOptions('sys_normal_disable');
   const filteredDeptTree = useMemo(() => filterDeptTree(deptTree, deptName), [deptName, deptTree]);
 
-  const loadTree = async () => {
+  const loadTree = useCallback(async () => {
     const response = await deptTreeSelect();
     setDeptTree(response.data);
-  };
+  }, []);
 
-  const loadList = async (nextQuery: PostQuery = query) => {
+  const loadList = useCallback(async (nextQuery: PostQuery) => {
     setLoading(true);
     try {
       const response = await listPost(nextQuery);
@@ -102,12 +102,12 @@ export default function PostPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadTree();
     loadList(initialQuery);
-  }, []);
+  }, [loadList, loadTree]);
 
   useEffect(() => {
     setExpandedDeptKeys(collectDeptKeys(deptTree));
@@ -124,40 +124,37 @@ export default function PostPage() {
     setAutoExpandParent(false);
   }, [deptName, filteredDeptTree]);
 
-  const columns = useMemo<ColumnsType<PostVO>>(
-    () => [
-      { title: '岗位编码', dataIndex: 'postCode', align: 'center', ellipsis: true },
-      { title: '类别编码', dataIndex: 'postCategory', align: 'center', ellipsis: true },
-      { title: '岗位名称', dataIndex: 'postName', align: 'center', ellipsis: true },
-      { title: '部门', dataIndex: 'deptName', align: 'center', ellipsis: true },
-      { title: '排序', dataIndex: 'postSort', width: 80, align: 'center' },
-      {
-        title: '状态',
-        dataIndex: 'status',
-        width: 110,
-        align: 'center',
-        render: (value: string) => <DictTag options={dict.sys_normal_disable || []} value={value} />
-      },
-      { title: '创建时间', dataIndex: 'createTime', width: 180, align: 'center' },
-      {
-        title: '操作',
-        key: 'action',
-        width: 160,
-        align: 'center',
-        render: (_, record) => (
-          <Space size={4}>
-            <Tooltip title="修改">
-              <Button className="table-action-link" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.postId)} />
-            </Tooltip>
-            <Tooltip title="删除">
-              <Button className="table-action-link" type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.postId)} />
-            </Tooltip>
-          </Space>
-        )
-      }
-    ],
-    [dict.sys_normal_disable]
-  );
+  const columns: ColumnsType<PostVO> = [
+    { title: '岗位编码', dataIndex: 'postCode', align: 'center', ellipsis: true },
+    { title: '类别编码', dataIndex: 'postCategory', align: 'center', ellipsis: true },
+    { title: '岗位名称', dataIndex: 'postName', align: 'center', ellipsis: true },
+    { title: '部门', dataIndex: 'deptName', align: 'center', ellipsis: true },
+    { title: '排序', dataIndex: 'postSort', width: 80, align: 'center' },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      width: 110,
+      align: 'center',
+      render: (value: string) => <DictTag options={dict.sys_normal_disable || []} value={value} />
+    },
+    { title: '创建时间', dataIndex: 'createTime', width: 180, align: 'center' },
+    {
+      title: '操作',
+      key: 'action',
+      width: 160,
+      align: 'center',
+      render: (_, record) => (
+        <Space size={4}>
+          <Tooltip title="修改">
+            <Button className="table-action-link" type="link" icon={<EditOutlined />} onClick={() => handleEdit(record.postId)} />
+          </Tooltip>
+          <Tooltip title="删除">
+            <Button className="table-action-link" type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.postId)} />
+          </Tooltip>
+        </Space>
+      )
+    }
+  ];
 
   const handleEdit = async (postId?: string | number) => {
     if (!postId) {
@@ -181,7 +178,7 @@ export default function PostPage() {
     await delPost(target);
     modal.msgSuccess('删除成功');
     setSelectedIds([]);
-    loadList();
+    loadList(query);
   };
 
   const handleSubmit = async () => {
@@ -195,7 +192,7 @@ export default function PostPage() {
       }
       modal.msgSuccess('操作成功');
       setDialogOpen(false);
-      loadList();
+      loadList(query);
     } finally {
       setSubmitting(false);
     }
@@ -378,7 +375,7 @@ export default function PostPage() {
                 </Button>
               </Space>
               <div className="right-toolbar-wrap">
-                <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList()} />
+                <RightToolbar showSearch={showSearch} onShowSearchChange={setShowSearch} onQueryTable={() => loadList(query)} />
               </div>
             </div>
 

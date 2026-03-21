@@ -44,7 +44,7 @@ const service = axios.create({
   }
 });
 
-const request = service as unknown as RequestInstance;
+const request = service as RequestInstance;
 
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {

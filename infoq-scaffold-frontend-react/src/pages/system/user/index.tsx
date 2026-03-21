@@ -258,7 +258,15 @@ export default function UserPage() {
     setPostOptions(data.posts);
     form.resetFields();
     form.setFieldsValue({
-      ...(data.user as unknown as UserForm),
+      userId: String(data.user.userId),
+      deptId: data.user.deptId,
+      userName: data.user.userName,
+      nickName: data.user.nickName,
+      phonenumber: data.user.phonenumber,
+      email: data.user.email,
+      sex: data.user.sex,
+      status: data.user.status,
+      remark: data.user.remark,
       roleIds: data.roleIds || [],
       postIds: data.postIds || []
     });

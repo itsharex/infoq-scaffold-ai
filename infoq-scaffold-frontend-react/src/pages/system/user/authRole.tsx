@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Card, Col, Form, Input, Row, Space, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ export default function AuthRolePage() {
   const [roles, setRoles] = useState<RoleVO[]>([]);
   const [selectedRoleIds, setSelectedRoleIds] = useState<Array<string | number>>([]);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!userId) {
       return;
     }
@@ -30,11 +30,11 @@ export default function AuthRolePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     loadData();
-  }, [userId]);
+  }, [loadData]);
 
   const columns = useMemo<ColumnsType<RoleVO>>(
     () => [

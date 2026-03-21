@@ -277,7 +277,7 @@ describe('views/system/role/index', () => {
               msgSuccess: roleMocks.msgSuccess
             },
             download: roleMocks.download
-          }
+          } as any
         },
         directives: {
           loading: {},

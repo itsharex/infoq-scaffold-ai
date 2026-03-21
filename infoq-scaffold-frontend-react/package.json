@@ -16,6 +16,10 @@
     "test:watch": "vitest",
     "test:coverage": "vitest --run --coverage"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luckykuang/infoq-scaffold-ai.git"
+  },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "antd": "^6.3.2",

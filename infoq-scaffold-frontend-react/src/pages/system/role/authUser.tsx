@@ -11,7 +11,6 @@ import Pagination from '@/components/Pagination';
 import RightToolbar from '@/components/RightToolbar';
 import SelectUser from '@/pages/system/role/selectUser';
 import modal from '@/utils/modal';
-import { resolveRows, resolveTotal } from '@/utils/api';
 
 const baseQuery: UserQuery = {
   pageNum: 1,
@@ -40,9 +39,9 @@ export default function AuthUserPage() {
   const loadList = async (nextQuery: UserQuery = query) => {
     setLoading(true);
     try {
-      const response = (await allocatedUserList(nextQuery)) as unknown as { rows?: UserVO[]; total?: number };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await allocatedUserList(nextQuery);
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }

@@ -10,7 +10,6 @@ import RightToolbar from '@/components/RightToolbar';
 import DictTag from '@/components/DictTag';
 import modal from '@/utils/modal';
 import { download } from '@/utils/request';
-import { resolveData, resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: ClientQuery = {
   pageNum: 1,
@@ -53,9 +52,9 @@ export default function ClientPage() {
   const loadList = async (nextQuery: ClientQuery = query) => {
     setLoading(true);
     try {
-      const response = (await listClient(nextQuery)) as unknown as { rows?: ClientVO[]; total?: number };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listClient(nextQuery);
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }
@@ -166,8 +165,8 @@ export default function ClientPage() {
     if (!id) {
       return;
     }
-    const response = (await getClient(id)) as unknown as { data?: ClientVO };
-    form.setFieldsValue(resolveData(response, initialForm));
+    const response = await getClient(id);
+    form.setFieldsValue({ ...initialForm, ...response.data });
     setDialogOpen(true);
   };
 

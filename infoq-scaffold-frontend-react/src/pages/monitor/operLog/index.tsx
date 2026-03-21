@@ -14,7 +14,6 @@ import OperInfoDialog from '@/pages/monitor/operLog/oper-info-dialog';
 import modal from '@/utils/modal';
 import { addDateRange } from '@/utils/scaffold';
 import { download } from '@/utils/request';
-import { resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: OperLogQuery = {
   pageNum: 1,
@@ -68,12 +67,9 @@ export default function OperLogPage() {
   const loadList = async (nextQuery: OperLogQuery = query, nextRange: [Dayjs, Dayjs] | null = dateRange) => {
     setLoading(true);
     try {
-      const response = (await list(addDateRange({ ...nextQuery }, formatRange(nextRange)))) as unknown as {
-        rows?: OperLogVO[];
-        total?: number;
-      };
-      setListData(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await list(addDateRange({ ...nextQuery }, formatRange(nextRange)));
+      setListData(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }

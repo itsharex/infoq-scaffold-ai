@@ -11,7 +11,6 @@ import RightToolbar from '@/components/RightToolbar';
 import modal from '@/utils/modal';
 import { addDateRange } from '@/utils/scaffold';
 import { download } from '@/utils/request';
-import { resolveData, resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: DictTypeQuery = {
   pageNum: 1,
@@ -47,12 +46,9 @@ export default function DictTypePage() {
   const loadList = async (nextQuery: DictTypeQuery = query, nextRange: [Dayjs, Dayjs] | null = dateRange) => {
     setLoading(true);
     try {
-      const response = (await listType(addDateRange({ ...nextQuery }, formatRange(nextRange)))) as unknown as {
-        rows?: DictTypeVO[];
-        total?: number;
-      };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listType(addDateRange({ ...nextQuery }, formatRange(nextRange)));
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }
@@ -134,8 +130,8 @@ export default function DictTypePage() {
     if (!dictId) {
       return;
     }
-    const response = (await getType(dictId)) as unknown as { data?: DictTypeVO };
-    form.setFieldsValue(resolveData(response, initialForm));
+    const response = await getType(dictId);
+    form.setFieldsValue({ ...initialForm, ...response.data });
     setDialogOpen(true);
   };
 

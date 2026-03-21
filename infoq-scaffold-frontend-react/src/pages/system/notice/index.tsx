@@ -10,7 +10,6 @@ import RightToolbar from '@/components/RightToolbar';
 import DictTag from '@/components/DictTag';
 import Editor from '@/components/Editor';
 import modal from '@/utils/modal';
-import { resolveData, resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: NoticeQuery = {
   pageNum: 1,
@@ -47,9 +46,9 @@ export default function NoticePage() {
   const loadList = async (nextQuery: NoticeQuery = query) => {
     setLoading(true);
     try {
-      const response = (await listNotice(nextQuery)) as unknown as { rows?: NoticeVO[]; total?: number };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listNotice(nextQuery);
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }
@@ -130,8 +129,8 @@ export default function NoticePage() {
   };
 
   const handleEdit = async (noticeId: string | number) => {
-    const response = (await getNotice(noticeId)) as unknown as { data?: NoticeVO };
-    form.setFieldsValue(resolveData(response, initialForm));
+    const response = await getNotice(noticeId);
+    form.setFieldsValue({ ...initialForm, ...response.data });
     setDialogOpen(true);
   };
 

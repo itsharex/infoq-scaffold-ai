@@ -8,7 +8,6 @@ import type { OssConfigForm, OssConfigQuery, OssConfigVO } from '@/api/system/os
 import Pagination from '@/components/Pagination';
 import RightToolbar from '@/components/RightToolbar';
 import modal from '@/utils/modal';
-import { resolveData, resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: OssConfigQuery = {
   pageNum: 1,
@@ -52,9 +51,9 @@ export default function OssConfigPage() {
   const loadList = async (nextQuery: OssConfigQuery = query) => {
     setLoading(true);
     try {
-      const response = (await listOssConfig(nextQuery)) as unknown as { rows?: OssConfigVO[]; total?: number };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listOssConfig(nextQuery);
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }
@@ -153,8 +152,8 @@ export default function OssConfigPage() {
     if (!ossConfigId) {
       return;
     }
-    const response = (await getOssConfig(ossConfigId)) as unknown as { data?: OssConfigVO };
-    form.setFieldsValue(resolveData(response, initialForm));
+    const response = await getOssConfig(ossConfigId);
+    form.setFieldsValue({ ...initialForm, ...response.data });
     setDialogOpen(true);
   };
 

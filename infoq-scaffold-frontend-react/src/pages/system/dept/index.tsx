@@ -11,7 +11,6 @@ import RightToolbar from '@/components/RightToolbar';
 import DictTag from '@/components/DictTag';
 import modal from '@/utils/modal';
 import { handleTree } from '@/utils/scaffold';
-import { resolveArrayData, resolveData } from '@/utils/api';
 
 const initialQuery: DeptQuery = {
   pageNum: 1,
@@ -62,8 +61,8 @@ export default function DeptPage() {
   const loadList = async (nextQuery: DeptQuery = query) => {
     setLoading(true);
     try {
-      const response = (await listDept(nextQuery)) as unknown as { data?: DeptVO[] };
-      const treeData = handleTree<DeptVO>(resolveArrayData(response), 'deptId');
+      const response = await listDept(nextQuery);
+      const treeData = handleTree<DeptVO>(response.data, 'deptId');
       setList(treeData);
       setExpandedRowKeys(expandAll ? collectDeptIds(treeData) : []);
     } finally {
@@ -72,8 +71,8 @@ export default function DeptPage() {
   };
 
   const loadDeptOptions = async () => {
-    const response = (await listDept()) as unknown as { data?: DeptVO[] };
-    setDeptOptions(handleTree<DeptVO>(resolveArrayData(response), 'deptId'));
+    const response = await listDept();
+    setDeptOptions(handleTree<DeptVO>(response.data, 'deptId'));
   };
 
   const loadDeptUsers = async (deptId?: string | number) => {
@@ -81,8 +80,8 @@ export default function DeptPage() {
       setDeptUsers([]);
       return;
     }
-    const response = (await listUserByDeptId(deptId)) as unknown as { data?: UserVO[] };
-    setDeptUsers(resolveArrayData(response));
+    const response = await listUserByDeptId(deptId);
+    setDeptUsers(response.data);
   };
 
   useEffect(() => {
@@ -159,12 +158,12 @@ export default function DeptPage() {
     if (!deptId) {
       return;
     }
-    const detailResponse = (await getDept(deptId)) as unknown as { data?: DeptVO };
-    const detail = resolveData(detailResponse, initialForm as unknown as DeptVO);
-    const optionsResponse = (await listDeptExcludeChild(deptId)) as unknown as { data?: DeptVO[] };
-    setDeptOptions(handleTree<DeptVO>(resolveArrayData(optionsResponse), 'deptId'));
+    const detailResponse = await getDept(deptId);
+    const detail = { ...initialForm, ...detailResponse.data } as DeptForm;
+    const optionsResponse = await listDeptExcludeChild(deptId);
+    setDeptOptions(handleTree<DeptVO>(optionsResponse.data, 'deptId'));
     await loadDeptUsers(detail.deptId);
-    form.setFieldsValue(detail as unknown as DeptForm);
+    form.setFieldsValue(detail);
     setDialogOpen(true);
   };
 

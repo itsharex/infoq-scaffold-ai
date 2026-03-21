@@ -6,7 +6,6 @@ import 'echarts/theme/macarons.js';
 import { getCache } from '@/api/monitor/cache';
 import type { CacheVO } from '@/api/monitor/cache/types';
 import modal from '@/utils/modal';
-import { resolveData } from '@/utils/api';
 
 const defaultCache: CacheVO = {
   commandStats: [],
@@ -23,8 +22,8 @@ export default function CachePage() {
     const loadCache = async () => {
       modal.loading('正在加载缓存监控数据，请稍候！');
       try {
-        const response = (await getCache()) as unknown as { data?: CacheVO };
-        setCache(resolveData(response, defaultCache));
+        const response = await getCache();
+        setCache(response.data);
       } finally {
         modal.closeLoading();
       }

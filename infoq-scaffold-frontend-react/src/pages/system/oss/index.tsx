@@ -12,7 +12,6 @@ import Pagination from '@/components/Pagination';
 import RightToolbar from '@/components/RightToolbar';
 import modal from '@/utils/modal';
 import { addDateRange } from '@/utils/scaffold';
-import { resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: OssQuery = {
   pageNum: 1,
@@ -48,12 +47,9 @@ export default function OssPage() {
   const loadList = async (nextQuery: OssQuery = query, nextRange: [Dayjs, Dayjs] | null = dateRange) => {
     setLoading(true);
     try {
-      const response = (await listOss(addDateRange({ ...nextQuery }, formatRange(nextRange), 'CreateTime'))) as unknown as {
-        rows?: OssVO[];
-        total?: number;
-      };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listOss(addDateRange({ ...nextQuery }, formatRange(nextRange), 'CreateTime'));
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }

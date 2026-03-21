@@ -12,7 +12,6 @@ import RightToolbar from '@/components/RightToolbar';
 import DictTag from '@/components/DictTag';
 import modal from '@/utils/modal';
 import { download } from '@/utils/request';
-import { resolveArrayData, resolveData, resolveRows, resolveTotal } from '@/utils/api';
 
 const initialForm: DictDataForm = {
   dictType: '',
@@ -58,15 +57,15 @@ export default function DictDataPage() {
   const dictCode = Form.useWatch('dictCode', form);
 
   const loadTypeOptions = async () => {
-    const response = (await getDictTypeOptions()) as unknown as { data?: DictTypeVO[] };
-    setTypeOptions(resolveArrayData(response));
+    const response = await getDictTypeOptions();
+    setTypeOptions(response.data);
   };
 
   const loadCurrentType = async () => {
     if (!dictId) {
       return;
     }
-    const response = (await getType(dictId)) as unknown as { data?: DictTypeVO };
+    const response = await getType(dictId);
     const info = response.data;
     if (!info) {
       return;
@@ -83,9 +82,9 @@ export default function DictDataPage() {
   const loadList = async (nextQuery: DictDataQuery = query) => {
     setLoading(true);
     try {
-      const response = (await listData(nextQuery)) as unknown as { rows?: DictDataVO[]; total?: number };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listData(nextQuery);
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }
@@ -188,8 +187,8 @@ export default function DictDataPage() {
     if (!dictCode) {
       return;
     }
-    const response = (await getData(dictCode)) as unknown as { data?: DictDataVO };
-    form.setFieldsValue(resolveData(response, initialForm));
+    const response = await getData(dictCode);
+    form.setFieldsValue({ ...initialForm, ...response.data });
     setDialogOpen(true);
   };
 

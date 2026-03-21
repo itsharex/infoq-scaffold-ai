@@ -12,7 +12,6 @@ import DictTag from '@/components/DictTag';
 import modal from '@/utils/modal';
 import { addDateRange } from '@/utils/scaffold';
 import { download } from '@/utils/request';
-import { resolveData, resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: ConfigQuery = {
   pageNum: 1,
@@ -51,12 +50,9 @@ export default function ConfigPage() {
   const loadList = async (nextQuery: ConfigQuery = query, nextRange: [Dayjs, Dayjs] | null = dateRange) => {
     setLoading(true);
     try {
-      const response = (await listConfig(addDateRange({ ...nextQuery }, formatRange(nextRange)))) as unknown as {
-        rows?: ConfigVO[];
-        total?: number;
-      };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listConfig(addDateRange({ ...nextQuery }, formatRange(nextRange)));
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }
@@ -143,8 +139,8 @@ export default function ConfigPage() {
   };
 
   const handleEdit = async (configId: string | number) => {
-    const response = (await getConfig(configId)) as unknown as { data?: ConfigVO };
-    form.setFieldsValue(resolveData(response, initialForm));
+    const response = await getConfig(configId);
+    form.setFieldsValue({ ...initialForm, ...response.data });
     setDialogOpen(true);
   };
 

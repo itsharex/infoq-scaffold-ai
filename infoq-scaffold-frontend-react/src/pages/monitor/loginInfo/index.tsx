@@ -13,7 +13,6 @@ import RightToolbar from '@/components/RightToolbar';
 import modal from '@/utils/modal';
 import { addDateRange } from '@/utils/scaffold';
 import { download } from '@/utils/request';
-import { resolveRows, resolveTotal } from '@/utils/api';
 
 type LoginInfoRow = LoginInfoVO & {
   clientKey?: string;
@@ -69,12 +68,9 @@ export default function LoginInfoPage() {
   const loadList = async (nextQuery: LoginInfoQuery = query, nextRange: [Dayjs, Dayjs] | null = dateRange) => {
     setLoading(true);
     try {
-      const response = (await list(addDateRange({ ...nextQuery }, formatRange(nextRange)))) as unknown as {
-        rows?: LoginInfoRow[];
-        total?: number;
-      };
-      setListData(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await list(addDateRange({ ...nextQuery }, formatRange(nextRange)));
+      setListData(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }

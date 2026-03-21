@@ -12,7 +12,6 @@ import RightToolbar from '@/components/RightToolbar';
 import DictTag from '@/components/DictTag';
 import modal from '@/utils/modal';
 import { download } from '@/utils/request';
-import { resolveArrayData, resolveData, resolveRows, resolveTotal } from '@/utils/api';
 
 const initialQuery: PostQuery = {
   pageNum: 1,
@@ -90,16 +89,16 @@ export default function PostPage() {
   const filteredDeptTree = useMemo(() => filterDeptTree(deptTree, deptName), [deptName, deptTree]);
 
   const loadTree = async () => {
-    const response = (await deptTreeSelect()) as unknown as { data?: DeptTreeVO[] };
-    setDeptTree(resolveArrayData(response));
+    const response = await deptTreeSelect();
+    setDeptTree(response.data);
   };
 
   const loadList = async (nextQuery: PostQuery = query) => {
     setLoading(true);
     try {
-      const response = (await listPost(nextQuery)) as unknown as { rows?: PostVO[]; total?: number };
-      setList(resolveRows(response));
-      setTotal(resolveTotal(response));
+      const response = await listPost(nextQuery);
+      setList(response.rows);
+      setTotal(response.total ?? response.rows.length);
     } finally {
       setLoading(false);
     }
@@ -164,8 +163,8 @@ export default function PostPage() {
     if (!postId) {
       return;
     }
-    const response = (await getPost(postId)) as unknown as { data?: PostVO };
-    form.setFieldsValue(resolveData(response, initialForm as unknown as PostVO) as unknown as PostForm);
+    const response = await getPost(postId);
+    form.setFieldsValue({ ...initialForm, ...response.data });
     setDialogOpen(true);
   };
 

@@ -11,7 +11,11 @@
 - Follow DRY, YAGNI, and separation of concerns.
 - Prefer clear naming and pragmatic abstractions over clever indirection.
 - Add concise comments only for critical intent or non-obvious logic.
+- Prefer minimal, targeted edits over large rewrites unless broader restructuring is explicitly required by the user or the task.
+- Avoid cleanup-driven refactors that mainly make code look "cleaner" while changing behavior or increasing risk without clear product value.
+- Keep implementation scoped to the requested outcome; do not add opportunistic features, broad side quests, or speculative improvements.
 - Remove dead code and obsolete compatibility branches when changing behavior, unless compatibility is explicitly required by the user.
+- If a change is later found to be wrong, revert the incorrect code immediately before continuing and do not leave unused, unreachable, or commented-out code behind.
 - Consider time and space complexity when dealing with heavy IO, loops, large payloads, or memory-sensitive flows.
 - Handle edge cases explicitly instead of assuming ideal input.
 
@@ -41,5 +45,7 @@
 
 - Keep code testable and prefer automated verification whenever feasible.
 - Prefer deterministic checks, formatting, and reproducible validation over ad-hoc manual confidence.
+- Do not change tests, mocks, warning thresholds, or validation settings merely to force green results while leaving the real defect unresolved.
+- Do not delete assertions, weaken expectations, or suppress build/test warnings unless the user explicitly approves the tradeoff and the reason is documented in the change.
 - Backend unit tests should use a hard timeout of 60 seconds to avoid stuck runs.
 - When changing behavior, verify the relevant path instead of relying on static reasoning alone.

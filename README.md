@@ -7,6 +7,7 @@
 
 > 一个为 Codex 设计的自动化工程仓库：通过 `AGENTS.md` 定义项目规则，通过 `.codex/skills` 注入可复用技能，再把这些能力作用到 Spring Boot 3 后端、Vue 3 管理端和 React 19 管理端，实现“从需求到代码到验证”的自动化研发闭环。
 
+![Version](https://img.shields.io/badge/Version-2.0.2-f66a39)
 ![JDK](https://img.shields.io/badge/JDK-17-1677FF)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.10-6DB33F)
 ![Vue](https://img.shields.io/badge/Vue-3.5.22-42B883)

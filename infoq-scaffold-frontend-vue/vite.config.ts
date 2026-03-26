@@ -46,6 +46,7 @@ function matchesNodeModulePackage(id: string, packages: string[]) {
  */
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd());
+  const proxyTarget = env.VITE_APP_PROXY_TARGET || 'http://localhost:8080';
   return {
     // 部署生产环境和开发环境下的URL。
     // 默认情况下，vite 会假设你的应用是被部署在一个域名的根路径上
@@ -60,8 +61,8 @@ export default defineConfig(({ mode, command }) => {
       open: true,
       proxy: {
         [env.VITE_APP_BASE_API]: {
-          // 后端宿主机部署，前端填写localhost:8080
-          target: 'http://localhost:8080',
+          // 后端宿主机部署时可通过 VITE_APP_PROXY_TARGET 覆盖代理目标
+          target: proxyTarget,
           changeOrigin: true,
           ws: true,
           rewrite: (path) => path.replace(new RegExp('^' + env.VITE_APP_BASE_API), '')

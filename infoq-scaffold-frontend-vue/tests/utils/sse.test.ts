@@ -76,8 +76,13 @@ describe('utils/sse', () => {
       autoReconnect: { onFailed: () => void };
     };
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    connectOptions.autoReconnect.onFailed();
-    expect(logSpy).toHaveBeenCalledWith('Failed to connect after 5 retries');
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    error.value = new Event('error');
+    await nextTick();
+    expect(logSpy).not.toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(error.value).toBeNull();
 
     data.value = '系统消息';
     await nextTick();
@@ -95,10 +100,10 @@ describe('utils/sse', () => {
     );
     expect(data.value).toBeNull();
 
-    error.value = new Error('sse-error');
-    await nextTick();
-    expect(error.value).toBeNull();
+    connectOptions.autoReconnect.onFailed();
+    expect(logSpy).toHaveBeenCalledWith('Failed to connect after 5 retries');
     logSpy.mockRestore();
+    errorSpy.mockRestore();
 
     closeSSE();
     expect(close).toHaveBeenCalled();

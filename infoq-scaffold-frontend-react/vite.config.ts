@@ -194,6 +194,8 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       globals: true,
       setupFiles: ['./tests/setup.ts'],
+      // Ant Design-heavy jsdom cases become flaky under worker contention.
+      maxWorkers: 1,
       include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
       exclude: ['node_modules', 'dist', 'coverage'],
       mockReset: true,
@@ -207,10 +209,10 @@ export default defineConfig(({ mode }) => {
         include: ['src/**/*.{ts,tsx}'],
         exclude: ['src/main.tsx', 'src/types/**/*.d.ts'],
         thresholds: {
-          lines: 1,
-          functions: 1,
-          branches: 1,
-          statements: 1
+          lines: 45,
+          functions: 38,
+          branches: 44,
+          statements: 46
         }
       }
     }

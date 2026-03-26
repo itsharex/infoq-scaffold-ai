@@ -56,10 +56,10 @@ public class SysLoginInfoServiceImpl implements SysLoginInfoService {
     @EventListener
     public void recordLoginInfo(LoginInfoEvent loginInfoEvent) {
         HttpServletRequest request = loginInfoEvent.getRequest();
-        final UserAgent userAgent = UserAgentUtil.parse(request.getHeader("User-Agent"));
-        final String ip = ServletUtils.getClientIP(request);
+        final UserAgent userAgent = request != null ? UserAgentUtil.parse(request.getHeader("User-Agent")) : null;
+        final String ip = request != null ? ServletUtils.getClientIP(request) : StringUtils.EMPTY;
         // 客户端信息
-        String clientId = request.getHeader(LoginHelper.CLIENT_KEY);
+        String clientId = request != null ? request.getHeader(LoginHelper.CLIENT_KEY) : StringUtils.EMPTY;
         SysClientVo client = null;
         if (StringUtils.isNotBlank(clientId)) {
             client = sysClientService.queryByClientId(clientId);
@@ -75,9 +75,9 @@ public class SysLoginInfoServiceImpl implements SysLoginInfoService {
         // 打印信息到日志
         log.info(sb.toString(), loginInfoEvent.getArgs());
         // 获取客户端操作系统
-        String os = userAgent.getOs().getName();
+        String os = userAgent != null && userAgent.getOs() != null ? userAgent.getOs().getName() : StringUtils.EMPTY;
         // 获取客户端浏览器
-        String browser = userAgent.getBrowser().getName();
+        String browser = userAgent != null && userAgent.getBrowser() != null ? userAgent.getBrowser().getName() : StringUtils.EMPTY;
         // 封装对象
         SysLoginInfoBo loginInfo = new SysLoginInfoBo();
         loginInfo.setUserName(loginInfoEvent.getUsername());

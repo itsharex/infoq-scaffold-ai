@@ -27,12 +27,7 @@ public class NetUtils extends NetUtil {
      * @return 是否为IPv6地址
      */
     public static boolean isIPv6(String ip) {
-        try {
-            // 判断是否为IPv6地址
-            return InetAddress.getByName(ip) instanceof Inet6Address;
-        } catch (UnknownHostException e) {
-            return false;
-        }
+        return RegexUtils.isMatch(PatternPool.IPV6, ip);
     }
 
     /**
@@ -50,6 +45,9 @@ public class NetUtils extends NetUtil {
      * @return 是否为内网地址
      */
     public static boolean isInnerIPv6(String ip) {
+        if (!isIPv6(ip)) {
+            throw new IllegalArgumentException("Invalid IPv6 address!");
+        }
         try {
             // 判断是否为IPv6地址
             if (InetAddress.getByName(ip) instanceof Inet6Address inet6Address) {

@@ -21,6 +21,7 @@ import cc.infoq.system.service.SysRegisterService;
 import cc.infoq.system.service.SysUserService;
 import cn.hutool.crypto.digest.BCrypt;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -102,7 +103,15 @@ public class SysRegisterServiceImpl implements SysRegisterService {
         loginInfoEvent.setUsername(username);
         loginInfoEvent.setStatus(status);
         loginInfoEvent.setMessage(message);
-        loginInfoEvent.setRequest(ServletUtils.getRequest());
+        loginInfoEvent.setRequest(resolveCurrentRequest());
         SpringUtils.context().publishEvent(loginInfoEvent);
+    }
+
+    private HttpServletRequest resolveCurrentRequest() {
+        try {
+            return ServletUtils.getRequest();
+        } catch (IllegalStateException ignored) {
+            return null;
+        }
     }
 }

@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.List;
 import java.util.function.Supplier;
@@ -83,7 +84,7 @@ public class SysLoginServiceImpl implements SysLoginService {
         loginInfoEvent.setUsername(username);
         loginInfoEvent.setStatus(status);
         loginInfoEvent.setMessage(message);
-        loginInfoEvent.setRequest(ServletUtils.getRequest());
+        loginInfoEvent.setRequest(resolveCurrentRequest());
         SpringUtils.context().publishEvent(loginInfoEvent);
     }
 
@@ -158,5 +159,13 @@ public class SysLoginServiceImpl implements SysLoginService {
 
         // 登录成功 清空错误次数
         RedisUtils.deleteObject(errorKey);
+    }
+
+    private HttpServletRequest resolveCurrentRequest() {
+        try {
+            return ServletUtils.getRequest();
+        } catch (IllegalStateException ignored) {
+            return null;
+        }
     }
 }

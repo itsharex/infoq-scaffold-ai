@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -217,6 +218,32 @@ class SysLoginInfoServiceImplTest {
         assertEquals(Constants.FAIL, bo.getStatus());
         assertNull(bo.getClientKey());
         assertNull(bo.getDeviceType());
+        verifyNoInteractions(sysClientService);
+    }
+
+    @Test
+    @DisplayName("recordLoginInfo: should tolerate missing request context")
+    void recordLoginInfoShouldTolerateMissingRequestContext() {
+        SysLoginInfoServiceImpl serviceSpy = spy(service);
+        ArgumentCaptor<SysLoginInfoBo> captor = ArgumentCaptor.forClass(SysLoginInfoBo.class);
+        doNothing().when(serviceSpy).insertLoginInfo(captor.capture());
+
+        LoginInfoEvent event = new LoginInfoEvent();
+        event.setUsername("admin");
+        event.setStatus(Constants.LOGIN_FAIL);
+        event.setMessage("登录失败");
+
+        try (MockedStatic<AddressUtils> addressUtils = mockStatic(AddressUtils.class)) {
+            addressUtils.when(() -> AddressUtils.getRealAddressByIP(eq(""))).thenReturn("未知");
+            serviceSpy.recordLoginInfo(event);
+        }
+
+        SysLoginInfoBo bo = captor.getValue();
+        assertEquals("admin", bo.getUserName());
+        assertEquals(Constants.FAIL, bo.getStatus());
+        assertEquals("登录失败", bo.getMsg());
+        assertEquals("", bo.getIpaddr());
+        assertEquals("未知", bo.getLoginLocation());
         verifyNoInteractions(sysClientService);
     }
 }

@@ -1,0 +1,10 @@
+# AGENTS.md
+|IMPORTANT:This file applies to infoq-scaffold-frontend-vue and its descendants; use it to narrow broad root guidance with Vue-specific rules.
+|Stack:Vue 3|TypeScript|Vite 6|Element Plus 2.x|Pinia|Vue Router 4|Vitest
+|Workspace Layout:src/views|src/components|src/api|src/store|src/router|src/utils|src/plugins|tests
+|Package And Formatting:Prefer pnpm.|Use the local eslint and prettier configuration with 2-space frontend formatting.|Keep source, env, and test files UTF-8.
+|Commands:install=cd infoq-scaffold-frontend-vue && pnpm install|dev=cd infoq-scaffold-frontend-vue && pnpm run dev|test=cd infoq-scaffold-frontend-vue && pnpm run test:unit|coverage=cd infoq-scaffold-frontend-vue && pnpm run test:unit:coverage|lint=cd infoq-scaffold-frontend-vue && pnpm run lint:eslint:fix|build=cd infoq-scaffold-frontend-vue && pnpm run build:prod
+|Component Boundary:Prefer Element Plus and existing Vue patterns before building custom widgets.|Use element-plus-component-reference for component API or version-support checks.|Do not apply React or Ant Design component rules here.
+|Testing Boundary:Use infoq-vue-unit-test-patterns for Vue unit tests and coverage work.|Favor deterministic Vitest plus Vue Test Utils assertions with mocked Element Plus, router, storage, and env dependencies.|Run coverage when extending shared utils, store, request, or permission paths, or when the user asks for coverage work.
+|Verification:For Vue behavior changes validate main flow, targeted or full unit tests as appropriate, lint, then production build.|Use infoq-vue-browser-automation for runtime UI smoke when rendered flows such as /login or shared views are affected.|Use infoq-vue-run-dev-stack when the local Vue stack must be started or restarted for verification.
+|Boundaries:Keep Vue-only rules in this workspace; React-specific commands, Antd APIs, and Testing Library patterns belong in infoq-scaffold-frontend-react.

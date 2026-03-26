@@ -7,7 +7,7 @@
 - 这里的 `*.template.md` 只作为写作骨架与校验口径
 - 任何实际需求的 `PRD.md`、`DESIGN.md`、`TRS.md`、`MATERIAL.md`、`DELIVERY.md` 都必须写到 `doc/plan/<task-slug>/`
 - 推荐先执行：
-  - `bash .codex/skills/infoq-subagent-delivery/scripts/init_plan_dir.sh <task-slug>`
+  - `bash .agents/skills/infoq-subagent-delivery/scripts/init_plan_dir.sh <task-slug>`
 
 模板列表：
 

@@ -36,7 +36,7 @@
 
 - 全局 subagent 配置：`.codex/config.toml`
 - 项目级 custom agents：`.codex/agents/*.toml`
-- 统一入口 skill：`.codex/skills/infoq-subagent-delivery/`
+- 统一入口 skill：`.agents/skills/infoq-subagent-delivery/`
 
 ### 3.2 文档目录
 
@@ -84,7 +84,7 @@ YYYY-MM-DD-short-topic
 执行：
 
 ```bash
-bash .codex/skills/infoq-subagent-delivery/scripts/init_plan_dir.sh 2026-03-26-user-import
+bash .agents/skills/infoq-subagent-delivery/scripts/init_plan_dir.sh 2026-03-26-user-import
 ```
 
 这个脚本会自动创建：
@@ -305,6 +305,6 @@ Codex：
 ## 13. 参考资料
 
 - OpenAI Codex Subagents: <https://developers.openai.com/codex/subagents>
-- 仓库内统一入口 skill：`.codex/skills/infoq-subagent-delivery/SKILL.md`
+- 仓库内统一入口 skill：`.agents/skills/infoq-subagent-delivery/SKILL.md`
 - 模板说明：`doc/agents/README.md`
 - 任务产物说明：`doc/plan/README.md`

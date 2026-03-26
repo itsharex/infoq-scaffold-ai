@@ -49,7 +49,7 @@
 可以把两者理解成两层系统：
 
 1. `AGENTS.md` 决定“该遵守什么规则”和“该触发什么能力”
-2. `.codex/skills` 决定“这类任务具体怎么做”
+2. `.agents/skills` 决定“这类任务具体怎么做”
 
 也就是说：
 
@@ -79,5 +79,5 @@
 - 顶层规则文件：`/AGENTS.md`
 - skill 指南：`./skills-guide.md`
 - subagents 使用指南：`./subagents-guide.md`
-- 项目静态参考：`../.codex/skills/infoq-project-reference/references/project-reference.md`
-- 压缩维护 skill：`../.codex/skills/agents-md-compress/SKILL.md`
+- 项目静态参考：`../.agents/skills/infoq-project-reference/references/project-reference.md`
+- 压缩维护 skill：`../.agents/skills/agents-md-compress/SKILL.md`

@@ -1,0 +1,10 @@
+# AGENTS.md
+|IMPORTANT:This file applies to infoq-scaffold-frontend-react and its descendants; use it to narrow broad root guidance with React-specific rules.
+|Stack:React 19|TypeScript|Vite 7|Ant Design 6|React Router 7|Zustand|Vitest|Testing Library
+|Workspace Layout:src/pages|src/components|src/api|src/store|src/router|src/utils|src/hooks|tests
+|Package And Formatting:Prefer pnpm.|Use the local eslint and prettier configuration with 2-space frontend formatting.|Keep source, env, and test files UTF-8.
+|Commands:install=cd infoq-scaffold-frontend-react && pnpm install|dev=cd infoq-scaffold-frontend-react && pnpm run dev|test=cd infoq-scaffold-frontend-react && pnpm run test|coverage=cd infoq-scaffold-frontend-react && pnpm run test:coverage|lint=cd infoq-scaffold-frontend-react && pnpm run lint:fix|build=cd infoq-scaffold-frontend-react && pnpm run build:prod
+|Component Boundary:Prefer Ant Design and existing React patterns before building custom widgets.|Use ant-design-component-reference for component API or version-support checks.|Do not apply Vue or Element Plus component rules here.
+|Testing Boundary:Use infoq-react-unit-test-patterns for React unit tests and coverage work.|Favor Vitest plus Testing Library behavior assertions, MemoryRouter helpers, and direct Zustand store setup over implementation-detail tests.|Run coverage when extending shared router, store, or utility paths, or when the user asks for coverage work.
+|Verification:For React behavior changes validate main flow, targeted or full unit tests as appropriate, lint, then production build.|Use infoq-react-browser-automation for runtime UI smoke when rendered flows such as /login or route guards are affected.|Use infoq-react-run-dev-stack when the local React stack must be started or restarted for verification.
+|Boundaries:Keep React-only rules in this workspace; Vue-specific commands, Element Plus APIs, and Vue Test Utils patterns belong in infoq-scaffold-frontend-vue.

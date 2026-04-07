@@ -16,6 +16,8 @@
 | `context7` | 已启用 | STDIO | 获取最新版第三方库文档和 API 示例 | 可选 `CONTEXT7_API_KEY` |
 | `openai-docs` | 已启用 | HTTP | 查询 OpenAI / Codex / API 官方文档 | 否 |
 | `chrome-devtools` | 已启用 | STDIO | 前端调试、Network/Console/Performance 分析 | 否 |
+| `mysql` | 已启用，只读 | STDIO | 只读查看本地 / 测试 MySQL 数据库上下文 | 需要配置 MySQL 环境变量并保证服务可达 |
+| `redis` | 已启用，只读 | STDIO | 只读查看本地 / 测试 Redis 缓存上下文 | 需要配置 Redis 环境变量并保证服务可达 |
 | `figma-desktop` | 待选，默认禁用 | HTTP | 从本地 Figma 桌面端读取设计上下文 | 需要安装 Figma 桌面端并启用本地 MCP |
 | `github` | 待选，默认禁用 | HTTP | 读取仓库、PR、Issue、Actions 等 GitHub 上下文 | 需要配置 `GITHUB_MCP_PAT` |
 
@@ -178,7 +180,117 @@ tool_timeout_sec = 120
 - 开启远程调试端口时，不要复用默认浏览器数据目录。
 - 如果只是一般页面检查、console、network、performance 分析，保留当前项目里的默认配置就够了，不必额外开启 Chrome 设置。
 
-### 3.5 `figma-desktop`（待选项）
+### 3.5 `mysql`（只读）
+
+用途：
+- 让代理直接只读 MySQL 表结构、执行查询、排查测试数据问题。
+- 适合本仓库后端联调、SQL 验证、表结构核对、开发环境数据检查。
+
+为什么本项目需要：
+- 仓库后端默认依赖 MySQL，本地开发、冒烟验证、Mapper/Controller 排查经常需要看真实数据。
+- 目前仓库已经固化了浏览器、文档类 MCP，但数据库上下文仍要靠人工切换客户端，效率较低。
+
+配置方式：
+- `STDIO`
+- 当前仓库通过 `bash .codex/scripts/start_mysql_mcp.sh` 启动
+- 启动脚本会读取 `infoq-scaffold-backend/infoq-admin/src/main/resources/application-local.yml`
+- 再调用 `npx -y @wenit/mysql-mcp-server`
+
+当前项目约定：
+- 当前项目级 `.codex/config.toml` 已启用 `mysql` server
+- 通过 `enabled_tools` 只暴露只读工具：`show_databases`、`list_tables`、`describe_table`、`show_create_table`、`show_indexes`、`query`、`select`、`batch_query`
+- 通过 `env = { MYSQL_READONLY = "true" }` 固定只读模式，不允许从项目配置层覆盖成写模式
+- 当前仓库默认从后端 `application-local.yml` 注入本地连接信息，避免把数据库密码继续写入 `.codex/config.toml`
+
+需要的环境变量：
+- `MYSQL_HOST`
+- `MYSQL_PORT`
+- `MYSQL_USER`
+- `MYSQL_PASSWORD`
+- `MYSQL_DATABASE`
+- 可选：`MYSQL_CONNECTION_LIMIT`、`MYSQL_READONLY`、`MYSQL_SSL_CA`、`MYSQL_TIMEOUT`
+
+适用场景：
+- 查看用户、角色、菜单、日志等真实数据
+- 核对 SQL 变更是否落库
+- 排查后端接口与数据库数据不一致的问题
+- 做本地只读数据分析
+
+启用前提：
+1. 本机或目标环境有可访问的 MySQL 实例。
+2. 在 shell 环境中导出所需变量，例如：
+
+```bash
+export MYSQL_HOST=127.0.0.1
+export MYSQL_PORT=3306
+export MYSQL_USER=root
+export MYSQL_PASSWORD=your_password
+export MYSQL_DATABASE=infoq
+export MYSQL_READONLY=true
+```
+
+3. 保证本地或测试环境的 MySQL 实例可达，并允许当前仓库读取 `application-local.yml` 中的连接配置。
+
+说明：
+- 当前选用的是 `@wenit/mysql-mcp-server`，因为它支持标准 `npx` 启动和环境变量配置。
+- 上游 server 虽然支持写操作，但当前仓库通过只读环境变量和工具白名单双重限制，仅保留只读能力。
+
+### 3.6 `redis`（只读）
+
+用途：
+- 让代理直接只读查看 Redis 键、TTL、缓存信息和常见数据结构内容。
+- 适合登录态、验证码、限流、缓存监控等问题排查。
+
+为什么本项目需要：
+- 仓库后端已集成 Redis / Redisson，登录、缓存、限流、分布式锁等场景都依赖 Redis。
+- 许多问题最终落在 key、过期时间、缓存内容或实例状态，仅靠日志不够高效。
+
+配置方式：
+- `STDIO`
+- 当前仓库通过 `bash .codex/scripts/start_redis_mcp.sh` 启动
+- 启动脚本会读取 `infoq-scaffold-backend/infoq-admin/src/main/resources/application-local.yml`
+- 再调用 `npx -y @wenit/redis-mcp-server`
+
+当前项目约定：
+- 当前项目级 `.codex/config.toml` 已启用 `redis` server
+- 通过 `enabled_tools` 只暴露只读工具：`ping`、`info`、`keys`、`get`、`hgetall`、`lrange`、`smembers`、`ttl`、`zrange`
+- 通过 `env = { REDIS_READONLY = "true" }` 固定只读模式，不允许从项目配置层覆盖成写模式
+- 当前仓库默认从后端 `application-local.yml` 注入本地连接信息，避免把 Redis 密码继续写入 `.codex/config.toml`
+
+需要的环境变量：
+- `REDIS_HOST`
+- `REDIS_PORT`
+- `REDIS_PASSWORD`
+- `REDIS_DB`
+- 可选：`REDIS_READONLY`、`REDIS_CLUSTER`、`REDIS_CLUSTER_NODES`
+- 可选：`REDIS_SENTINEL`、`REDIS_SENTINEL_MASTER_NAME`、`REDIS_SENTINEL_NODES`
+- 可选：`REDIS_TLS_CA`、`REDIS_TLS_CERT`、`REDIS_TLS_KEY`
+
+适用场景：
+- 查看登录 token、验证码、限流计数等缓存键
+- 核对缓存监控接口返回内容
+- 排查 TTL、过期时间和缓存未命中问题
+- 查看 Redis 服务器基础信息
+
+启用前提：
+1. 本机或目标环境有可访问的 Redis 实例。
+2. 在 shell 环境中导出所需变量，例如：
+
+```bash
+export REDIS_HOST=127.0.0.1
+export REDIS_PORT=6379
+export REDIS_PASSWORD=
+export REDIS_DB=0
+export REDIS_READONLY=true
+```
+
+3. 保证本地或测试环境的 Redis 实例可达，并允许当前仓库读取 `application-local.yml` 中的连接配置。
+
+说明：
+- 当前选用的是 `@wenit/redis-mcp-server`，因为它支持标准环境变量配置，并覆盖单机、Cluster、Sentinel、TLS 等常见场景。
+- 上游 server 虽然提供写入工具，但当前仓库通过只读环境变量和工具白名单双重限制，仅保留只读能力。
+
+### 3.7 `figma-desktop`（待选项）
 
 用途：
 - 从 Figma 桌面端本地 MCP server 读取设计稿上下文。
@@ -206,7 +318,7 @@ tool_timeout_sec = 120
 - 设计稿到 React 页面
 - 读取 Figma 节点结构、布局、资源信息
 
-### 3.6 `github`（待选项）
+### 3.8 `github`（待选项）
 
 用途：
 - 让代理直接访问 GitHub 平台能力，而不只是本地 `git`。
@@ -242,9 +354,9 @@ export GITHUB_MCP_PAT=your_personal_access_token
 - 不要把真实 token 写进仓库。
 - 建议使用最小权限 PAT。
 
-## 4. 为什么是这 6 个
+## 4. 为什么是这 8 个
 
-项目当前最强相关的需求有三类：
+项目当前最强相关的需求有四类：
 
 ### 4.1 前端运行态验证
 
@@ -266,7 +378,17 @@ export GITHUB_MCP_PAT=your_personal_access_token
 - `context7` 解决第三方开发库文档问题。
 - `openai-docs` 解决 Codex / OpenAI 官方文档问题。
 
-### 4.3 设计稿和远程协作上下文
+### 4.3 数据库与缓存上下文
+
+对应 MCP：
+- `mysql`
+- `redis`
+
+原因：
+- 本仓库后端默认依赖 MySQL 与 Redis，本地联调和问题排查经常需要直接查看数据库与缓存内容。
+- 这两类 MCP 在需要时价值很高，但都依赖本地环境变量和可达实例；当前项目虽然启用了 server 条目，但只保留只读能力。
+
+### 4.4 设计稿和远程协作上下文
 
 对应 MCP：
 - `figma-desktop`
@@ -280,17 +402,19 @@ export GITHUB_MCP_PAT=your_personal_access_token
 
 当前 `.codex/config.toml` 中已包含：
 
-- 已启用：`playwright`、`context7`、`openai-docs`、`chrome-devtools`
+- 已启用：`playwright`、`context7`、`openai-docs`、`chrome-devtools`、`mysql`（只读）、`redis`（只读）
 - 已预留但默认禁用：`figma-desktop`、`github`
 
 这意味着：
 - 普通代码和联调任务可以直接使用前四个 MCP。
-- 设计稿或 GitHub 平台协作需求出现时，只需补齐本地条件并启用对应 server。
+- 数据库和缓存上下文现在可直接只读使用；设计稿或 GitHub 平台协作需求出现时，再补齐本地条件并启用对应 server。
 
 ## 6. 后续维护建议
 
 - 新增 MCP 前，先确认它是否真的被当前仓库 workflow 使用。
 - 需要账号、token、桌面客户端、浏览器远程调试之类前置条件的 MCP，一律默认禁用。
+- 需要数据库或缓存连接信息的 MCP 必须通过环境变量或本地配置解析注入凭据。
+- MySQL 与 Redis 若保留项目级启用状态，必须继续使用只读环境变量和 `enabled_tools` 白名单，禁止在未获明确确认前放开写工具。
 - 项目级 `.codex/config.toml` 只保留“仓库公共需要”的 MCP，不把个人临时 server 混进来。
 - 不要在配置文件里写死任何真实密钥。
 
@@ -302,5 +426,7 @@ export GITHUB_MCP_PAT=your_personal_access_token
 - Chrome DevTools MCP 官方仓库: https://github.com/ChromeDevTools/chrome-devtools-mcp
 - Context7 官方页面: https://context7.com/upstash/context7
 - Context7 MCP Registry 页面: https://github.com/mcp/io.github.upstash/context7
+- MySQL MCP package: https://www.npmjs.com/package/@wenit/mysql-mcp-server
+- Redis MCP package: https://www.npmjs.com/package/@wenit/redis-mcp-server
 - Figma Desktop MCP 官方文档: https://developers.figma.com/docs/figma-mcp-server/local-server-installation/
 - GitHub 官方 MCP Server 仓库: https://github.com/github/github-mcp-server

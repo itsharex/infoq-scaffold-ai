@@ -23,12 +23,13 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: './coverage',
-      include: ['src/mobile-core/helpers.ts', 'src/mobile-core/permissions.ts', 'src/store/session.ts'],
+      include: ['src/mobile-core/**/*.ts', 'src/store/session.ts'],
+      exclude: ['src/mobile-core/types.ts'],
       thresholds: {
-        lines: 70,
-        functions: 70,
-        branches: 60,
-        statements: 70
+        lines: 100,
+        functions: 100,
+        branches: 100,
+        statements: 100
       }
     }
   }

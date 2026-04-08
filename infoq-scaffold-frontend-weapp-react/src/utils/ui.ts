@@ -4,7 +4,7 @@ import { relaunch, routes } from './navigation';
 
 export const showSuccess = (title: string) => Taro.showToast({ title, icon: 'success' });
 
-export const showError = (error: unknown, fallback?: string) =>
+const showError = (error: unknown, fallback?: string) =>
   Taro.showToast({
     title: toErrorMessage(error, fallback),
     icon: 'none',

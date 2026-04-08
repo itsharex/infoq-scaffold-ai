@@ -97,6 +97,23 @@ describe('store/session', () => {
     expect(useSessionStore.getState().initialized).toBe(true);
   });
 
+  it('signIn should fallback to empty permissions when backend omits permissions', async () => {
+    mockLogin.mockResolvedValue({ data: { access_token: 'token-4' } });
+    mockGetInfo.mockResolvedValue({
+      data: {
+        user: { userId: 101, userName: 'tester2' },
+        roles: [],
+        permissions: undefined
+      }
+    });
+    mockNormalizePermissions.mockReturnValue([]);
+
+    await useSessionStore.getState().signIn({ username: 'tester2', password: 'pwd2' });
+
+    expect(mockNormalizePermissions).toHaveBeenCalledWith([]);
+    expect(useSessionStore.getState().permissions).toEqual([]);
+  });
+
   it('signOut should clear state even when remote logout fails', async () => {
     mockGetToken.mockReturnValue('token-2');
     mockLogout.mockRejectedValue(new Error('logout failed'));
@@ -114,6 +131,105 @@ describe('store/session', () => {
     expect(useSessionStore.getState().user).toBeNull();
     expect(useSessionStore.getState().permissions).toEqual([]);
     expect(useSessionStore.getState().initialized).toBe(true);
+  });
+
+  it('signOut should call remote logout when token exists and clear state', async () => {
+    mockGetToken.mockReturnValue('token-3');
+    mockLogout.mockResolvedValue(undefined);
+    useSessionStore.setState({
+      token: 'token-3',
+      user: { userId: 3, userName: 'u3' },
+      permissions: ['system:user:list'],
+      initialized: true
+    });
+
+    await useSessionStore.getState().signOut();
+
+    expect(mockLogout).toHaveBeenCalledTimes(1);
+    expect(mockRemoveToken).toHaveBeenCalledTimes(1);
+    expect(useSessionStore.getState().token).toBe('');
+    expect(useSessionStore.getState().user).toBeNull();
+  });
+
+  it('loadSession(force=true) should refresh user info even when initialized', async () => {
+    mockGetToken.mockReturnValue('force-token');
+    mockGetInfo.mockResolvedValue({
+      data: {
+        user: { userId: 300, userName: 'forced' },
+        roles: [],
+        permissions: ['system:dept:list']
+      }
+    });
+    useSessionStore.setState({
+      token: 'force-token',
+      user: { userId: 200, userName: 'cached' },
+      permissions: ['system:user:list'],
+      initialized: true
+    });
+
+    const result = await useSessionStore.getState().loadSession(true);
+
+    expect(mockGetInfo).toHaveBeenCalledTimes(1);
+    expect(result?.user.userName).toBe('forced');
+    expect(useSessionStore.getState().user?.userName).toBe('forced');
+  });
+
+  it('loadSession should fallback to empty permissions when backend omits permissions', async () => {
+    mockGetToken.mockReturnValue('token-5');
+    mockGetInfo.mockResolvedValue({
+      data: {
+        user: { userId: 500, userName: 'no-perm' },
+        roles: [],
+        permissions: undefined
+      }
+    });
+    mockNormalizePermissions.mockReturnValue([]);
+
+    const result = await useSessionStore.getState().loadSession(true);
+
+    expect(mockNormalizePermissions).toHaveBeenCalledWith([]);
+    expect(result?.user.userName).toBe('no-perm');
+    expect(useSessionStore.getState().permissions).toEqual([]);
+  });
+
+  it('signOut should skip remote logout when token is missing', async () => {
+    mockGetToken.mockReturnValue('');
+    useSessionStore.setState({
+      token: '',
+      user: { userId: 10, userName: 'u10' },
+      permissions: ['system:user:list'],
+      initialized: true
+    });
+
+    await useSessionStore.getState().signOut();
+
+    expect(mockLogout).not.toHaveBeenCalled();
+    expect(mockRemoveToken).toHaveBeenCalledTimes(1);
+    expect(useSessionStore.getState().user).toBeNull();
+  });
+
+  it('patchUser should merge when user exists and initialize when user is null', () => {
+    useSessionStore.setState({
+      user: { userId: 501, userName: 'origin', nickName: 'n1' } as any
+    });
+    useSessionStore.getState().patchUser({
+      nickName: 'n2'
+    } as any);
+    expect(useSessionStore.getState().user).toMatchObject({
+      userId: 501,
+      userName: 'origin',
+      nickName: 'n2'
+    });
+
+    useSessionStore.setState({
+      user: null
+    });
+    useSessionStore.getState().patchUser({
+      userName: 'new-user'
+    } as any);
+    expect(useSessionStore.getState().user).toMatchObject({
+      userName: 'new-user'
+    });
   });
 
   it('hasPermission should delegate to mobile-core permission helper', () => {

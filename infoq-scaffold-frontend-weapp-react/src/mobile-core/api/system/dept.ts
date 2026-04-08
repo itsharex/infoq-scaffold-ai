@@ -8,21 +8,6 @@ export const listDept = (query?: DeptQuery) =>
     params: (query || {}) as unknown as Record<string, unknown>
   });
 
-export const optionSelectDepts = (deptIds?: Array<string | number>) =>
-  request<ApiResponse<DeptVO[]>>({
-    url: '/system/dept/optionselect',
-    method: 'GET',
-    params: {
-      deptIds
-    }
-  });
-
-export const listDeptExcludeChild = (deptId: string | number) =>
-  request<ApiResponse<DeptVO[]>>({
-    url: `/system/dept/list/exclude/${deptId}`,
-    method: 'GET'
-  });
-
 export const getDept = (deptId: string | number) =>
   request<ApiResponse<DeptVO>>({
     url: `/system/dept/${deptId}`,

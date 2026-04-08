@@ -46,13 +46,3 @@ export const setRememberedLogin = (value: RememberedLogin) => {
   Taro.setStorageSync(REMEMBERED_LOGIN_KEY, value);
   Taro.setStorageSync(LAST_USERNAME_KEY, value.username);
 };
-
-export const getLastUsername = () => String(Taro.getStorageSync(LAST_USERNAME_KEY) || '');
-
-export const setLastUsername = (username: string) => {
-  if (!username) {
-    Taro.removeStorageSync(LAST_USERNAME_KEY);
-    return;
-  }
-  Taro.setStorageSync(LAST_USERNAME_KEY, username);
-};

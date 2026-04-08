@@ -14,16 +14,6 @@ export const getPost = (postId: string | number) =>
     method: 'GET'
   });
 
-export const optionSelectPosts = (deptId?: string | number, postIds?: Array<string | number>) =>
-  request<ApiResponse<PostVO[]>>({
-    url: '/system/post/optionselect',
-    method: 'GET',
-    params: {
-      deptId,
-      postIds
-    }
-  });
-
 export const addPost = (data: PostForm) =>
   request<ApiResponse<null>, PostForm>({
     url: '/system/post',

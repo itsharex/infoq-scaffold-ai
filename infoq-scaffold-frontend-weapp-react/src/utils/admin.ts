@@ -1,7 +1,7 @@
 import { mobileAdminModules, type AdminModuleKey } from 'infoq-mobile-core';
 import { routes } from './navigation';
 
-export const adminRouteMap: Record<AdminModuleKey, string> = {
+const adminRouteMap: Record<AdminModuleKey, string> = {
   users: routes.users,
   roles: routes.roles,
   depts: routes.depts,

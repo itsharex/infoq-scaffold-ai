@@ -1,0 +1,60 @@
+---
+name: infoq-weapp-react-unit-test-patterns
+description: Build and scale unit tests for infoq-scaffold-frontend-weapp-react (Taro 4 + React 18 + TypeScript + Zustand) with Vitest + jsdom and strict 100% coverage gates. Use when users request 小程序单测, weapp unit tests, coverage backfill, 回归补测, or test-first bug fixes in the React mini-program workspace. Do not use this skill for backend, Vue, or infoq-scaffold-frontend-react admin work.
+---
+
+# Infoq Weapp React Unit Test Patterns
+
+## Scope
+
+Use this skill only for `infoq-scaffold-frontend-weapp-react`.
+
+Current project baseline:
+- Unit runner: Vitest (`vitest.config.ts`).
+- Test env: `jsdom` + `tests/setup.ts` Taro storage/runtime mocks.
+- Coverage gate: 100% lines/functions/branches/statements.
+- Coverage include: `src/mobile-core/**/*.ts` and `src/store/session.ts`.
+
+Package manager policy:
+- Prefer `pnpm`.
+- If `pnpm` is unavailable, use equivalent `npm run ...` commands.
+
+## Workflow
+
+1. Confirm test baseline is healthy (`pnpm run test`).
+2. Add or repair targeted tests first for the broken module.
+3. Expand tests by priority:
+   - P0: `src/mobile-core/request.ts`, `src/mobile-core/auth.ts`, `src/mobile-core/crypto.ts`, `src/mobile-core/rsa.ts`, `src/mobile-core/env.ts`
+   - P1: `src/mobile-core/api/**/*.ts` contract wrappers and `src/mobile-core/permissions.ts`
+   - P2: `src/store/session.ts` state transitions and auth-dependent branches
+4. Use deterministic mocks only:
+   - Reuse `tests/setup.ts` default Taro and `wx` mocks.
+   - For branch-heavy modules, use `vi.doMock(...)` + `vi.resetModules()` per case.
+5. If tests expose a real bug, patch source code immediately and add regression assertions.
+6. Run validation in fixed order: targeted test -> full test -> coverage -> build checks.
+
+## Guardrails
+
+- Assert observable behavior and error branches; do not rely on broad snapshots.
+- Do not weaken coverage thresholds or mute assertions to make CI pass.
+- Do not add silent fallback logic in product code to satisfy tests.
+- Keep mocks narrow; avoid replacing full modules unless branch control requires it.
+- If a change is wrong, revert that wrong change immediately before continuing.
+
+## Finish Criteria
+
+All required commands must pass:
+
+```bash
+cd infoq-scaffold-frontend-weapp-react
+pnpm run test
+pnpm run test:coverage
+pnpm run build:weapp:dev
+pnpm run build:weapp
+```
+
+## References
+
+- Commands: `references/commands.md`
+- Priority matrix: `references/priority-matrix.md`
+- Mock patterns: `references/mock-patterns.md`

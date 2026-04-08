@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { ALL_PERMISSION, hasPermission, normalizePermissions } from '../../src/mobile-core/permissions';
 
 describe('mobile-core/permissions', () => {

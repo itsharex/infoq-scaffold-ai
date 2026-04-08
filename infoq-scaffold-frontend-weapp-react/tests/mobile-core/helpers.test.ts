@@ -1,4 +1,7 @@
+import * as Taro from '@tarojs/taro';
+import { describe, expect, it, vi } from 'vitest';
 import {
+  asCaptchaImage,
   flattenTree,
   formatDateTime,
   getDictLabel,
@@ -43,8 +46,78 @@ describe('mobile-core/helpers', () => {
 
   it('formatDateTime should format valid dates and keep invalid input', () => {
     expect(formatDateTime('2026-04-07 08:09:10')).toBe('2026-04-07 08:09');
+    expect(formatDateTime(new Date('2026-04-07T08:09:10Z')).startsWith('2026-04-07')).toBe(true);
+    expect(formatDateTime(1712477350000).length).toBe(16);
     expect(formatDateTime('invalid-date')).toBe('invalid-date');
     expect(formatDateTime(undefined)).toBe('');
+  });
+
+  it('asCaptchaImage should return empty string when image is missing', async () => {
+    await expect(asCaptchaImage(undefined)).resolves.toBe('');
+  });
+
+  it('asCaptchaImage should materialize to user data path in weapp runtime', async () => {
+    (Taro.base64ToArrayBuffer as any).mockImplementation((value: string) => new TextEncoder().encode(value).buffer);
+    (Taro.getFileSystemManager as any).mockReturnValue({
+      writeFile: ({ success }: { success?: () => void }) => {
+        success?.();
+      }
+    });
+
+    const result = await asCaptchaImage('YWJjZA==', 'qa/a?1');
+
+    expect(result).toBe('/tmp/captcha-qaa1.gif');
+  });
+
+  it('asCaptchaImage should keep data URL and fallback cache key to latest', async () => {
+    (Taro.base64ToArrayBuffer as any).mockImplementation((value: string) => new TextEncoder().encode(value).buffer);
+    (Taro.getFileSystemManager as any).mockReturnValue({
+      writeFile: ({ success }: { success?: () => void }) => {
+        success?.();
+      }
+    });
+
+    const result = await asCaptchaImage('data:image/gif;base64,YWJj', '***');
+
+    expect(result).toBe('/tmp/captcha-latest.gif');
+  });
+
+  it('asCaptchaImage should use latest cache key when cacheKey is undefined', async () => {
+    (Taro.base64ToArrayBuffer as any).mockImplementation((value: string) => new TextEncoder().encode(value).buffer);
+    (Taro.getFileSystemManager as any).mockReturnValue({
+      writeFile: ({ success }: { success?: () => void }) => {
+        success?.();
+      }
+    });
+
+    const result = await asCaptchaImage('YWJjZA==');
+
+    expect(result).toBe('/tmp/captcha-latest.gif');
+  });
+
+  it('asCaptchaImage should fallback to data URL when write file fails', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    (Taro.getFileSystemManager as any).mockReturnValue({
+      writeFile: ({ fail }: { fail?: (error: unknown) => void }) => {
+        fail?.(new Error('write-failed'));
+      }
+    });
+
+    const result = await asCaptchaImage('raw-base64', 'captcha-key');
+
+    expect(result).toBe('data:image/gif;base64,raw-base64');
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    warnSpy.mockRestore();
+  });
+
+  it('asCaptchaImage should fallback when wx user data path is missing', async () => {
+    const originalWx = (globalThis as any).wx;
+    (globalThis as any).wx = {};
+
+    const result = await asCaptchaImage('raw-base64-no-path', 'cache-key');
+
+    expect(result).toBe('data:image/gif;base64,raw-base64-no-path');
+    (globalThis as any).wx = originalWx;
   });
 
   it('toDictOptions and getDictLabel should map labels correctly', () => {
@@ -59,6 +132,8 @@ describe('mobile-core/helpers', () => {
     ]);
     expect(getDictLabel(options, '1')).toBe('停用');
     expect(getDictLabel(options, 'x')).toBe('x');
+    expect(getDictLabel(options, undefined)).toBe('');
+    expect(toDictOptions(undefined)).toEqual([]);
   });
 
   it('flattenTree and resolveTableTotal should work for list responses', () => {
@@ -74,5 +149,6 @@ describe('mobile-core/helpers', () => {
     expect(resolveTableTotal({ rows: [1, 2, 3] as any[], total: 9 })).toBe(9);
     expect(resolveTableTotal({ rows: [1, 2, 3] as any[] })).toBe(3);
     expect(resolveTableTotal(undefined)).toBe(0);
+    expect(flattenTree(undefined)).toEqual([]);
   });
 });

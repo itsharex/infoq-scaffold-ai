@@ -1,22 +1,9 @@
 import { View, Text } from '@tarojs/components';
 import type { ReactNode } from 'react';
 import {
-  AtAccordion,
   AtPagination,
-  AtRadio,
   AtIcon
 } from 'taro-ui';
-
-type Primitive = string | number;
-
-export type RadioOptionValue = Primitive;
-
-export type SimpleOption<T extends Primitive = string> = {
-  desc?: string;
-  disabled?: boolean;
-  label: string;
-  value: T;
-};
 
 type ActionItem = {
   disabled?: boolean;
@@ -43,25 +30,7 @@ type StatusTagProps = {
   label: string;
 };
 
-type RecordAccordionProps = {
-  children: ReactNode;
-  note?: string;
-  onToggle: (open: boolean) => void;
-  open: boolean;
-  title: string;
-};
-
-export const buildRadioOptions = <T extends Primitive>(options: SimpleOption<T>[], includeAll = false, allLabel = '全部') => {
-  const normalizedOptions: SimpleOption<T>[] = includeAll ? [{ label: allLabel, value: '' as T }] : [];
-  return normalizedOptions.concat(options).map((item) => ({
-    desc: item.desc,
-    disabled: item.disabled,
-    label: item.label,
-    value: item.value
-  }));
-};
-
-export function ActionList({ items }: { items: ActionItem[] }) {
+function ActionList({ items }: { items: ActionItem[] }) {
   return (
     <View className="record-footer">
       {items.map((item) => (
@@ -119,26 +88,6 @@ export function PaginationBar({ current, onChange, pageSize, total }: Pagination
         onPageChange={(data) => onChange(data.current)} 
       />
     </View>
-  );
-}
-
-export function OptionRadio<T extends RadioOptionValue>({
-  onChange,
-  options,
-  value
-}: {
-  onChange: (value: T) => void;
-  options: SimpleOption<T>[];
-  value: T;
-}) {
-  return <AtRadio value={value} options={buildRadioOptions(options)} onClick={(nextValue) => onChange(nextValue as T)} />;
-}
-
-export function RecordAccordion({ children, note, onToggle, open, title }: RecordAccordionProps) {
-  return (
-    <AtAccordion note={note} open={open} title={title} onClick={onToggle}>
-      <View>{children}</View>
-    </AtAccordion>
   );
 }
 

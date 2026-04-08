@@ -16,16 +16,6 @@ export const listUser = (query: UserQuery) =>
     params: query as unknown as Record<string, unknown>
   });
 
-export const optionSelectUsers = (userIds?: Array<string | number>, deptId?: string | number) =>
-  request<ApiResponse<UserVO[]>>({
-    url: '/system/user/optionselect',
-    method: 'GET',
-    params: {
-      userIds,
-      deptId
-    }
-  });
-
 export const getUser = (userId?: string | number) =>
   request<ApiResponse<UserInfoVO>>({
     url: userId === undefined || userId === '' ? '/system/user/' : `/system/user/${userId}`,
@@ -62,28 +52,8 @@ export const changeUserStatus = (userId: string | number, status: string) =>
     }
   });
 
-export const resetUserPwd = (userId: string | number, password: string) =>
-  request<ApiResponse<null>, { userId: string | number; password: string }>({
-    url: '/system/user/resetPwd',
-    method: 'PUT',
-    headers: {
-      isEncrypt: true,
-      repeatSubmit: false
-    },
-    data: {
-      userId,
-      password
-    }
-  });
-
 export const deptTreeSelectForUser = () =>
   request<ApiResponse<DeptTreeVO[]>>({
     url: '/system/user/deptTree',
-    method: 'GET'
-  });
-
-export const listUserByDeptId = (deptId: string | number) =>
-  request<ApiResponse<UserVO[]>>({
-    url: `/system/user/list/dept/${deptId}`,
     method: 'GET'
   });

@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
-import { accessSync, constants, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  accessSync,
+  constants,
+  existsSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  writeFileSync,
+} from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import process from 'node:process';
@@ -12,6 +20,7 @@ const projectDir = 'infoq-scaffold-frontend-weapp-react';
 const projectLabel = 'React';
 const projectRoot = path.join(repoRoot, projectDir);
 const { cliAppId, mode } = parseArgs(process.argv.slice(2));
+const urlCheckEnabled = resolveUrlCheckSetting();
 
 ensureProjectRoot();
 
@@ -22,11 +31,21 @@ const apiOrigin = resolveApiOrigin(mode);
 const devtoolsCli = resolveDevtoolsCli();
 const projectPath = path.join(projectRoot, 'dist');
 const projectConfigPath = path.join(projectPath, 'project.config.json');
+const projectPrivateConfigPath = path.join(projectPath, 'project.private.config.json');
+const openCommandFailurePatterns = [
+  /\[error\]/i,
+  /invalid appid/i,
+  /appid 不合法/i,
+  /✖\s+preparing/i,
+];
 
 log(`Using mini-program workspace: ${projectRoot}`);
 log(`Using WeChat DevTools CLI: ${devtoolsCli}`);
 log(`Using mini-program AppID: ${appId}`);
 log(`Using build mode: ${mode}`);
+log(
+  `DevTools legal-domain check: ${urlCheckEnabled ? 'enabled' : 'disabled'} (project.config.setting.urlCheck=${urlCheckEnabled})`,
+);
 warnIfLocalApiOrigin(apiOrigin);
 log(`Building ${projectLabel} mini-program bundle...`);
 runCommand('pnpm', buildWeappArgs(mode), {
@@ -39,19 +58,29 @@ if (!existsSync(projectPath)) {
   fail(`Expected build output at "${projectPath}", but it was not created.`);
 }
 
-patchProjectConfig(projectConfigPath, appId);
+patchProjectConfig(projectConfigPath, appId, urlCheckEnabled);
+patchProjectPrivateConfig(projectPrivateConfigPath, urlCheckEnabled);
+syncDevtoolsLocalProjectSetting(projectPath, urlCheckEnabled, 'before-open');
 
-log(`Opening ${projectLabel} mini-program project in WeChat DevTools...`);
-runCommand(devtoolsCli, ['open', '--project', projectPath], {}, {
-  cwd: repoRoot,
-  failurePatterns: [
-    /\[error\]/i,
-    /invalid appid/i,
-    /appid 不合法/i,
-    /✖\s+preparing/i,
-  ],
-});
-log(`WeChat DevTools launch request completed for ${projectLabel}.`);
+openProjectInDevtools(devtoolsCli, projectPath, openCommandFailurePatterns);
+
+const syncAfterOpen = syncDevtoolsLocalProjectSetting(projectPath, urlCheckEnabled, 'after-open');
+if (syncAfterOpen.updated > 0) {
+  log(
+    `Detected ${syncAfterOpen.updated} local project setting file(s) rewritten by DevTools on launch. Reopening project to apply urlCheck=${urlCheckEnabled} immediately.`,
+  );
+  runCommand(devtoolsCli, ['close', '--project', projectPath], {}, {
+    cwd: repoRoot,
+  });
+  openProjectInDevtools(devtoolsCli, projectPath, openCommandFailurePatterns);
+
+  const syncAfterReopen = syncDevtoolsLocalProjectSetting(projectPath, urlCheckEnabled, 'after-reopen');
+  if (syncAfterReopen.updated > 0) {
+    fail(
+      `DevTools keeps rewriting local project setting "urlCheck". Expected ${urlCheckEnabled} but still had to patch ${syncAfterReopen.updated} file(s) after reopen.`,
+    );
+  }
+}
 
 function parseArgs(args) {
   let resolvedAppId = process.env.TARO_APP_ID ?? '';
@@ -155,6 +184,30 @@ function resolveEnvFilePath(mode) {
   return path.join(projectRoot, `.env.${mode}`);
 }
 
+function resolveUrlCheckSetting() {
+  const rawValue = process.env.WECHAT_DEVTOOLS_URL_CHECK;
+  if (rawValue === undefined) {
+    return false;
+  }
+
+  const normalized = String(rawValue).trim().toLowerCase();
+  if (!normalized) {
+    return false;
+  }
+
+  if (normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on') {
+    return true;
+  }
+
+  if (normalized === '0' || normalized === 'false' || normalized === 'no' || normalized === 'off') {
+    return false;
+  }
+
+  fail(
+    `Unsupported WECHAT_DEVTOOLS_URL_CHECK value "${rawValue}". Use one of: true/false/1/0/yes/no/on/off.`,
+  );
+}
+
 function buildWeappArgs(mode) {
   if (mode === 'production') {
     return ['run', 'build:weapp'];
@@ -231,7 +284,7 @@ function resolveDevtoolsCli() {
   );
 }
 
-function patchProjectConfig(projectConfigPath, appId) {
+function patchProjectConfig(projectConfigPath, appId, urlCheckEnabled) {
   if (!existsSync(projectConfigPath)) {
     fail(`Expected project config at "${projectConfigPath}", but it was not created.`);
   }
@@ -244,7 +297,162 @@ function patchProjectConfig(projectConfigPath, appId) {
   }
 
   parsedConfig.appid = appId;
+  if (parsedConfig.setting !== undefined && (Array.isArray(parsedConfig.setting) || typeof parsedConfig.setting !== 'object')) {
+    fail(`Expected "setting" in "${projectConfigPath}" to be an object.`);
+  }
+  parsedConfig.setting = parsedConfig.setting || {};
+  parsedConfig.setting.urlCheck = urlCheckEnabled;
   writeFileSync(projectConfigPath, `${JSON.stringify(parsedConfig, null, 2)}\n`, 'utf8');
+  log(`Patched "${projectConfigPath}" with appid and setting.urlCheck=${urlCheckEnabled}.`);
+}
+
+function patchProjectPrivateConfig(projectPrivateConfigPath, urlCheckEnabled) {
+  let parsedConfig = {};
+  if (existsSync(projectPrivateConfigPath)) {
+    try {
+      parsedConfig = JSON.parse(readFileSync(projectPrivateConfigPath, 'utf8'));
+    } catch (error) {
+      fail(`Failed to parse "${projectPrivateConfigPath}": ${error.message}`);
+    }
+  }
+
+  if (Array.isArray(parsedConfig) || typeof parsedConfig !== 'object' || parsedConfig === null) {
+    fail(`Expected "${projectPrivateConfigPath}" to contain a JSON object.`);
+  }
+
+  if (parsedConfig.setting !== undefined && (Array.isArray(parsedConfig.setting) || typeof parsedConfig.setting !== 'object')) {
+    fail(`Expected "setting" in "${projectPrivateConfigPath}" to be an object.`);
+  }
+
+  parsedConfig.setting = parsedConfig.setting || {};
+  parsedConfig.setting.urlCheck = urlCheckEnabled;
+  writeFileSync(projectPrivateConfigPath, `${JSON.stringify(parsedConfig, null, 2)}\n`, 'utf8');
+  log(`Patched "${projectPrivateConfigPath}" with setting.urlCheck=${urlCheckEnabled}.`);
+}
+
+function syncDevtoolsLocalProjectSetting(projectPath, urlCheckEnabled, stage) {
+  const homeDir = process.env.HOME;
+  if (!homeDir) {
+    log(`Skipping local DevTools setting sync (${stage}): HOME is not set.`);
+    return { matched: 0, updated: 0 };
+  }
+
+  const devtoolsDataRoot = path.join(homeDir, 'Library', 'Application Support', '微信开发者工具');
+  if (!existsSync(devtoolsDataRoot)) {
+    log(`Skipping local DevTools setting sync (${stage}): "${devtoolsDataRoot}" does not exist.`);
+    return { matched: 0, updated: 0 };
+  }
+
+  const pathVariants = resolveProjectPathVariants(projectPath);
+  const localStorageTargets = new Set();
+  const profileDirs = readdirSync(devtoolsDataRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => path.join(devtoolsDataRoot, entry.name));
+
+  for (const profileDir of profileDirs) {
+    const localDataDir = path.join(profileDir, 'WeappLocalData');
+    const hashMapPath = path.join(localDataDir, 'hash_key_map_2.json');
+    if (!existsSync(hashMapPath)) {
+      continue;
+    }
+
+    let hashKeyMap = {};
+    try {
+      hashKeyMap = JSON.parse(readFileSync(hashMapPath, 'utf8'));
+    } catch (error) {
+      log(`Skipping corrupted hash key map "${hashMapPath}": ${error.message}`);
+      continue;
+    }
+
+    if (Array.isArray(hashKeyMap) || typeof hashKeyMap !== 'object' || hashKeyMap === null) {
+      log(`Skipping invalid hash key map "${hashMapPath}": expected a JSON object.`);
+      continue;
+    }
+
+    const mapEntries = Object.entries(hashKeyMap);
+    for (const variantPath of pathVariants) {
+      const candidateNames = [
+        `project2_${variantPath}`,
+        `project_${variantPath}`,
+      ];
+      for (const [hashKey, mappedName] of mapEntries) {
+        if (!candidateNames.includes(mappedName)) {
+          continue;
+        }
+        const localStoragePath = path.join(localDataDir, `localstorage_${hashKey}.json`);
+        if (existsSync(localStoragePath)) {
+          localStorageTargets.add(localStoragePath);
+        }
+      }
+    }
+  }
+
+  if (localStorageTargets.size === 0) {
+    log(`No local DevTools project settings found for "${projectPath}" (${stage}).`);
+    return { matched: 0, updated: 0 };
+  }
+
+  let updated = 0;
+  for (const localStoragePath of localStorageTargets) {
+    const changed = patchLocalProjectSetting(localStoragePath, urlCheckEnabled);
+    if (changed) {
+      updated += 1;
+    }
+  }
+
+  log(
+    `Synced local DevTools project settings (${stage}): matched=${localStorageTargets.size}, updated=${updated}, target.urlCheck=${urlCheckEnabled}.`,
+  );
+  return {
+    matched: localStorageTargets.size,
+    updated,
+  };
+}
+
+function patchLocalProjectSetting(localStoragePath, urlCheckEnabled) {
+  let parsedConfig;
+  try {
+    parsedConfig = JSON.parse(readFileSync(localStoragePath, 'utf8'));
+  } catch (error) {
+    fail(`Failed to parse local DevTools setting "${localStoragePath}": ${error.message}`);
+  }
+
+  if (Array.isArray(parsedConfig) || typeof parsedConfig !== 'object' || parsedConfig === null) {
+    fail(`Expected local DevTools setting "${localStoragePath}" to be a JSON object.`);
+  }
+
+  if (parsedConfig.setting !== undefined && (Array.isArray(parsedConfig.setting) || typeof parsedConfig.setting !== 'object')) {
+    fail(`Expected "setting" in local DevTools setting "${localStoragePath}" to be an object.`);
+  }
+
+  parsedConfig.setting = parsedConfig.setting || {};
+  const previousValue = parsedConfig.setting.urlCheck;
+  if (previousValue === urlCheckEnabled) {
+    return false;
+  }
+
+  parsedConfig.setting.urlCheck = urlCheckEnabled;
+  writeFileSync(localStoragePath, `${JSON.stringify(parsedConfig)}\n`, 'utf8');
+  return true;
+}
+
+function resolveProjectPathVariants(projectPath) {
+  const variants = new Set([path.resolve(projectPath)]);
+  try {
+    variants.add(realpathSync(projectPath));
+  } catch {
+    // projectPath is expected to exist; when it does not, using path.resolve is still sufficient for lookup attempts.
+  }
+  return Array.from(variants);
+}
+
+function openProjectInDevtools(devtoolsCli, projectPath, failurePatterns) {
+  log(`Opening ${projectLabel} mini-program project in WeChat DevTools...`);
+  runCommand(devtoolsCli, ['open', '--project', projectPath], {}, {
+    cwd: repoRoot,
+    failurePatterns,
+  });
+  log(`WeChat DevTools launch request completed for ${projectLabel}.`);
 }
 
 function readEnvValue(filePath, key) {

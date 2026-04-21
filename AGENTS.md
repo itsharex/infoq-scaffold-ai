@@ -9,6 +9,7 @@
 |AI Coding Guardrails:避免无意义过度注释，注释解释意图而不是逐行复述。|避免只为“更干净”而改变行为的空重构。|避免范围蔓延，只实现用户明确要求。|处理错误与边界情况，不假设输入永远理想。|优先最小改动，不做大面积重写。|若某段改动被识别为错误，先立即回退错误代码，再继续处理，不留下死代码。|不要为了让测试或构建通过而削弱断言、放宽 mock、压警告、抬阈值或伪造成功路径。
 |Acceptance Contract:实现前必须在当前任务上下文中写清一个 acceptance contract，覆盖 functional scope、non-goals、exception handling、required logs or observability、rollback trigger or conditions；若缺项或冲突，先暴露问题再编码。
 |Execution Loop:按最小闭环工作，一次只改一类问题。|验证顺序固定为 main-flow verification -> targeted tests -> lint/build or equivalent checks -> diff review。|每次代码改动交付前都必须通过相关单元测试；若不适用或跑不起来，必须明确写出 blocker，不能当作 ready。|除非用户明确要求，不要把无关重构和行为修改绑在一起。
+|Unit Test Doctrine:不同类型单元测试必须按业务行为与边界条件编写，禁止脱离业务语义只为凑覆盖率。|单元测试失败时先检查并修复产品代码问题；仅在需求或断言错误且有证据时才允许改测试，禁止通过修改测试隐藏代码缺陷。|每种单测类型先跑通一个最小闭环后，必须沉淀一份仓库可复用 skill（含触发条件、标准步骤、验证命令与常见反模式），用于后续提效与节约 token。
 |Release Guardrails:可发布变更必须保持依赖版本与 lockfile 一致。|执行或部署前核验必需 env、config 和外部依赖。|影响共享环境、数据或部署状态的高风险/破坏性操作必须先获明确确认。
 |Pre-Release Checklist:发布或交付前显式检查 performance impact、alerting/observability coverage、rollback path/script、config/SQL/dependency impact；任何未检查项都要作为 residual risk 说明。
 |Instruction Layering:根 `AGENTS.md` 只保留跨仓规则。|backend、Vue、React admin、weapp React 使用更近的 `AGENTS.md` 或 `AGENTS.override.md` 写栈内细则。|当更近文件与根规则冲突时，以更近文件为准。

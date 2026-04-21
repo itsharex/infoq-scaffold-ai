@@ -10,8 +10,7 @@
       
       <view class="avatar-outer">
         <view class="avatar-inner">
-          <image v-if="profile.avatar" :src="profile.avatar" class="avatar-img" mode="aspectFill" />
-          <text v-else class="avatar-placeholder">{{ displayName.slice(0, 1).toUpperCase() }}</text>
+          <image :src="avatarImage" class="avatar-img" mode="aspectFill" @error="handleAvatarLoadError" />
         </view>
       </view>
       
@@ -89,10 +88,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import BottomNav from '@/components/BottomNav.vue';
 import AppIcon from '@/components/AppIcon.vue';
+import defaultAvatar from '@/assets/images/profile.jpg';
 import { 
   getDictLabel, 
   getDicts, 
@@ -104,6 +104,7 @@ import {
 } from '@/api';
 import { ensureAuthenticated } from '@/composables/use-auth-guard';
 import { navigate, relaunch, routes } from '@/utils/navigation';
+import { resolveAvatarUrl } from '@/utils/avatar';
 import { handlePageError, showSuccess } from '@/utils/ui';
 import { useSessionStore } from '@/store/session';
 
@@ -129,7 +130,24 @@ const pwdForm = reactive({
   confirmPassword: ''
 });
 
-const displayName = computed(() => sessionStore.user?.nickName || sessionStore.user?.userName || '用户');
+const avatarLoadFailed = ref(false);
+watch(
+  () => profile.avatar,
+  () => {
+    avatarLoadFailed.value = false;
+  }
+);
+
+const avatarImage = computed(() => {
+  if (avatarLoadFailed.value) {
+    return defaultAvatar;
+  }
+  return resolveAvatarUrl(profile.avatar) || defaultAvatar;
+});
+
+const handleAvatarLoadError = () => {
+  avatarLoadFailed.value = true;
+};
 
 const loadPage = async () => {
   if (!ensureAuthenticated()) {

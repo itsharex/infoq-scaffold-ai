@@ -635,6 +635,18 @@ describe('request', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
+  it('should normalize non-object primitive rejection by String(error)', async () => {
+    const { request, mocks } = await setupRequestModule();
+    mocks.requestMock.mockRejectedValueOnce(503);
+
+    await expect(
+      request({
+        url: '/monitor/cache',
+        method: 'GET'
+      })
+    ).rejects.toThrow('503');
+  });
+
   it('should normalize undefined rejection into default network message', async () => {
     const { request, mocks } = await setupRequestModule();
     mocks.requestMock.mockRejectedValueOnce(undefined);
@@ -659,6 +671,78 @@ describe('request', () => {
         method: 'GET'
       })
     ).rejects.toThrow('小程序请求域名未在合法域名列表，请检查开发者工具域名校验配置。');
+  });
+
+  it.each([
+    {
+      caseId: 'V-RQ-01',
+      rejection: { data: { message: 'from-error-data-message' } },
+      expectedMessage: 'from-error-data-message'
+    },
+    {
+      caseId: 'V-RQ-02',
+      rejection: { data: { msg: 'from-error-data-msg' } },
+      expectedMessage: 'from-error-data-msg'
+    },
+    {
+      caseId: 'V-RQ-03',
+      rejection: { response: { message: 'from-error-response-message' } },
+      expectedMessage: 'from-error-response-message'
+    },
+    {
+      caseId: 'V-RQ-04',
+      rejection: { response: { msg: 'from-error-response-msg' } },
+      expectedMessage: 'from-error-response-msg'
+    },
+    {
+      caseId: 'V-RQ-05',
+      rejection: { response: { data: { message: 'from-error-response-data-message' } } },
+      expectedMessage: 'from-error-response-data-message'
+    },
+    {
+      caseId: 'V-RQ-06',
+      rejection: { response: { data: { msg: 'from-error-response-data-msg' } } },
+      expectedMessage: 'from-error-response-data-msg'
+    }
+  ])('$caseId should extract message from nested rejection payload', async ({ rejection, expectedMessage }) => {
+    const { request, mocks } = await setupRequestModule();
+    mocks.requestMock.mockRejectedValueOnce(rejection);
+
+    await expect(
+      request({
+        url: '/monitor/cache',
+        method: 'GET'
+      })
+    ).rejects.toThrow(expectedMessage);
+  });
+
+  it('V-RQ-07 should fallback to default message when nested message fields are empty strings', async () => {
+    const { request, AppError, mocks } = await setupRequestModule();
+    mocks.requestMock.mockRejectedValueOnce({
+      data: { message: '  ', msg: '' },
+      response: {
+        message: '',
+        msg: ' ',
+        data: {
+          message: '',
+          msg: '  '
+        }
+      }
+    });
+
+    let captured: unknown;
+    try {
+      await request({
+        url: '/monitor/cache',
+        method: 'GET'
+      });
+    } catch (error) {
+      captured = error;
+    }
+
+    expect(captured).toBeInstanceOf(AppError);
+    expect((captured as Error).message).toBe('请求失败，请稍后重试。');
+    expect((captured as Error).message).not.toContain('[object Object]');
   });
 
   it('should normalize opaque object rejection into default message instead of object string', async () => {

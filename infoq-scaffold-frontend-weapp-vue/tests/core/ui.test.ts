@@ -21,7 +21,14 @@ const setupUiModule = async (options: SetupOptions = {}) => {
     toErrorMessage: toErrorMessageMock
   }));
 
-  const currentPagesMock = globalThis.getCurrentPages as unknown as ReturnType<typeof vi.fn>;
+  const runtime = globalThis as typeof globalThis & {
+    getCurrentPages: ReturnType<typeof vi.fn>;
+    uni: {
+      reLaunch: ReturnType<typeof vi.fn>;
+      showToast: ReturnType<typeof vi.fn>;
+    };
+  };
+  const currentPagesMock = runtime.getCurrentPages;
   currentPagesMock.mockReturnValue(route ? [{ route }] : []);
 
   const uiModule = await import('../../src/utils/ui');
@@ -29,10 +36,7 @@ const setupUiModule = async (options: SetupOptions = {}) => {
   return {
     handlePageError: uiModule.handlePageError,
     mocks: {
-      uni: globalThis.uni as unknown as {
-        reLaunch: ReturnType<typeof vi.fn>;
-        showToast: ReturnType<typeof vi.fn>;
-      },
+      uni: runtime.uni,
       isAuthErrorMock,
       toErrorMessageMock
     }

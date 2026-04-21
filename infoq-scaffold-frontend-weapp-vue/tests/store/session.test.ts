@@ -161,6 +161,7 @@ describe('store/session', () => {
   it('loadSession(force=true) should refresh user info even when initialized', async () => {
     const store = useSessionStore();
     mockGetToken.mockReturnValue('force-token');
+    mockNormalizePermissions.mockReturnValue(['system:dept:list']);
     mockGetInfo.mockResolvedValue({
       data: {
         user: { userId: 300, userName: 'forced' },
@@ -179,7 +180,31 @@ describe('store/session', () => {
 
     expect(mockGetInfo).toHaveBeenCalledTimes(1);
     expect(result?.user.userName).toBe('forced');
+    expect(result?.permissions).toEqual(['system:dept:list']);
+    expect(store.token).toBe('force-token');
     expect(store.user?.userName).toBe('forced');
+    expect(store.permissions).toEqual(['system:dept:list']);
+    expect(store.initialized).toBe(true);
+  });
+
+  it('loadSession(force=true) should normalize empty permissions to [] when backend omits permissions', async () => {
+    const store = useSessionStore();
+    mockGetToken.mockReturnValue('force-token-empty-permissions');
+    mockGetInfo.mockResolvedValue({
+      data: {
+        user: { userId: 301, userName: 'forced-empty-permissions' },
+        roles: [],
+        permissions: undefined
+      }
+    });
+    mockNormalizePermissions.mockReturnValue([]);
+
+    const result = await store.loadSession(true);
+
+    expect(mockNormalizePermissions).toHaveBeenCalledWith([]);
+    expect(result?.permissions).toEqual(undefined);
+    expect(store.permissions).toEqual([]);
+    expect(store.initialized).toBe(true);
   });
 
   it('signOut should skip remote logout when token is missing', async () => {

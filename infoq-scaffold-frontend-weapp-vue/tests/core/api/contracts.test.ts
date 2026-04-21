@@ -156,7 +156,7 @@ describe('api contracts', () => {
   });
 
   it('notice api should map request options correctly', async () => {
-    await listNotice({ pageNum: 1, pageSize: 10, noticeTitle: '', noticeType: '', createBy: '' });
+    await listNotice({ pageNum: 1, pageSize: 10, noticeTitle: '', noticeType: '', createByName: '', status: '' });
     expect(mockRequest.mock.calls[0][0]).toMatchObject({
       url: '/system/notice/list',
       method: 'GET'
@@ -195,7 +195,7 @@ describe('api contracts', () => {
     });
 
     await updateUserProfile({
-      userId: 1,
+      userId: '1',
       userName: 'admin',
       nickName: 'Admin',
       email: 'admin@example.com',
@@ -268,7 +268,7 @@ describe('api contracts', () => {
       method: 'POST'
     });
 
-    await updateUser({ userId: 88, userName: 'u2', nickName: 'n2' });
+    await updateUser({ userId: '88', userName: 'u2', nickName: 'n2' });
     expect(mockRequest.mock.calls[5][0]).toMatchObject({
       url: '/system/user',
       method: 'PUT'
@@ -326,13 +326,13 @@ describe('api contracts', () => {
       method: 'GET'
     });
 
-    await addRole({ roleName: 'r1', roleKey: 'key1', roleSort: 1, status: '0', menuIds: [1] });
+    await addRole({ roleName: 'r1', roleKey: 'key1', roleSort: 1, status: '0', remark: '', menuIds: [1] });
     expect(mockRequest.mock.calls[4][0]).toMatchObject({
       url: '/system/role',
       method: 'POST'
     });
 
-    await updateRole({ roleId: 3, roleName: 'r2', roleKey: 'key2', roleSort: 2, status: '1', menuIds: [1, 2] });
+    await updateRole({ roleId: '3', roleName: 'r2', roleKey: 'key2', roleSort: 2, status: '1', remark: '', menuIds: [1, 2] });
     expect(mockRequest.mock.calls[5][0]).toMatchObject({
       url: '/system/role',
       method: 'PUT'
@@ -363,7 +363,7 @@ describe('api contracts', () => {
       params: {}
     });
 
-    await listDept({ deptName: '研发', status: '0' });
+    await listDept({ pageNum: 1, pageSize: 20, deptName: '研发', status: '0' });
     expect(mockRequest.mock.calls[1][0]).toMatchObject({
       params: {
         deptName: '研发',
@@ -442,7 +442,7 @@ describe('api contracts', () => {
       method: 'DELETE'
     });
 
-    await listPost({ pageNum: 1, pageSize: 10, postCode: '', postName: '', status: '' });
+    await listPost({ pageNum: 1, pageSize: 10, postCode: '', postName: '', postCategory: '', status: '' });
     expect(mockRequest.mock.calls[7][0]).toMatchObject({
       url: '/system/post/list',
       method: 'GET'
@@ -530,7 +530,17 @@ describe('api contracts', () => {
       method: 'DELETE'
     });
 
-    await listOperLog({ pageNum: 1, pageSize: 10, title: '', businessType: '', operName: '' });
+    await listOperLog({
+      pageNum: 1,
+      pageSize: 10,
+      operIp: '',
+      title: '',
+      businessType: '',
+      operName: '',
+      status: '',
+      orderByColumn: '',
+      isAsc: ''
+    });
     expect(mockRequest.mock.calls[7][0]).toMatchObject({
       url: '/monitor/operLog/list',
       method: 'GET'

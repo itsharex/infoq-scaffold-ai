@@ -12,12 +12,14 @@ This workspace hosts the uni-app + Vue 3 mini-program frontend for the scaffold.
 
 ## Local Test Workflow
 
+- Run `pnpm run typecheck` for workspace-level TypeScript checks (src + tests build gate).
 - Run `pnpm test` for deterministic unit tests (Vitest).
 - Run `pnpm run test:coverage` for coverage report (`coverage/` output).
 - Run `pnpm run test:e2e:weapp` (alias of `test:e2e:weapp:smoke`) for fast route smoke checks.
 - Run `pnpm run test:e2e:weapp:core` for core auth/profile/notice/permission checks.
 - Run `pnpm run test:e2e:weapp:full` for full checks plus report output in `tests/e2e/weapp/reports/`.
-- Run `pnpm run verify:local` for one-command local regression (`test -> build:weapp:dev -> weapp core -> build:weapp`).
+- Run `pnpm run verify:build` for build-chain baseline verification (`typecheck -> test -> build:h5 -> build:weapp:dev -> build:weapp`).
+- Run `pnpm run verify:local` for one-command local regression (`typecheck -> test -> build:weapp:dev -> weapp core -> build:weapp`).
 
 ## Local WeChat DevTools Workflow
 

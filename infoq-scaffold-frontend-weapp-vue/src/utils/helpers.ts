@@ -141,9 +141,10 @@ export const handleTree = <T>(data: any[], id = 'id', parentId = 'parentId', chi
     }
   });
   const adaptToChildrenList = (o: any) => {
-    if (childrenListMap[o[config.id]] !== null) {
-      o[config.childrenList] = childrenListMap[o[config.id]];
-      o[config.childrenList].forEach((c: any) => adaptToChildrenList(c));
+    const childrenList = childrenListMap[o[config.id]];
+    if (Array.isArray(childrenList) && childrenList.length > 0) {
+      o[config.childrenList] = childrenList;
+      childrenList.forEach((c: any) => adaptToChildrenList(c));
     }
   };
   tree.forEach((t) => adaptToChildrenList(t));

@@ -225,6 +225,11 @@ const normalizeFailure = (error: unknown) => {
   return new AppError(message || '请求失败，请稍后重试。', 'network');
 };
 
+const isPromiseLike = <T>(value: unknown): value is Promise<T> =>
+  typeof value === 'object'
+  && value !== null
+  && typeof (value as { then?: unknown }).then === 'function';
+
 const runRequest = (payload: UniApp.RequestOptions): Promise<UniApp.RequestSuccessCallbackResult> =>
   new Promise((resolve, reject) => {
     const requestTask = uni.request({
@@ -232,8 +237,8 @@ const runRequest = (payload: UniApp.RequestOptions): Promise<UniApp.RequestSucce
       success: resolve,
       fail: reject
     });
-    if (requestTask && typeof (requestTask as Promise<UniApp.RequestSuccessCallbackResult>).then === 'function') {
-      (requestTask as Promise<UniApp.RequestSuccessCallbackResult>).then(resolve).catch(reject);
+    if (isPromiseLike<UniApp.RequestSuccessCallbackResult>(requestTask)) {
+      requestTask.then(resolve).catch(reject);
     }
   });
 
@@ -244,8 +249,8 @@ const runUploadFile = (payload: UniApp.UploadFileOption): Promise<UniApp.UploadF
       success: resolve,
       fail: reject
     });
-    if (uploadTask && typeof (uploadTask as Promise<UniApp.UploadFileSuccessCallbackResult>).then === 'function') {
-      (uploadTask as Promise<UniApp.UploadFileSuccessCallbackResult>).then(resolve).catch(reject);
+    if (isPromiseLike<UniApp.UploadFileSuccessCallbackResult>(uploadTask)) {
+      uploadTask.then(resolve).catch(reject);
     }
   });
 

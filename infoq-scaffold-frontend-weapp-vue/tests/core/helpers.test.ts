@@ -4,6 +4,8 @@ import {
   flattenTree,
   formatDateTime,
   getDictLabel,
+  handleDeptTree,
+  handleTree,
   parseStrEmpty,
   resolveTableTotal,
   stripHtml,
@@ -149,5 +151,74 @@ describe('helpers', () => {
     expect(resolveTableTotal({ rows: [1, 2, 3] as any[] })).toBe(3);
     expect(resolveTableTotal(undefined)).toBe(0);
     expect(flattenTree(undefined)).toEqual([]);
+  });
+
+  it('V-HP-01 should build multi-root tree and recursively attach descendants', () => {
+    const source = [
+      { id: 1, parentId: 0, name: 'root-1' },
+      { id: 2, parentId: 1, name: 'child-1-1' },
+      { id: 3, parentId: 2, name: 'child-1-1-1' },
+      { id: 4, parentId: 0, name: 'root-2' }
+    ];
+
+    const tree = handleTree<any>(source);
+
+    expect(tree.map((item) => item.id)).toEqual([1, 4]);
+    expect(tree[0].children?.map((item: any) => item.id)).toEqual([2]);
+    expect(tree[0].children?.[0].children?.map((item: any) => item.id)).toEqual([3]);
+  });
+
+  it('V-HP-02 should support custom id/parentId/children field names', () => {
+    const source = [
+      { keyId: 'A', parentKey: '0', title: 'root-A' },
+      { keyId: 'B', parentKey: 'A', title: 'child-B' },
+      { keyId: 'C', parentKey: 'B', title: 'child-C' },
+      { keyId: 'D', parentKey: '0', title: 'root-D' }
+    ];
+
+    const tree = handleTree<any>(source, 'keyId', 'parentKey', 'nodes');
+
+    expect(tree.map((item) => item.keyId)).toEqual(['A', 'D']);
+    expect(tree[0].nodes?.map((item: any) => item.keyId)).toEqual(['B']);
+    expect(tree[0].nodes?.[0].nodes?.map((item: any) => item.keyId)).toEqual(['C']);
+  });
+
+  it('should fallback to default tree field names when custom args are empty strings', () => {
+    const source = [
+      { id: 1, parentId: 0, label: 'root' },
+      { id: 2, parentId: 1, label: 'child' }
+    ];
+
+    const tree = handleTree<any>(source, '', '', '');
+
+    expect(tree.map((item) => item.id)).toEqual([1]);
+    expect(tree[0].children?.map((item: any) => item.id)).toEqual([2]);
+  });
+
+  it('V-HP-03 should build dept tree using preset dept field mapping', () => {
+    const source = [
+      { deptId: 10, parentId: 0, deptName: '总部' },
+      { deptId: 11, parentId: 10, deptName: '研发部' },
+      { deptId: 12, parentId: 11, deptName: '平台组' }
+    ];
+
+    const tree = handleDeptTree(source) as Array<{ deptId: number; children?: Array<{ deptId: number; children?: Array<{ deptId: number }> }> }>;
+
+    expect(tree.map((item) => item.deptId)).toEqual([10]);
+    expect(tree[0].children?.map((item) => item.deptId)).toEqual([11]);
+    expect(tree[0].children?.[0].children?.map((item) => item.deptId)).toEqual([12]);
+  });
+
+  it('V-HP-04 should keep empty input and orphan nodes stable', () => {
+    expect(handleTree([])).toEqual([]);
+
+    const orphanSource = [
+      { id: 100, parentId: 999, name: 'orphan-root' },
+      { id: 101, parentId: 100, name: 'orphan-child' }
+    ];
+    const orphanTree = handleTree<any>(orphanSource);
+
+    expect(orphanTree.map((item) => item.id)).toEqual([100]);
+    expect(orphanTree[0].children?.map((item: any) => item.id)).toEqual([101]);
   });
 });

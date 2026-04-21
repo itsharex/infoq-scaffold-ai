@@ -35,10 +35,39 @@ const loadEnvModule = async ({ compileEnv, systemInfo, throwOnSystemInfo = false
 };
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   delete (globalThis as Record<string, unknown>).__INFOQ_COMPILE_ENV__;
 });
 
 describe('env', () => {
+  it('should normalize runtime UNI_PLATFORM=web to h5', async () => {
+    vi.stubEnv('UNI_PLATFORM', 'web');
+    const { mobileEnv } = await loadEnvModule({
+      compileEnv: {
+        TARO_ENV: 'weapp'
+      },
+      systemInfo: {
+        uniPlatform: 'mp-weixin'
+      }
+    });
+
+    expect(mobileEnv.taroEnv).toBe('h5');
+  });
+
+  it('should prefer runtime UNI_PLATFORM over system info and compile TARO_ENV', async () => {
+    vi.stubEnv('UNI_PLATFORM', 'mp-weixin');
+    const { mobileEnv } = await loadEnvModule({
+      compileEnv: {
+        TARO_ENV: 'h5'
+      },
+      systemInfo: {
+        uniPlatform: 'web'
+      }
+    });
+
+    expect(mobileEnv.taroEnv).toBe('weapp');
+  });
+
   it('should read compile env and normalize runtime mp-weixin to weapp', async () => {
     const { mobileEnv } = await loadEnvModule({
       compileEnv: {
@@ -65,7 +94,7 @@ describe('env', () => {
     expect(mobileEnv.taroEnv).toBe('weapp');
   });
 
-  it('should fallback to compile TARO_ENV when runtime system info lookup fails', async () => {
+  it('should fallback to compile TARO_ENV after runtime probe throws', async () => {
     const { mobileEnv } = await loadEnvModule({
       compileEnv: {
         TARO_ENV: 'weapp',
@@ -76,6 +105,17 @@ describe('env', () => {
 
     expect(mobileEnv.taroEnv).toBe('weapp');
     expect(mobileEnv.miniBaseApi).toBe('/fallback-base');
+  });
+
+  it('should fallback to default h5 when runtime probe throws and compile TARO_ENV is missing', async () => {
+    const { mobileEnv } = await loadEnvModule({
+      compileEnv: {
+        TARO_APP_BASE_API: '/fallback-base-without-taro-env'
+      },
+      throwOnSystemInfo: true
+    });
+
+    expect(mobileEnv.taroEnv).toBe('h5');
   });
 
   it('should fallback to defaults when compile env is empty or invalid', async () => {

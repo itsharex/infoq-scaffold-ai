@@ -1,10 +1,10 @@
-import path from 'node:path';
+import { resolve } from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': resolve(__dirname, './src')
     }
   },
   test: {
@@ -22,6 +22,10 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: './coverage',
+      lines: 100,
+      branches: 100,
+      functions: 100,
+      statements: 100,
       include: [
         'src/api/**/*.ts',
         'src/utils/{auth,crypto,env,errors,helpers,permissions,rsa,theme}.ts',

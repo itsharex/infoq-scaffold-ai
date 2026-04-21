@@ -61,3 +61,4 @@ pnpm run build:weapp
 - Commands: `references/commands.md`
 - Priority matrix: `references/priority-matrix.md`
 - Mock patterns: `references/mock-patterns.md`
+- Coverage fastpath: `references/coverage-fastpath.md`

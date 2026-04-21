@@ -16,9 +16,9 @@ describe('theme', () => {
   });
 
   it('subscribeSystemThemeMode should register and teardown listener', () => {
-    let captured: ((event: { theme?: string }) => void) | null = null;
+    const listeners: Array<(event: { theme?: string }) => void> = [];
     (uni.onThemeChange as any).mockImplementation((cb: (event: { theme?: string }) => void) => {
-      captured = cb;
+      listeners.push(cb);
     });
 
     const received: string[] = [];
@@ -27,10 +27,13 @@ describe('theme', () => {
     });
 
     expect(typeof unsubscribe).toBe('function');
-    expect(captured).not.toBeNull();
-
-    captured?.({ theme: 'dark' });
-    captured?.({ theme: 'light' });
+    expect(listeners.length).toBe(1);
+    const handler = listeners[0];
+    if (!handler) {
+      throw new Error('theme change handler should be registered');
+    }
+    handler({ theme: 'dark' });
+    handler({ theme: 'light' });
 
     expect(received).toEqual(['dark', 'light']);
 

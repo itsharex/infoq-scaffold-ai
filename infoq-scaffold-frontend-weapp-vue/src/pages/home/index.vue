@@ -2,7 +2,7 @@
   <view class="home-container">
     <view class="welcome-section">
       <view class="avatar-wrapper">
-        <text class="avatar-text">{{ displayName.slice(0, 1).toUpperCase() }}</text>
+        <image :src="avatarImage" class="avatar-img" mode="aspectFill" @error="handleAvatarLoadError" />
       </view>
       <view class="welcome-text">
         <view class="greet">您好，{{ displayName }}</view>
@@ -88,11 +88,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import BottomNav from '@/components/BottomNav.vue';
 import AppIcon from '@/components/AppIcon.vue';
+import defaultAvatar from '@/assets/images/profile.jpg';
 import { adminModules } from '@/utils/admin';
+import { resolveAvatarUrl } from '@/utils/avatar';
 import { navigate, routes } from '@/utils/navigation';
 import { handlePageError } from '@/utils/ui';
 import { ensureAuthenticated } from '@/composables/use-auth-guard';
@@ -109,6 +111,24 @@ const summary = ref({
 });
 
 const displayName = computed(() => (sessionStore.user?.nickName || sessionStore.user?.userName || '用户'));
+const avatarLoadFailed = ref(false);
+watch(
+  () => sessionStore.user?.avatar,
+  () => {
+    avatarLoadFailed.value = false;
+  }
+);
+
+const avatarImage = computed(() => {
+  if (avatarLoadFailed.value) {
+    return defaultAvatar;
+  }
+  return resolveAvatarUrl(sessionStore.user?.avatar) || defaultAvatar;
+});
+
+const handleAvatarLoadError = () => {
+  avatarLoadFailed.value = true;
+};
 
 const primaryNotice = computed(() => recentNotices.value[0]);
 

@@ -4,8 +4,7 @@
       <view class="banner-title">完善个人资料</view>
       <view class="avatar-edit-box" @click="handleUpdateAvatar">
         <view class="avatar-frame">
-          <image v-if="form.avatar" :src="form.avatar" class="avatar-img" mode="aspectFill" />
-          <text v-else class="avatar-txt">{{ form.nickName.slice(0, 1).toUpperCase() || 'U' }}</text>
+          <image :src="avatarImage" class="avatar-img" mode="aspectFill" @error="handleAvatarLoadError" />
         </view>
         <view class="edit-badge">
           <AppIcon name="camera" size="32" color="#1677ff" />
@@ -73,11 +72,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getUserProfile, updateUserProfile } from '@/api';
+import defaultAvatar from '@/assets/images/profile.jpg';
 import { ensureAuthenticated } from '@/composables/use-auth-guard';
 import { backOr, routes } from '@/utils/navigation';
+import { resolveAvatarUrl } from '@/utils/avatar';
 import { handlePageError, showSuccess } from '@/utils/ui';
 import { useSessionStore } from '@/store/session';
 
@@ -89,6 +90,24 @@ const form = reactive({
   sex: '0',
   avatar: ''
 });
+const avatarLoadFailed = ref(false);
+watch(
+  () => form.avatar,
+  () => {
+    avatarLoadFailed.value = false;
+  }
+);
+
+const avatarImage = computed(() => {
+  if (avatarLoadFailed.value) {
+    return defaultAvatar;
+  }
+  return resolveAvatarUrl(form.avatar) || defaultAvatar;
+});
+
+const handleAvatarLoadError = () => {
+  avatarLoadFailed.value = true;
+};
 
 const loadProfile = async () => {
   if (!ensureAuthenticated()) {

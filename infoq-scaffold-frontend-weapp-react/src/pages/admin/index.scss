@@ -1,4 +1,4 @@
-@import '../../styles/common.scss';
+@use '../../styles/common.scss' as *;
 
 .admin-container {
   padding-bottom: 200rpx; // Increased to prevent bottom nav from obscuring the last card

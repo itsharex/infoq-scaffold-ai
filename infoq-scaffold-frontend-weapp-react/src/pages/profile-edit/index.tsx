@@ -11,8 +11,10 @@ import {
   updateUserProfile,
   uploadAvatar
 } from '@/api';
+import defaultAvatar from '@/assets/images/profile.jpg';
 import { useState } from 'react';
 import { useSessionStore } from '../../store/session';
+import { resolveAvatarUrl } from '../../utils/avatar';
 import { backOr, routes } from '../../utils/navigation';
 import { handlePageError, showSuccess } from '../../utils/ui';
 import './index.scss';
@@ -33,6 +35,7 @@ export default function ProfileEditPage() {
     sex: '',
     avatar: ''
   });
+  const avatarImage = resolveAvatarUrl(form.avatar) || defaultAvatar;
 
   useDidShow(() => {
     const run = async () => {
@@ -123,7 +126,7 @@ export default function ProfileEditPage() {
         <View className="avatar-wrapper" onClick={() => void handleChooseAvatar()}>
           <AtAvatar
             circle
-            image={form.avatar || undefined}
+            image={avatarImage}
             text={getDisplayName(form.userName, form.nickName)}
           />
           <View className="camera-icon">

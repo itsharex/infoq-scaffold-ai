@@ -10,8 +10,10 @@ import {
   updateUserPwd,
   type DictOption
 } from '@/api';
+import defaultAvatar from '@/assets/images/profile.jpg';
 import { useState } from 'react';
 import BottomNav from '../../components/bottom-nav';
+import { resolveAvatarUrl } from '../../utils/avatar';
 import { navigate, relaunch, routes } from '../../utils/navigation';
 import { handlePageError } from '../../utils/ui';
 import { useSessionStore } from '../../store/session';
@@ -55,6 +57,7 @@ export default function ProfilePage() {
     newPassword: '',
     confirmPassword: ''
   });
+  const avatarImage = resolveAvatarUrl(profile.avatar) || defaultAvatar;
 
   useDidShow(() => {
     const run = async () => {
@@ -146,7 +149,7 @@ export default function ProfilePage() {
         <AtAvatar
           circle
           size="large"
-          image={profile.avatar || undefined}
+          image={avatarImage}
           text={getDisplayName(profile.userName, profile.nickName)}
         />
         <View className="user-info">

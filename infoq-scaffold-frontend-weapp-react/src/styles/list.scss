@@ -1,4 +1,6 @@
-@import './common.scss';
+@use 'sass:color';
+@forward './common.scss';
+@use './common.scss' as *;
 
 .list-container {
   min-height: 100vh;
@@ -114,7 +116,7 @@
           }
 
           &.primary {
-            background: linear-gradient(135deg, $primary-color 0, lighten($primary-color, 6%) 100%) !important;
+            background: linear-gradient(135deg, $primary-color 0, color.adjust($primary-color, $lightness: 6%) 100%) !important;
             color: #ffffff !important;
             border: 1rpx solid $primary-color !important;
             box-shadow: 0 10rpx 24rpx rgba($primary-color, 0.24) !important;
@@ -322,7 +324,7 @@
   bottom: calc(192rpx + env(safe-area-inset-bottom));
   width: 108rpx;
   height: 108rpx;
-  background: linear-gradient(135deg, $primary-color, lighten($primary-color, 12%));
+  background: linear-gradient(135deg, $primary-color, color.adjust($primary-color, $lightness: 12%));
   border-radius: 50%;
   display: flex;
   align-items: center;

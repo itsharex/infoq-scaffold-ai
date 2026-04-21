@@ -8,9 +8,11 @@ import {
   type AdminModuleKey,
   type NoticeVO
 } from '@/api';
+import defaultAvatar from '@/assets/images/profile.jpg';
 import { useState } from 'react';
 import BottomNav from '../../components/bottom-nav';
 import { adminModules } from '../../utils/admin';
+import { resolveAvatarUrl } from '../../utils/avatar';
 import { navigate, routes } from '../../utils/navigation';
 import { handlePageError } from '../../utils/ui';
 import { useSessionStore } from '../../store/session';
@@ -92,6 +94,7 @@ export default function HomePage() {
 
   const canOpenNotice = permissions.includes('system:notice:list');
   const primaryNotice = recentNotices[0];
+  const avatarImage = resolveAvatarUrl(user?.avatar) || defaultAvatar;
   const gridItems: HomeGridItem[] = gridModuleKeys.map((key) => {
     const module = adminModules.find((item) => item.key === key);
     if (!module) {
@@ -128,7 +131,7 @@ export default function HomePage() {
   return (
     <View className="home-container">
       <View className="welcome-section">
-        <AtAvatar circle size="large" text={displayName} />
+        <AtAvatar circle size="large" image={avatarImage} text={displayName} />
         <View className="welcome-text">
           <View className="greet">您好，{user?.nickName || user?.userName || '用户'}</View>
           <View className="dept">{user?.deptName || 'AI-first 全栈脚手架'}</View>

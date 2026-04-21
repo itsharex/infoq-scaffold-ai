@@ -638,6 +638,18 @@ describe('request', () => {
     ).rejects.toBeInstanceOf(AppError);
   });
 
+  it('should normalize non-object primitive rejection values by String conversion', async () => {
+    const { request, mocks } = await setupRequestModule();
+    mocks.requestMock.mockRejectedValueOnce(503);
+
+    await expect(
+      request({
+        url: '/monitor/cache',
+        method: 'GET'
+      })
+    ).rejects.toThrow('503');
+  });
+
   it('should normalize undefined rejection into default network message', async () => {
     const { request, mocks } = await setupRequestModule();
     mocks.requestMock.mockRejectedValueOnce(undefined);
@@ -662,6 +674,56 @@ describe('request', () => {
         method: 'GET'
       })
     ).rejects.toThrow('小程序请求域名未在合法域名列表，请检查开发者工具域名校验配置。');
+  });
+
+  it('should extract rejection message from nested error.data payload', async () => {
+    const { request, mocks } = await setupRequestModule();
+    mocks.requestMock.mockRejectedValueOnce({
+      data: {
+        msg: 'nested data message'
+      }
+    });
+
+    await expect(
+      request({
+        url: '/monitor/cache',
+        method: 'GET'
+      })
+    ).rejects.toThrow('nested data message');
+  });
+
+  it('should extract rejection message from error.response and error.response.data payloads', async () => {
+    const { request, mocks } = await setupRequestModule();
+    mocks.requestMock.mockRejectedValueOnce({
+      response: {
+        message: 'response level message',
+        data: {
+          msg: 'response data message'
+        }
+      }
+    });
+
+    await expect(
+      request({
+        url: '/monitor/cache',
+        method: 'GET'
+      })
+    ).rejects.toThrow('response level message');
+
+    mocks.requestMock.mockRejectedValueOnce({
+      response: {
+        data: {
+          msg: 'response data only message'
+        }
+      }
+    });
+
+    await expect(
+      request({
+        url: '/monitor/cache',
+        method: 'GET'
+      })
+    ).rejects.toThrow('response data only message');
   });
 
   it('should normalize opaque object rejection into default message instead of object string', async () => {

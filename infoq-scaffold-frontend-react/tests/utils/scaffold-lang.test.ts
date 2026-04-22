@@ -10,7 +10,7 @@ type StrictTreeNode = {
 
 type LooseTreeNode = {
   id?: number;
-  parentId: number;
+  parentId?: number;
   children?: LooseTreeNode[];
 };
 

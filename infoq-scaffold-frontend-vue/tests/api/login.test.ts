@@ -7,6 +7,7 @@ vi.mock('@/utils/request', () => ({
 }));
 
 import { getCodeImg, getInfo, login, logout, register } from '@/api/login';
+import type { LoginData } from '@/api/types';
 
 describe('api/login', () => {
   beforeEach(() => {
@@ -20,7 +21,7 @@ describe('api/login', () => {
       password: '123456',
       code: 'abcd',
       uuid: 'uuid-1'
-    } as any);
+    } as unknown as LoginData);
 
     expect(loginApiMocks.request).toHaveBeenCalledWith({
       url: '/auth/login',
@@ -49,7 +50,7 @@ describe('api/login', () => {
       uuid: 'uuid-1',
       clientId: 'custom-client',
       grantType: 'sms'
-    } as any);
+    } as LoginData);
 
     expect(loginApiMocks.request).toHaveBeenCalledWith(
       expect.objectContaining({

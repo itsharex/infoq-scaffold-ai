@@ -2,6 +2,28 @@ import modal from '@/plugins/modal';
 import { ElLoading, ElMessage, ElMessageBox, ElNotification } from 'element-plus/es';
 
 describe('plugins/modal', () => {
+  const messageMock = ElMessage as unknown as {
+    info: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+    warning: ReturnType<typeof vi.fn>;
+  };
+  const notificationMock = ElNotification as unknown as {
+    info: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+    warning: ReturnType<typeof vi.fn>;
+  };
+  const messageBoxMock = ElMessageBox as unknown as {
+    alert: ReturnType<typeof vi.fn>;
+    confirm: ReturnType<typeof vi.fn>;
+    prompt: ReturnType<typeof vi.fn>;
+  };
+  const loadingServiceMock = ElLoading.service as unknown as ReturnType<typeof vi.fn>;
+  const loadingMock = ElLoading as unknown as {
+    service: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -12,10 +34,10 @@ describe('plugins/modal', () => {
     modal.msgSuccess('success');
     modal.msgWarning('warning');
 
-    expect((ElMessage as any).info).toHaveBeenCalledWith('info');
-    expect((ElMessage as any).error).toHaveBeenCalledWith('error');
-    expect((ElMessage as any).success).toHaveBeenCalledWith('success');
-    expect((ElMessage as any).warning).toHaveBeenCalledWith('warning');
+    expect(messageMock.info).toHaveBeenCalledWith('info');
+    expect(messageMock.error).toHaveBeenCalledWith('error');
+    expect(messageMock.success).toHaveBeenCalledWith('success');
+    expect(messageMock.warning).toHaveBeenCalledWith('warning');
   });
 
   it('dispatches alert, notification, confirm and prompt', async () => {
@@ -32,23 +54,23 @@ describe('plugins/modal', () => {
     await modal.confirm('confirm');
     await modal.prompt('prompt');
 
-    expect((ElMessageBox as any).alert).toHaveBeenCalledTimes(4);
-    expect((ElNotification as any).info).toHaveBeenCalledWith('notify');
-    expect((ElNotification as any).error).toHaveBeenCalledWith('notify-error');
-    expect((ElNotification as any).success).toHaveBeenCalledWith('notify-success');
-    expect((ElNotification as any).warning).toHaveBeenCalledWith('notify-warning');
-    expect((ElMessageBox as any).confirm).toHaveBeenCalledWith('confirm', '系统提示', expect.objectContaining({ type: 'warning' }));
-    expect((ElMessageBox as any).prompt).toHaveBeenCalledWith('prompt', '系统提示', expect.objectContaining({ type: 'warning' }));
+    expect(messageBoxMock.alert).toHaveBeenCalledTimes(4);
+    expect(notificationMock.info).toHaveBeenCalledWith('notify');
+    expect(notificationMock.error).toHaveBeenCalledWith('notify-error');
+    expect(notificationMock.success).toHaveBeenCalledWith('notify-success');
+    expect(notificationMock.warning).toHaveBeenCalledWith('notify-warning');
+    expect(messageBoxMock.confirm).toHaveBeenCalledWith('confirm', '系统提示', expect.objectContaining({ type: 'warning' }));
+    expect(messageBoxMock.prompt).toHaveBeenCalledWith('prompt', '系统提示', expect.objectContaining({ type: 'warning' }));
   });
 
   it('opens and closes loading overlay', () => {
     const close = vi.fn();
-    vi.mocked(ElLoading.service as any).mockReturnValueOnce({ close });
+    loadingServiceMock.mockReturnValueOnce({ close });
 
     modal.loading('处理中');
     modal.closeLoading();
 
-    expect((ElLoading as any).service).toHaveBeenCalledWith(
+    expect(loadingMock.service).toHaveBeenCalledWith(
       expect.objectContaining({
         lock: true,
         text: '处理中'

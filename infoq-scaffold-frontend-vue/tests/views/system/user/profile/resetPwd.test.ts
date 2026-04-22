@@ -83,7 +83,7 @@ describe('views/system/user/profile/resetPwd', () => {
             $tab: {
               closePage: resetPwdMocks.closePage
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-form': ElFormStub,
@@ -108,7 +108,16 @@ describe('views/system/user/profile/resetPwd', () => {
     expect(resetPwdMocks.msgSuccess).toHaveBeenCalledTimes(1);
     expect(resetPwdMocks.msgSuccess).toHaveBeenCalledWith('修改成功');
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      rules: {
+        confirmPassword: Array<{
+          validator: (rule: unknown, value: string, cb: (error?: Error) => void) => void;
+        }>;
+      };
+      user: {
+        newPassword: string;
+      };
+    };
     const equalValidator = vm.rules.confirmPassword[1].validator;
     vm.user.newPassword = 'new-password';
     const mismatchCb = vi.fn();

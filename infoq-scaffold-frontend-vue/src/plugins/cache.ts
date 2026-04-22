@@ -1,5 +1,16 @@
-const sessionCache = {
-  set(key: string, value: any) {
+type JsonObject = Record<string, unknown>;
+type JsonValue = string | number | boolean | null | JsonObject | JsonValue[];
+
+interface StorageCache {
+  set(key: string, value: string): void;
+  get(key: string): string | null;
+  setJSON<T extends JsonValue>(key: string, jsonValue: T): void;
+  getJSON<T = unknown>(key: string): T | null;
+  remove(key: string): void;
+}
+
+const sessionCache: StorageCache = {
+  set(key: string, value: string) {
     if (!sessionStorage) {
       return;
     }
@@ -16,15 +27,15 @@ const sessionCache = {
     }
     return sessionStorage.getItem(key);
   },
-  setJSON(key: string, jsonValue: any) {
+  setJSON<T extends JsonValue>(key: string, jsonValue: T) {
     if (jsonValue != null) {
       this.set(key, JSON.stringify(jsonValue));
     }
   },
-  getJSON(key: string) {
+  getJSON<T = unknown>(key: string): T | null {
     const value = this.get(key);
     if (value != null) {
-      return JSON.parse(value);
+      return JSON.parse(value) as T;
     }
     return null;
   },
@@ -32,8 +43,8 @@ const sessionCache = {
     sessionStorage.removeItem(key);
   }
 };
-const localCache = {
-  set(key: string, value: any) {
+const localCache: StorageCache = {
+  set(key: string, value: string) {
     if (!localStorage) {
       return;
     }
@@ -50,15 +61,15 @@ const localCache = {
     }
     return localStorage.getItem(key);
   },
-  setJSON(key: string, jsonValue: any) {
+  setJSON<T extends JsonValue>(key: string, jsonValue: T) {
     if (jsonValue != null) {
       this.set(key, JSON.stringify(jsonValue));
     }
   },
-  getJSON(key: string) {
+  getJSON<T = unknown>(key: string): T | null {
     const value = this.get(key);
     if (value != null) {
-      return JSON.parse(value);
+      return JSON.parse(value) as T;
     }
     return null;
   },

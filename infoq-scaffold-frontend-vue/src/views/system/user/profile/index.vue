@@ -79,8 +79,8 @@ interface State {
   user: Partial<UserVO>;
   roleGroup: string;
   postGroup: string;
-  auths: any;
-  devices: any;
+  auths: unknown[];
+  devices: Array<Record<string, unknown>>;
 }
 const state = ref<State>({
   user: {},
@@ -90,7 +90,7 @@ const state = ref<State>({
   devices: []
 });
 
-const userForm = ref({});
+const userForm = ref<Record<string, unknown>>({});
 
 const getUser = async () => {
   const res = await getUserProfile();

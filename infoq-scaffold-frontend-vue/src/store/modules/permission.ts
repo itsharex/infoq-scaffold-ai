@@ -9,9 +9,10 @@ import ParentView from '@/components/ParentView/index.vue';
 import InnerLink from '@/layout/components/InnerLink/index.vue';
 import { ref } from 'vue';
 import { createCustomNameComponent } from '@/utils/createCustomNameComponent';
+import type { Component } from 'vue';
 
 // 匹配views里面所有的.vue文件
-const modules = import.meta.glob('./../../views/**/*.vue');
+const modules = import.meta.glob<{ default: Component }>('./../../views/**/*.vue');
 export const usePermissionStore = defineStore('permission', () => {
   const routes = ref<RouteRecordRaw[]>([]);
   const addRoutes = ref<RouteRecordRaw[]>([]);
@@ -86,7 +87,7 @@ export const usePermissionStore = defineStore('permission', () => {
       } else if (route.component?.toString() === 'InnerLink') {
         route.component = InnerLink;
       } else {
-        route.component = loadView(route.component, route.name as string);
+        route.component = loadView(String(route.component || ''), route.name as string);
       }
       if (route.children != null && route.children && route.children.length) {
         route.children = filterAsyncRouter(route.children, route, type);
@@ -143,8 +144,8 @@ export const filterDynamicRoutes = (routes: RouteRecordRaw[]) => {
   return res;
 };
 
-export const loadView = (view: any, name: string) => {
-  let res;
+export const loadView = (view: string, name: string) => {
+  let res: ReturnType<typeof createCustomNameComponent> | undefined;
   for (const path in modules) {
     const viewsIndex = path.indexOf('/views/');
     let dir = path.substring(viewsIndex + 7);

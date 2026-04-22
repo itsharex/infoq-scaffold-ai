@@ -46,7 +46,7 @@ export function updateConfig(data: ConfigForm) {
 }
 
 // 修改参数配置
-export function updateConfigByKey(key: string, value: any) {
+export function updateConfigByKey(key: string, value: string | number | boolean | null) {
   return request({
     url: '/system/config/updateByKey',
     method: 'put',

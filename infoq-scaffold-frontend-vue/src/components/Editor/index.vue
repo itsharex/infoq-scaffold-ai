@@ -21,7 +21,7 @@
       content-type="html"
       :options="options"
       :style="styles"
-      @text-change="(e: any) => $emit('update:modelValue', content)"
+      @text-change="(_e: unknown) => $emit('update:modelValue', content)"
     />
   </div>
 </template>
@@ -56,10 +56,37 @@ const upload = reactive<UploadOption>({
   headers: globalHeaders(),
   url: import.meta.env.VITE_APP_BASE_API + '/resource/oss/upload'
 });
-const quillEditorRef = ref();
+const quillEditorRef = ref<QuillEditorInstance>();
 const uploadRef = ref<HTMLDivElement>();
 
-const options = ref<any>({
+interface QuillRange {
+  index: number;
+}
+
+interface QuillEditorInstance {
+  getQuill: () => {
+    selection: {
+      savedRange: QuillRange;
+    };
+    insertEmbed: (index: number, type: string, value: string) => void;
+    setSelection: (index: number) => void;
+  };
+}
+
+interface UploadSuccessResponse {
+  code: number;
+  data: {
+    url: string;
+  };
+}
+
+interface EditorUploadFile {
+  type: string;
+  size: number;
+  name: string;
+}
+
+const options = ref<Record<string, unknown>>({
   theme: 'snow',
   bounds: document.body,
   debug: 'warn',
@@ -95,7 +122,7 @@ const options = ref<any>({
 });
 
 const styles = computed(() => {
-  const style: any = {};
+  const style: Record<string, string> = {};
   if (props.minHeight) {
     style.minHeight = `${props.minHeight}px`;
   }
@@ -117,11 +144,17 @@ watch(
 );
 
 // 图片上传成功返回图片地址
-const handleUploadSuccess = (res: any) => {
+const handleUploadSuccess = (res: UploadSuccessResponse) => {
   // 如果上传成功
   if (res.code === 200) {
     // 获取富文本实例
-    const quill = toRaw(quillEditorRef.value).getQuill();
+    const currentEditor = toRaw(quillEditorRef.value);
+    if (!currentEditor) {
+      proxy?.$modal.msgError('编辑器实例不存在');
+      proxy?.$modal.closeLoading();
+      return;
+    }
+    const quill = currentEditor.getQuill();
     // 获取光标位置
     const length = quill.selection.savedRange.index;
     // 插入图片，res为服务器返回的图片链接地址
@@ -136,7 +169,7 @@ const handleUploadSuccess = (res: any) => {
 };
 
 // 图片上传前拦截
-const handleBeforeUpload = (file: any) => {
+const handleBeforeUpload = (file: EditorUploadFile) => {
   const type = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg'];
   const isJPG = type.includes(file.type);
   //检验文件格式
@@ -157,7 +190,7 @@ const handleBeforeUpload = (file: any) => {
 };
 
 // 图片失败拦截
-const handleUploadError = (err: any) => {
+const handleUploadError = (_err: unknown) => {
   proxy?.$modal.msgError('上传文件失败');
 };
 </script>

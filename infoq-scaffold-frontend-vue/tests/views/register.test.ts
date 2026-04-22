@@ -64,6 +64,10 @@ const passthroughStub = (name: string) =>
   });
 
 describe('views/register', () => {
+  const messageBoxMock = ElMessageBox as unknown as {
+    alert: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     registerMocks.getCodeImg.mockResolvedValue({
@@ -82,7 +86,7 @@ describe('views/register', () => {
         config: {
           globalProperties: {
             $t: (key: string) => key
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-form': ElFormStub,
@@ -103,7 +107,7 @@ describe('views/register', () => {
     await flushPromises();
 
     expect(registerMocks.register).toHaveBeenCalledTimes(1);
-    expect((ElMessageBox as any).alert).toHaveBeenCalled();
+    expect(messageBoxMock.alert).toHaveBeenCalled();
     expect(registerMocks.routerPush).toHaveBeenCalledWith('/login');
   });
 
@@ -123,9 +127,18 @@ describe('views/register', () => {
     const wrapper = mountView();
     await flushPromises();
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      registerForm: {
+        password: string;
+      };
+      registerRules: {
+        confirmPassword: Array<{
+          validator: (rule: unknown, value: string, cb: (error?: Error) => void) => void;
+        }>;
+      };
+    };
     vm.registerForm.password = 'Pass@123';
-    const validator = vm.registerRules.confirmPassword[1].validator as (rule: any, value: string, cb: (error?: Error) => void) => void;
+    const validator = vm.registerRules.confirmPassword[1].validator as (rule: unknown, value: string, cb: (error?: Error) => void) => void;
 
     const mismatchCb = vi.fn();
     validator({}, 'Mismatch@123', mismatchCb);

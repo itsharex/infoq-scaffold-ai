@@ -20,7 +20,7 @@ describe('utils/dict', () => {
 
   it('returns cached dict immediately when exists', () => {
     const dictStore = useDictStore();
-    dictStore.setDict('sys_yes_no', [{ label: '是', value: 'Y' } as any]);
+    dictStore.setDict('sys_yes_no', [{ label: '是', value: 'Y' } as DictDataOption]);
 
     const result = useDict('sys_yes_no');
     expect(result.sys_yes_no).toEqual([{ label: '是', value: 'Y' }]);

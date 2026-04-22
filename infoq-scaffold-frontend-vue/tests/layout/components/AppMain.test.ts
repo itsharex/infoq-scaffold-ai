@@ -74,7 +74,7 @@ describe('layout/components/AppMain', () => {
               animateList: ['animate-in'],
               defaultAnimate: 'animate-default'
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'router-view': RouterViewStub,

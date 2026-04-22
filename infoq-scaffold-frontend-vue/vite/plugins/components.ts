@@ -2,7 +2,11 @@ import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import IconsResolver from 'unplugin-icons/resolver';
 
-export default (path: any) => {
+interface PathResolver {
+  resolve: (...paths: string[]) => string;
+}
+
+export default (path: PathResolver) => {
   return Components({
     resolvers: [
       // 自动导入 Element Plus 组件

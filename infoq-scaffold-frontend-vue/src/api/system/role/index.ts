@@ -1,8 +1,10 @@
 import { UserVO } from '@/api/system/user/types';
 import { UserQuery } from '@/api/system/user/types';
 import type { ApiResponse, TableResponse } from '@/api/types';
-import { RoleQuery, RoleVO, RoleDeptTree } from './types';
+import { RoleForm, RoleQuery, RoleVO, RoleDeptTree } from './types';
 import request from '@/utils/request';
+
+type RolePayload = Record<string, unknown>;
 
 export const listRole = (query: RoleQuery): Promise<TableResponse<RoleVO>> => {
   return request({
@@ -36,7 +38,7 @@ export const getRole = (roleId: string | number): Promise<ApiResponse<RoleVO>> =
 /**
  * 新增角色
  */
-export const addRole = (data: any) => {
+export const addRole = (data: RoleForm) => {
   return request({
     url: '/system/role',
     method: 'post',
@@ -48,7 +50,7 @@ export const addRole = (data: any) => {
  * 修改角色
  * @param data
  */
-export const updateRole = (data: any) => {
+export const updateRole = (data: RoleForm) => {
   return request({
     url: '/system/role',
     method: 'put',
@@ -59,7 +61,7 @@ export const updateRole = (data: any) => {
 /**
  * 角色数据权限
  */
-export const dataScope = (data: any) => {
+export const dataScope = (data: RolePayload) => {
   return request({
     url: '/system/role/dataScope',
     method: 'put',
@@ -117,7 +119,7 @@ export const unallocatedUserList = (query: UserQuery): Promise<TableResponse<Use
 /**
  * 取消用户授权角色
  */
-export const authUserCancel = (data: any) => {
+export const authUserCancel = (data: RolePayload) => {
   return request({
     url: '/system/role/authUser/cancel',
     method: 'put',
@@ -128,7 +130,7 @@ export const authUserCancel = (data: any) => {
 /**
  * 批量取消用户授权角色
  */
-export const authUserCancelAll = (data: any) => {
+export const authUserCancelAll = (data: RolePayload) => {
   return request({
     url: '/system/role/authUser/cancelAll',
     method: 'put',
@@ -139,7 +141,7 @@ export const authUserCancelAll = (data: any) => {
 /**
  * 授权用户选择
  */
-export const authUserSelectAll = (data: any) => {
+export const authUserSelectAll = (data: RolePayload) => {
   return request({
     url: '/system/role/authUser/selectAll',
     method: 'put',

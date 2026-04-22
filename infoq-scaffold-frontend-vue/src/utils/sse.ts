@@ -58,7 +58,7 @@ export const initSSE = (baseUrl: string) => {
       retries: 5,
       delay: 5000,
       onFailed() {
-        console.log('Failed to connect after 5 retries');
+        console.error('Failed to connect after 5 retries');
       }
     }
   });

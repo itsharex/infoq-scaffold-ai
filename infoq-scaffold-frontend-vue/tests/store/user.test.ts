@@ -1,6 +1,8 @@
 import { createPinia, setActivePinia } from 'pinia';
 import { useUserStore } from '@/store/modules/user';
 import { getToken } from '@/utils/auth';
+import type { ApiResponse, LoginData, LoginResult } from '@/api/types';
+import type { UserInfo } from '@/api/system/user/types';
 
 vi.mock('@/api/login', () => ({
   login: vi.fn(),
@@ -23,10 +25,10 @@ describe('store/user', () => {
   });
 
   it('login success should update token and defer sse init to layout', async () => {
-    vi.mocked(login).mockResolvedValue({ data: { access_token: 'token-1' } } as any);
+    vi.mocked(login).mockResolvedValue({ data: { access_token: 'token-1' } } as ApiResponse<LoginResult>);
     const store = useUserStore();
 
-    await store.login({ username: 'admin', password: '123456', code: '', uuid: '' } as any);
+    await store.login({ username: 'admin', password: '123456', code: '', uuid: '' } as LoginData);
 
     expect(store.token).toBe('token-1');
     expect(getToken()).toBe('token-1');
@@ -37,7 +39,7 @@ describe('store/user', () => {
     vi.mocked(login).mockRejectedValue(new Error('login failed'));
     const store = useUserStore();
 
-    await expect(store.login({ username: 'u', password: 'p', code: '', uuid: '' } as any)).rejects.toBeTruthy();
+    await expect(store.login({ username: 'u', password: 'p', code: '', uuid: '' } as LoginData)).rejects.toBeTruthy();
   });
 
   it('getInfo should map profile and fallback role', async () => {
@@ -47,7 +49,7 @@ describe('store/user', () => {
         roles: [],
         permissions: ['system:user:list']
       }
-    } as any);
+    } as ApiResponse<UserInfo>);
 
     const store = useUserStore();
     await store.getInfo();
@@ -65,7 +67,7 @@ describe('store/user', () => {
         roles: ['admin', 'common'],
         permissions: ['system:user:list', 'system:role:edit']
       }
-    } as any);
+    } as ApiResponse<UserInfo>);
 
     const store = useUserStore();
     await store.getInfo();

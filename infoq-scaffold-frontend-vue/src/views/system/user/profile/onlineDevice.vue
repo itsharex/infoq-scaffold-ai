@@ -28,16 +28,15 @@
 
 <script setup name="Online" lang="ts">
 import { delOnline } from '@/api/monitor/online';
-import { propTypes } from '@/utils/propTypes';
 import { toDictRefs } from '@/utils/dict';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_device_type } = toDictRefs((proxy?.useDict('sys_device_type') ?? {}) as Record<'sys_device_type', DictDataOption[]>);
 
-const props = defineProps({
-  devices: propTypes.any.isRequired
-});
-const devices = computed(() => props.devices);
+const props = defineProps<{
+  devices: Array<Record<string, unknown>>;
+}>();
+const devices = computed<Array<Record<string, unknown>>>(() => props.devices);
 
 /** 删除按钮操作 */
 const handldDelOnline = async (row: { tokenId: string | number }) => {

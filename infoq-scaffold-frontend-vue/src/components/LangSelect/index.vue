@@ -20,11 +20,11 @@ import SvgIcon from '@/components/SvgIcon/index.vue';
 const appStore = useAppStore();
 const { locale } = useI18n();
 
-const message: any = {
+const message: Record<'zh_CN' | 'en_US', string> = {
   zh_CN: '切换语言成功！',
   en_US: 'Switch Language Successful!'
 };
-const handleLanguageChange = (lang: any) => {
+const handleLanguageChange = (lang: 'zh_CN' | 'en_US') => {
   locale.value = lang;
   appStore.changeLanguage(lang);
   ElMessage.success(message[lang] || '切换语言成功！');

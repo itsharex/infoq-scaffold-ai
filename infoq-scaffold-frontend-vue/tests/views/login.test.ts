@@ -7,7 +7,7 @@ const loginMocks = vi.hoisted(() => {
     getCodeImg: vi.fn(),
     userLogin: vi.fn(),
     routerPush: vi.fn(),
-    formValidate: vi.fn((cb: (valid: boolean, fields?: any) => void) => cb(true, {})),
+    formValidate: vi.fn((cb: (valid: boolean, fields?: unknown) => void) => cb(true, {})),
     currentRoute: {
       value: {
         query: {
@@ -46,7 +46,7 @@ const ElFormStub = defineComponent({
   name: 'ElForm',
   setup(_, { slots, expose }) {
     expose({
-      validate: (cb: (valid: boolean, fields?: any) => void) => loginMocks.formValidate(cb)
+      validate: (cb: (valid: boolean, fields?: unknown) => void) => loginMocks.formValidate(cb)
     });
     return () => h('form', { class: 'el-form-stub' }, slots.default?.());
   }
@@ -88,7 +88,7 @@ describe('views/login', () => {
       }
     });
     loginMocks.userLogin.mockResolvedValue(undefined);
-    loginMocks.formValidate.mockImplementation((cb: (valid: boolean, fields?: any) => void) => cb(true, {}));
+    loginMocks.formValidate.mockImplementation((cb: (valid: boolean, fields?: unknown) => void) => cb(true, {}));
   });
 
   const mountView = () =>
@@ -97,7 +97,7 @@ describe('views/login', () => {
         config: {
           globalProperties: {
             $t: (key: string) => key
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-form': ElFormStub,
@@ -145,7 +145,13 @@ describe('views/login', () => {
     const wrapper = mountView();
     await flushPromises();
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      loginForm: {
+        username: string;
+        password: string;
+        rememberMe: boolean;
+      };
+    };
     vm.loginForm.username = 'remember-user';
     vm.loginForm.password = 'remember-pass';
     vm.loginForm.rememberMe = true;
@@ -158,11 +164,10 @@ describe('views/login', () => {
     expect(window.localStorage.getItem('rememberMe')).toBe('true');
   });
 
-  it('logs validation errors when form validation fails', async () => {
-    loginMocks.formValidate.mockImplementationOnce((cb: (valid: boolean, fields?: any) => void) =>
+  it('stops submit when form validation fails', async () => {
+    loginMocks.formValidate.mockImplementationOnce((cb: (valid: boolean, fields?: unknown) => void) =>
       cb(false, { username: [{ message: 'required' }] })
     );
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
     const wrapper = mountView();
     await flushPromises();
@@ -170,7 +175,6 @@ describe('views/login', () => {
     await flushPromises();
 
     expect(loginMocks.userLogin).not.toHaveBeenCalled();
-    expect(logSpy).toHaveBeenCalledWith('error submit!', { username: [{ message: 'required' }] });
-    logSpy.mockRestore();
+    expect(loginMocks.routerPush).not.toHaveBeenCalled();
   });
 });

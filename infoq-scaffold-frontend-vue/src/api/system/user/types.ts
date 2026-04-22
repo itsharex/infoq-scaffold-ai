@@ -43,9 +43,9 @@ export interface UserVO extends BaseEntity {
   remark: string;
   deptName: string;
   roles: RoleVO[];
-  roleIds: any;
-  postIds: any;
-  roleId: any;
+  roleIds: Array<string | number> | null;
+  postIds: Array<string | number> | null;
+  roleId: string | number | null;
   admin: boolean;
 }
 

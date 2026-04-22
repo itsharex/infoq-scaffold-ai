@@ -5,7 +5,7 @@ import SearchMenu from '@/layout/components/TopBar/search.vue';
 const topBarSearchMocks = vi.hoisted(() => ({
   routerPush: vi.fn(),
   focus: vi.fn(),
-  routes: [] as Array<Record<string, any>>
+  routes: [] as Array<Record<string, unknown>>
 }));
 
 vi.mock('vue-router', () => ({
@@ -149,7 +149,7 @@ describe('layout/components/TopBar/search', () => {
     expect(topBarSearchMocks.focus).toHaveBeenCalledTimes(1);
 
     const autoProps = wrapper.findComponent(ElAutocompleteStub).props() as {
-      fetchSuggestions: (keyword: string, cb: (options: any[]) => void) => void;
+      fetchSuggestions: (keyword: string, cb: (options: unknown[]) => void) => void;
     };
     const callback = vi.fn();
     autoProps.fetchSuggestions('系统/用户', callback);

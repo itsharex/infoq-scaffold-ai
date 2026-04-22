@@ -61,6 +61,7 @@ import { useUserStore } from '@/store/modules/user';
 import { LoginData } from '@/api/types';
 import { to } from 'await-to-js';
 import { useI18n } from 'vue-i18n';
+import type { RouteLocationNormalizedLoaded } from 'vue-router';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -95,14 +96,15 @@ const loginRef = ref<ElFormInstance>();
 
 watch(
   () => router.currentRoute.value,
-  (newRoute: any) => {
-    redirect.value = newRoute.query && newRoute.query.redirect && decodeURIComponent(newRoute.query.redirect);
+  (newRoute: RouteLocationNormalizedLoaded) => {
+    const redirectQuery = newRoute.query?.redirect;
+    redirect.value = typeof redirectQuery === 'string' ? decodeURIComponent(redirectQuery) : '/';
   },
   { immediate: true }
 );
 
 const handleLogin = () => {
-  loginRef.value?.validate(async (valid: boolean, fields: any) => {
+  loginRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       loading.value = true;
       // 勾选了需要记住密码设置在 localStorage 中设置记住用户名和密码
@@ -129,8 +131,6 @@ const handleLogin = () => {
           await getCode();
         }
       }
-    } else {
-      console.log('error submit!', fields);
     }
   });
 };

@@ -1,6 +1,11 @@
 import { mount } from '@vue/test-utils';
 import { createCustomNameComponent } from '@/utils/createCustomNameComponent';
 import { defineComponent, h } from 'vue';
+import type { Component } from 'vue';
+
+type NamedComponent = {
+  name: string;
+};
 
 describe('utils/createCustomNameComponent', () => {
   it('loads component lazily and caches loader result', async () => {
@@ -18,10 +23,10 @@ describe('utils/createCustomNameComponent', () => {
     const wrapped2 = await factory();
 
     expect(loader).toHaveBeenCalledTimes(1);
-    expect((wrapped1 as any).name).toBe('WrappedRouteComponent');
-    expect((wrapped2 as any).name).toBe('WrappedRouteComponent');
+    expect((wrapped1 as NamedComponent).name).toBe('WrappedRouteComponent');
+    expect((wrapped2 as NamedComponent).name).toBe('WrappedRouteComponent');
 
-    const rendered = mount(wrapped1 as any);
+    const rendered = mount(wrapped1 as Component);
     expect(rendered.text()).toContain('loaded');
   });
 
@@ -36,7 +41,7 @@ describe('utils/createCustomNameComponent', () => {
 
     expect(loader).toHaveBeenCalledTimes(1);
     expect(consoleErrorSpy).toHaveBeenCalled();
-    expect((wrapped as any).name).toBe('BrokenRoute');
+    expect((wrapped as NamedComponent).name).toBe('BrokenRoute');
     consoleErrorSpy.mockRestore();
   });
 });

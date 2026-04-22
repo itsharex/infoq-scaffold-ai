@@ -28,7 +28,7 @@ export function login(data: LoginData): Promise<ApiResponse<LoginResult>> {
 }
 
 // 注册方法
-export function register(data: any) {
+export function register(data: Record<string, unknown>): Promise<ApiResponse<LoginResult>> {
   const params = {
     ...data,
     clientId: clientId,

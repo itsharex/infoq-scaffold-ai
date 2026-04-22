@@ -52,7 +52,7 @@ describe('views/monitor/operLog/oper-info-dialog', () => {
             selectDictLabel: (options: Array<{ label: string; value: number }>, value: number) =>
               options.find((item) => item.value === value)?.label || '',
             parseTime: (value: string) => value
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-dialog': ElDialogStub,
@@ -65,7 +65,7 @@ describe('views/monitor/operLog/oper-info-dialog', () => {
 
   it('opens dialog and renders operation detail', async () => {
     const wrapper = mountView();
-    const vm = wrapper.vm as unknown as { openDialog: (row: Record<string, any>) => void };
+    const vm = wrapper.vm as unknown as { openDialog: (row: Record<string, unknown>) => void };
 
     vm.openDialog({
       status: 0,
@@ -95,7 +95,7 @@ describe('views/monitor/operLog/oper-info-dialog', () => {
   it('closes dialog through exposed api', async () => {
     const wrapper = mountView();
     const vm = wrapper.vm as unknown as {
-      openDialog: (row: Record<string, any>) => void;
+      openDialog: (row: Record<string, unknown>) => void;
       closeDialog: () => void;
     };
 

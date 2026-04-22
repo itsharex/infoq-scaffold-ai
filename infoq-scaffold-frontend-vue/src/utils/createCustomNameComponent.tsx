@@ -9,7 +9,11 @@ interface Options {
   name?: string;
 }
 
-export function createCustomNameComponent(loader: () => Promise<any>, options: Options = {}): () => Promise<Component> {
+interface AsyncComponentModule {
+  default: Component;
+}
+
+export function createCustomNameComponent(loader: () => Promise<AsyncComponentModule>, options: Options = {}): () => Promise<Component> {
   const { name } = options;
   let component: Component | null = null;
 

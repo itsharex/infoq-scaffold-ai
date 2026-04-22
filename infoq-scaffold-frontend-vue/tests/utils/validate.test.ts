@@ -68,8 +68,8 @@ describe('utils/validate', () => {
       configurable: true
     });
     try {
-      expect(isArray(['fallback'] as any)).toBe(true);
-      expect(isArray('fallback' as any)).toBe(false);
+      expect(isArray(['fallback'])).toBe(true);
+      expect(isArray('fallback')).toBe(false);
     } finally {
       Object.defineProperty(Array, 'isArray', {
         value: originalIsArray,

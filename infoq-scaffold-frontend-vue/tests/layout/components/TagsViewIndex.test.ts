@@ -1,6 +1,18 @@
 import { flushPromises, mount } from '@vue/test-utils';
-import { defineComponent, h, reactive } from 'vue';
+import { defineComponent, h, reactive, type ComponentCustomProperties } from 'vue';
 import TagsView from '@/layout/components/TagsView/index.vue';
+
+type TagRoute = {
+  path: string;
+  fullPath: string;
+  query: Record<string, unknown>;
+  meta: {
+    title?: string;
+    link?: string;
+    affix?: boolean;
+  };
+  name: string;
+};
 
 const tagsViewMocks = vi.hoisted(() => ({
   route: {
@@ -9,7 +21,7 @@ const tagsViewMocks = vi.hoisted(() => ({
     query: {},
     meta: {},
     name: 'Dashboard'
-  } as Record<string, any>,
+  } as TagRoute,
   routerPush: vi.fn(() => Promise.resolve()),
   routerReplace: vi.fn(() => Promise.resolve()),
   refreshPage: vi.fn(),
@@ -96,17 +108,17 @@ const RouterLinkStub = defineComponent({
         {
           class: attrs.class as string,
           style: attrs.style as Record<string, string>,
-          'data-path': (attrs as Record<string, any>)['data-path'],
-          onContextmenu: (attrs as Record<string, any>).onContextmenu,
-          onClick: (attrs as Record<string, any>).onClick,
-          onMouseup: (attrs as Record<string, any>).onMouseup
+          'data-path': (attrs as Record<string, unknown>)['data-path'],
+          onContextmenu: (attrs as Record<string, unknown>).onContextmenu,
+          onClick: (attrs as Record<string, unknown>).onClick,
+          onMouseup: (attrs as Record<string, unknown>).onMouseup
         },
         slots.default?.()
       );
   }
 });
 
-const createView = (path: string, fullPath?: string, options: Record<string, any> = {}) => ({
+const createView = (path: string, fullPath?: string, options: Record<string, unknown> = {}) => ({
   path,
   fullPath: fullPath || path,
   title: options.title || path,
@@ -130,7 +142,7 @@ describe('layout/components/TagsView/index', () => {
       query: {},
       meta: {},
       name: 'Dashboard'
-    });
+    }) as TagRoute;
     tagsViewMocks.getRoutes.mockReturnValue([
       {
         path: '/index',
@@ -204,7 +216,7 @@ describe('layout/components/TagsView/index', () => {
               closeOtherPage: tagsViewMocks.closeOtherPage,
               closeAllPage: tagsViewMocks.closeAllPage
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown> as ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'scroll-pane': ScrollPaneStub,
@@ -226,7 +238,7 @@ describe('layout/components/TagsView/index', () => {
       link: 'https://docs.example.com'
     };
     const wrapper = mountView();
-    Object.defineProperty((wrapper.vm as any).$el, 'offsetWidth', {
+    Object.defineProperty((wrapper.vm as { $el: HTMLElement }).$el, 'offsetWidth', {
       configurable: true,
       value: 200
     });
@@ -254,7 +266,7 @@ describe('layout/components/TagsView/index', () => {
     tagsViewMocks.route.path = '/current';
     tagsViewMocks.route.fullPath = '/current';
     const wrapper = mountView();
-    Object.defineProperty((wrapper.vm as any).$el, 'offsetWidth', {
+    Object.defineProperty((wrapper.vm as { $el: HTMLElement }).$el, 'offsetWidth', {
       configurable: true,
       value: 200
     });
@@ -281,7 +293,7 @@ describe('layout/components/TagsView/index', () => {
     tagsViewMocks.route.path = '/b';
     tagsViewMocks.route.fullPath = '/b?x=1';
     const wrapper = mountView();
-    Object.defineProperty((wrapper.vm as any).$el, 'offsetWidth', {
+    Object.defineProperty((wrapper.vm as { $el: HTMLElement }).$el, 'offsetWidth', {
       configurable: true,
       value: 200
     });
@@ -311,7 +323,7 @@ describe('layout/components/TagsView/index', () => {
     ]);
 
     const wrapper = mountView();
-    Object.defineProperty((wrapper.vm as any).$el, 'offsetWidth', {
+    Object.defineProperty((wrapper.vm as { $el: HTMLElement }).$el, 'offsetWidth', {
       configurable: true,
       value: 200
     });
@@ -358,7 +370,7 @@ describe('layout/components/TagsView/index', () => {
       }
     ]);
     const wrapper = mountView();
-    Object.defineProperty((wrapper.vm as any).$el, 'offsetWidth', {
+    Object.defineProperty((wrapper.vm as { $el: HTMLElement }).$el, 'offsetWidth', {
       configurable: true,
       value: 200
     });
@@ -403,7 +415,7 @@ describe('layout/components/TagsView/index', () => {
     });
 
     const wrapper = mountView();
-    Object.defineProperty((wrapper.vm as any).$el, 'offsetWidth', {
+    Object.defineProperty((wrapper.vm as { $el: HTMLElement }).$el, 'offsetWidth', {
       configurable: true,
       value: 200
     });

@@ -20,7 +20,7 @@ const noticeMocks = vi.hoisted(() => ({
       createByName: 'admin',
       createTime: '2026-03-07 10:00:00'
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('@/api/system/notice', () => ({
@@ -82,7 +82,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, emit }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-stub' }, [
@@ -90,7 +90,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'selection-first',
-            onClick: () => emit('selection-change', [(props.data as any[])[0]])
+            onClick: () => emit('selection-change', [(props.data as unknown[])[0]])
           },
           'selection-first'
         ),
@@ -104,7 +104,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || { createTime: '' }, $index: 0 })) || []);
@@ -202,7 +202,7 @@ describe('views/system/notice/index', () => {
               confirm: noticeMocks.modalConfirm,
               msgSuccess: noticeMocks.msgSuccess
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},

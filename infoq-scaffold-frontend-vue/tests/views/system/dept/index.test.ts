@@ -33,7 +33,7 @@ const deptMocks = vi.hoisted(() => ({
         }
       ]
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('@/api/system/dept', () => ({
@@ -99,7 +99,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, expose }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     expose({
       toggleRowExpansion: deptMocks.toggleRowExpansion
@@ -113,7 +113,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || { createTime: '' }, $index: 0 })) || []);
@@ -222,12 +222,12 @@ describe('views/system/dept/index', () => {
               }
             },
             parseTime: (value: string) => value,
-            handleTree: (data: any[]) => data,
+            handleTree: (data: unknown[]) => data,
             $modal: {
               confirm: deptMocks.modalConfirm,
               msgSuccess: deptMocks.msgSuccess
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},
@@ -356,7 +356,11 @@ describe('views/system/dept/index', () => {
     await rowAddButton!.trigger('click');
     await flushPromises();
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      form: {
+        parentId: number;
+      };
+    };
     expect(vm.form.parentId).toBe(1);
 
     const cancelButton = wrapper

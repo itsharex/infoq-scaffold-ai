@@ -25,14 +25,16 @@ vi.mock('@/store/modules/notice', () => ({
 import { initWebSocket } from '@/utils/websocket';
 
 describe('utils/websocket', () => {
+  const notificationMock = ElNotification as unknown as ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    (import.meta.env as any).VITE_APP_CLIENT_ID = 'test-client-id';
-    (import.meta.env as any).VITE_APP_WEBSOCKET = 'true';
+    (import.meta.env as Record<string, string>).VITE_APP_CLIENT_ID = 'test-client-id';
+    (import.meta.env as Record<string, string>).VITE_APP_WEBSOCKET = 'true';
   });
 
   it('skips websocket init when feature switch is disabled', () => {
-    (import.meta.env as any).VITE_APP_WEBSOCKET = 'false';
+    (import.meta.env as Record<string, string>).VITE_APP_WEBSOCKET = 'false';
     initWebSocket('/ws/notice');
     expect(websocketMocks.useWebSocket).not.toHaveBeenCalled();
   });
@@ -44,7 +46,14 @@ describe('utils/websocket', () => {
     initWebSocket('/ws/notice');
 
     expect(websocketMocks.useWebSocket).toHaveBeenCalledTimes(1);
-    const [url, options] = websocketMocks.useWebSocket.mock.calls[0] as [string, any];
+    const [url, options] = websocketMocks.useWebSocket.mock.calls[0] as [
+      string,
+      {
+        autoReconnect: { onFailed: () => void; retries: number; delay: number };
+        heartbeat: { interval: number; pongTimeout: number };
+        onMessage: (_ws: unknown, event: { data: string }) => void;
+      }
+    ];
     expect(url).toBe('/ws/notice?Authorization=Bearer ws-token&clientid=test-client-id');
     expect(options).toEqual(
       expect.objectContaining({
@@ -60,7 +69,7 @@ describe('utils/websocket', () => {
         read: false
       })
     );
-    expect(ElNotification as any).toHaveBeenCalledWith(
+    expect(notificationMock).toHaveBeenCalledWith(
       expect.objectContaining({
         message: '业务通知',
         type: 'success'
@@ -73,28 +82,34 @@ describe('utils/websocket', () => {
     websocketMocks.useWebSocket.mockReturnValue({});
 
     initWebSocket('/ws/notice');
-    const [, options] = websocketMocks.useWebSocket.mock.calls[0] as [string, any];
+    const [, options] = websocketMocks.useWebSocket.mock.calls[0] as [
+      string,
+      {
+        onMessage: (_ws: unknown, event: { data: string }) => void;
+      }
+    ];
 
     options.onMessage({}, { data: 'ping' });
 
     expect(websocketMocks.addNotice).not.toHaveBeenCalled();
-    expect(ElNotification as any).not.toHaveBeenCalled();
+    expect(notificationMock).not.toHaveBeenCalled();
   });
 
-  it('logs lifecycle callbacks for reconnect and connection state', () => {
+  it('logs reconnect failure at error level', () => {
     websocketMocks.getToken.mockReturnValue('ws-token');
     websocketMocks.useWebSocket.mockReturnValue({});
-    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     initWebSocket('/ws/notice');
-    const [, options] = websocketMocks.useWebSocket.mock.calls[0] as [string, any];
+    const [, options] = websocketMocks.useWebSocket.mock.calls[0] as [
+      string,
+      {
+        autoReconnect: { onFailed: () => void };
+      }
+    ];
 
     options.autoReconnect.onFailed();
-    options.onConnected();
-    options.onDisconnected();
 
-    expect(consoleLogSpy).toHaveBeenCalledWith('websocket重连失败');
-    expect(consoleLogSpy).toHaveBeenCalledWith('websocket已经连接');
-    expect(consoleLogSpy).toHaveBeenCalledWith('websocket已经断开');
+    expect(consoleErrorSpy).toHaveBeenCalledWith('websocket重连失败');
   });
 });

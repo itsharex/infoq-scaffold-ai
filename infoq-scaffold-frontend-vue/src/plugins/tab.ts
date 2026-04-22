@@ -1,5 +1,5 @@
 import router from '@/router';
-import { RouteLocationMatched, RouteLocationNormalized, RouteLocationRaw } from 'vue-router';
+import { NavigationFailure, RouteLocationMatched, RouteLocationNormalized, RouteLocationRaw } from 'vue-router';
 import { useTagsViewStore } from '@/store/modules/tagsView';
 
 export default {
@@ -48,7 +48,9 @@ export default {
     }
   },
   // 关闭指定tab页签
-  async closePage(obj?: RouteLocationNormalized): Promise<{ visitedViews: RouteLocationNormalized[]; cachedViews: string[] } | any> {
+  async closePage(
+    obj?: RouteLocationNormalized
+  ): Promise<{ visitedViews: RouteLocationNormalized[]; cachedViews: string[] } | void | NavigationFailure> {
     if (obj === undefined) {
       // prettier-ignore
       const { visitedViews } = await useTagsViewStore().delView(router.currentRoute.value)
@@ -82,7 +84,7 @@ export default {
    * @param title 标题
    * @param query 参数
    */
-  openPage(url: string, title?: string, query?: any) {
+  openPage(url: string, title?: string, query?: Record<string, unknown>) {
     const obj = { path: url, query: { ...query, title } };
     return router.push(obj);
   },

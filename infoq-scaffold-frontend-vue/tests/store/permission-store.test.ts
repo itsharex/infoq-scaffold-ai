@@ -42,6 +42,11 @@ describe('store/permission generateRoutes', () => {
   });
 
   it('generates sidebar/default routes and injects authorized dynamic routes', async () => {
+    type RouteNode = {
+      path: string;
+      children?: RouteNode[];
+    };
+
     permissionStoreMocks.getRouters.mockResolvedValueOnce({
       data: [
         {
@@ -93,14 +98,15 @@ describe('store/permission generateRoutes', () => {
     expect(permissionStoreMocks.addRoute).toHaveBeenCalledTimes(2);
     expect(permissionStoreMocks.addRoute).toHaveBeenCalledWith(expect.objectContaining({ path: '/dyn-perm' }));
     expect(permissionStoreMocks.addRoute).toHaveBeenCalledWith(expect.objectContaining({ path: '/dyn-role' }));
-    expect(ElNotification as any).toHaveBeenCalledWith(
+    const notification = ElNotification as unknown as ReturnType<typeof vi.fn>;
+    expect(notification).toHaveBeenCalledWith(
       expect.objectContaining({
         title: '路由名称重复'
       })
     );
 
     expect(rewriteRoutes.length).toBe(3);
-    expect(rewriteRoutes.find((route: any) => route.path === '/nested')?.children?.[0]?.path).toBe('parent/notice');
+    expect(rewriteRoutes.find((route: RouteNode) => route.path === '/nested')?.children?.[0]?.path).toBe('parent/notice');
     expect(store.getRoutes()[0].path).toBe('/const-home');
     expect(store.getSidebarRoutes()[0].path).toBe('/const-home');
     expect(store.getDefaultRoutes()[0].path).toBe('/const-home');

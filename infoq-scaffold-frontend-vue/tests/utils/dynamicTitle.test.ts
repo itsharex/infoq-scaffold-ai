@@ -17,7 +17,7 @@ import { useDynamicTitle } from '@/utils/dynamicTitle';
 
 describe('utils/dynamicTitle', () => {
   beforeEach(() => {
-    (import.meta.env as any).VITE_APP_TITLE = 'InfoQ';
+    (import.meta.env as Record<string, string>).VITE_APP_TITLE = 'InfoQ';
   });
 
   it('uses dynamic title when switch is enabled', () => {

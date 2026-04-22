@@ -13,20 +13,41 @@ import { decrypt, encrypt } from '@/utils/jsencrypt';
 import router from '@/router';
 
 const encryptHeader = 'encrypt-key';
-let downloadLoadingInstance: LoadingInstance;
+let downloadLoadingInstance: LoadingInstance | undefined;
 
-type RequestConfig<D = any> = AxiosRequestConfig<D>;
+type RequestConfig<D = unknown> = AxiosRequestConfig<D>;
+
+interface SessionRequestPayload {
+  url?: string;
+  data?: unknown;
+  time?: number;
+}
+
+interface ErrorResponsePayload {
+  code?: string | number;
+  msg?: string;
+}
+
+const getResponseErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    return String((error as { message?: unknown }).message ?? '');
+  }
+  return String(error ?? '');
+};
 
 interface RequestInstance extends Omit<AxiosInstance, 'request' | 'get' | 'delete' | 'head' | 'options' | 'post' | 'put' | 'patch'> {
-  <T = any, D = any>(config: RequestConfig<D>): Promise<T>;
-  request<T = any, D = any>(config: RequestConfig<D>): Promise<T>;
-  get<T = any, D = any>(url: string, config?: RequestConfig<D>): Promise<T>;
-  delete<T = any, D = any>(url: string, config?: RequestConfig<D>): Promise<T>;
-  head<T = any, D = any>(url: string, config?: RequestConfig<D>): Promise<T>;
-  options<T = any, D = any>(url: string, config?: RequestConfig<D>): Promise<T>;
-  post<T = any, D = any>(url: string, data?: D, config?: RequestConfig<D>): Promise<T>;
-  put<T = any, D = any>(url: string, data?: D, config?: RequestConfig<D>): Promise<T>;
-  patch<T = any, D = any>(url: string, data?: D, config?: RequestConfig<D>): Promise<T>;
+  <T = unknown, D = unknown>(config: RequestConfig<D>): Promise<T>;
+  request<T = unknown, D = unknown>(config: RequestConfig<D>): Promise<T>;
+  get<T = unknown, D = unknown>(url: string, config?: RequestConfig<D>): Promise<T>;
+  delete<T = unknown, D = unknown>(url: string, config?: RequestConfig<D>): Promise<T>;
+  head<T = unknown, D = unknown>(url: string, config?: RequestConfig<D>): Promise<T>;
+  options<T = unknown, D = unknown>(url: string, config?: RequestConfig<D>): Promise<T>;
+  post<T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig<D>): Promise<T>;
+  put<T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig<D>): Promise<T>;
+  patch<T = unknown, D = unknown>(url: string, data?: D, config?: RequestConfig<D>): Promise<T>;
 }
 
 // 是否显示重新登录
@@ -67,7 +88,7 @@ service.interceptors.request.use(
     }
     // get请求映射params参数
     if (config.method === 'get' && config.params) {
-      let url = config.url + '?' + tansParams(config.params);
+      let url = config.url + '?' + tansParams(config.params as Record<string, unknown>);
       url = url.slice(0, -1);
       config.params = {};
       config.url = url;
@@ -79,8 +100,8 @@ service.interceptors.request.use(
         data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
         time: new Date().getTime()
       };
-      const sessionObj = cache.session.getJSON('sessionObj');
-      if (sessionObj === undefined || sessionObj === null || sessionObj === '') {
+      const sessionObj = cache.session.getJSON<SessionRequestPayload>('sessionObj');
+      if (sessionObj === undefined || sessionObj === null) {
         cache.session.setJSON('sessionObj', requestObj);
       } else {
         const s_url = sessionObj.url; // 请求地址
@@ -102,7 +123,8 @@ service.interceptors.request.use(
         // 生成一个 AES 密钥
         const aesKey = generateAesKey();
         config.headers[encryptHeader] = encrypt(encryptBase64(aesKey));
-        config.data = typeof config.data === 'object' ? encryptWithAes(JSON.stringify(config.data), aesKey) : encryptWithAes(config.data, aesKey);
+        const originData = typeof config.data === 'object' ? JSON.stringify(config.data) : (config.data as string);
+        config.data = encryptWithAes(originData, aesKey);
       }
     }
     // FormData数据去请求头Content-Type
@@ -111,7 +133,7 @@ service.interceptors.request.use(
     }
     return config;
   },
-  (error: any) => {
+  (error: unknown) => {
     return Promise.reject(error);
   }
 );
@@ -179,8 +201,8 @@ service.interceptors.response.use(
       return res.data;
     }
   },
-  (error: any) => {
-    let { message } = error;
+  (error: unknown) => {
+    let message = getResponseErrorMessage(error);
     if (message == 'Network Error') {
       message = '后端接口连接异常';
     } else if (message.includes('timeout')) {
@@ -195,18 +217,18 @@ service.interceptors.response.use(
 
 const request = service as RequestInstance;
 // 通用下载方法
-export function download(url: string, params: any, fileName: string) {
+export function download(url: string, params: Record<string, unknown>, fileName: string) {
   downloadLoadingInstance = ElLoading.service({ text: '正在下载数据，请稍候', background: 'rgba(0, 0, 0, 0.7)' });
   // prettier-ignore
-  return request.post<Blob>(url, params, {
+  return request.post<Blob, Record<string, unknown>>(url, params, {
       transformRequest: [
-        (params: any) => {
-          return tansParams(params);
+        (currentParams: unknown) => {
+          return tansParams(currentParams as Record<string, unknown>);
         }
       ],
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       responseType: 'blob'
-    }).then(async (resp: any) => {
+    }).then(async (resp: Blob) => {
       const isLogin = blobValidate(resp);
       if (isLogin) {
         const blob = new Blob([resp]);
@@ -214,15 +236,15 @@ export function download(url: string, params: any, fileName: string) {
       } else {
         const blob = new Blob([resp]);
         const resText = await blob.text();
-        const rspObj = JSON.parse(resText);
+        const rspObj = JSON.parse(resText) as ErrorResponsePayload;
         const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
         ElMessage.error(errMsg);
       }
-      downloadLoadingInstance.close();
-    }).catch((r: any) => {
+      downloadLoadingInstance?.close();
+    }).catch((r: unknown) => {
       console.error(r);
       ElMessage.error('下载文件出现错误，请联系管理员！');
-      downloadLoadingInstance.close();
+      downloadLoadingInstance?.close();
     });
 }
 // 导出 axios 实例

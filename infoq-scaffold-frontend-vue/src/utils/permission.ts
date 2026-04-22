@@ -5,8 +5,8 @@ import { useUserStore } from '@/store/modules/user';
  * @param {Array} value 校验值
  * @returns {Boolean}
  */
-export const checkPermi = (value: any) => {
-  if (value && value instanceof Array && value.length > 0) {
+export const checkPermi = (value: string[]): boolean => {
+  if (Array.isArray(value) && value.length > 0) {
     const permissions = useUserStore().permissions;
     const permissionDatas = value;
     const all_permission = '*:*:*';
@@ -30,8 +30,8 @@ export const checkPermi = (value: any) => {
  * @param {Array} value 校验值
  * @returns {Boolean}
  */
-export const checkRole = (value: any): boolean => {
-  if (value && value instanceof Array && value.length > 0) {
+export const checkRole = (value: string[]): boolean => {
+  if (Array.isArray(value) && value.length > 0) {
     const roles = useUserStore().roles;
     const permissionRoles = value;
     const super_admin = 'admin';

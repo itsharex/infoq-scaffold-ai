@@ -168,7 +168,7 @@ describe('views/system/user/profile/userAvatar', () => {
               msgSuccess: avatarMocks.msgSuccess,
               msgError: avatarMocks.msgError
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-dialog': ElDialogStub,
@@ -218,7 +218,7 @@ describe('views/system/user/profile/userAvatar', () => {
               msgSuccess: avatarMocks.msgSuccess,
               msgError: avatarMocks.msgError
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-dialog': ElDialogStub,
@@ -260,7 +260,11 @@ describe('views/system/user/profile/userAvatar', () => {
     expect(previewImg.attributes('src')).toBe('https://preview.example.com/avatar-preview.png');
     expect(previewImg.attributes('style')).toContain('width: 80px');
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      options: {
+        img: string;
+      };
+    };
     vm.options.img = 'https://cdn.example.com/temp-avatar.png';
     await wrapper.find('button.emit-close').trigger('click');
     await flushPromises();

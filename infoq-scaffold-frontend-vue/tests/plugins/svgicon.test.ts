@@ -8,12 +8,13 @@ const iconMocks = vi.hoisted(() => {
 vi.mock('@element-plus/icons-vue', () => iconMocks);
 
 import svgicon from '@/plugins/svgicon';
+import type { App } from 'vue';
 
 describe('plugins/svgicon', () => {
   it('registers all element-plus icons', () => {
     const app = {
       component: vi.fn()
-    } as any;
+    } as unknown as App;
 
     svgicon.install(app);
 

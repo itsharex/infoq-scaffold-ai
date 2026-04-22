@@ -1,4 +1,5 @@
 import router, { constantRoutes, dynamicRoutes } from '@/router';
+import type { RouteLocationNormalized } from 'vue-router';
 
 describe('router/index', () => {
   it('exposes expected constant and dynamic route definitions', () => {
@@ -11,10 +12,11 @@ describe('router/index', () => {
   });
 
   it('applies scroll behavior with saved position fallback', () => {
-    const scrollBehavior = router.options.scrollBehavior as any;
+    const scrollBehavior = router.options.scrollBehavior as NonNullable<typeof router.options.scrollBehavior>;
+    const dummyRoute = {} as RouteLocationNormalized;
     const saved = { left: 20, top: 30 };
 
-    expect(scrollBehavior({}, {}, saved)).toEqual(saved);
-    expect(scrollBehavior({}, {}, null)).toEqual({ top: 0 });
+    expect(scrollBehavior(dummyRoute, dummyRoute, saved)).toEqual(saved);
+    expect(scrollBehavior(dummyRoute, dummyRoute, null)).toEqual({ top: 0 });
   });
 });

@@ -1,6 +1,6 @@
 declare module '*.vue' {
   import { DefineComponent } from 'vue';
-  const Component: DefineComponent<{}, {}, any>;
+  const Component: DefineComponent<{}, {}, unknown>;
   export default Component;
 }
 
@@ -21,5 +21,5 @@ interface ImportMetaEnv {
 }
 interface ImportMeta {
   readonly env: ImportMetaEnv;
-  // readonly glob: any;
+  // readonly glob: unknown;
 }

@@ -4,7 +4,7 @@ import { ElNotification } from 'element-plus';
 import { useNoticeStore } from '@/store/modules/notice';
 
 // 初始化socket
-export const initWebSocket = (url: any) => {
+export const initWebSocket = (url: string) => {
   if (import.meta.env.VITE_APP_WEBSOCKET === 'false') {
     return;
   }
@@ -16,7 +16,7 @@ export const initWebSocket = (url: any) => {
       // 重连间隔
       delay: 1000,
       onFailed() {
-        console.log('websocket重连失败');
+        console.error('websocket重连失败');
       }
     },
     heartbeat: {
@@ -25,12 +25,6 @@ export const initWebSocket = (url: any) => {
       interval: 10000,
       // 接收到心跳response的超时时间
       pongTimeout: 2000
-    },
-    onConnected() {
-      console.log('websocket已经连接');
-    },
-    onDisconnected() {
-      console.log('websocket已经断开');
     },
     onMessage: (_, e) => {
       if (typeof e.data === 'string' && e.data.indexOf('ping') >= 0) {

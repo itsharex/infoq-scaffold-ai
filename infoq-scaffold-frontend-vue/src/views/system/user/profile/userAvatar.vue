@@ -62,14 +62,26 @@ import { uploadAvatar } from '@/api/system/user';
 import { useUserStore } from '@/store/modules/user';
 import { UploadRawFile } from 'element-plus';
 
+interface CropperPreviewData {
+  url: string;
+  img: Record<string, string>;
+}
+
+interface CropperInstance {
+  rotateLeft: () => void;
+  rotateRight: () => void;
+  changeScale: (num: number) => void;
+  getCropBlob: (callback: (blob: Blob) => void) => void;
+}
+
 interface Options {
-  img: string | any; // 裁剪图片的地址
+  img: string; // 裁剪图片的地址
   autoCrop: boolean; // 是否默认生成截图框
   autoCropWidth: number; // 默认生成截图框宽度
   autoCropHeight: number; // 默认生成截图框高度
   fixedBox: boolean; // 固定截图框大小 不允许改变
   fileName: string;
-  previews: any; // 预览数据
+  previews: CropperPreviewData; // 预览数据
   outputType: string;
   visible: boolean;
 }
@@ -81,7 +93,7 @@ const open = ref(false);
 const visible = ref(false);
 const title = ref('修改头像');
 
-const cropper = ref<any>({});
+const cropper = ref<CropperInstance | null>(null);
 //图片裁剪数据
 const options = reactive<Options>({
   img: userStore.avatar,
@@ -91,7 +103,7 @@ const options = reactive<Options>({
   fixedBox: true,
   outputType: 'png',
   fileName: '',
-  previews: {},
+  previews: { url: '', img: {} },
   visible: false
 });
 
@@ -104,36 +116,37 @@ const modalOpened = () => {
   visible.value = true;
 };
 /** 覆盖默认上传行为 */
-const requestUpload = (): any => {};
+const requestUpload = () => {};
 /** 向左旋转 */
 const rotateLeft = () => {
-  cropper.value.rotateLeft();
+  cropper.value?.rotateLeft();
 };
 /** 向右旋转 */
 const rotateRight = () => {
-  cropper.value.rotateRight();
+  cropper.value?.rotateRight();
 };
 /** 图片缩放 */
 const changeScale = (num: number) => {
   num = num || 1;
-  cropper.value.changeScale(num);
+  cropper.value?.changeScale(num);
 };
 /** 上传预处理 */
-const beforeUpload = (file: UploadRawFile): any => {
+const beforeUpload = (file: UploadRawFile): boolean | void => {
   if (file.type.indexOf('image/') == -1) {
     proxy?.$modal.msgError('文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。');
+    return false;
   } else {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      options.img = reader.result;
+      options.img = typeof reader.result === 'string' ? reader.result : '';
       options.fileName = file.name;
     };
   }
 };
 /** 上传图片 */
 const uploadImg = async () => {
-  cropper.value.getCropBlob(async (data: any) => {
+  cropper.value?.getCropBlob(async (data: Blob) => {
     const formData = new FormData();
     formData.append('avatarfile', data, options.fileName);
     const res = await uploadAvatar(formData);
@@ -145,7 +158,7 @@ const uploadImg = async () => {
   });
 };
 /** 实时预览 */
-const realTime = (data: any) => {
+const realTime = (data: CropperPreviewData) => {
   options.previews = data;
 };
 /** 关闭窗口 */

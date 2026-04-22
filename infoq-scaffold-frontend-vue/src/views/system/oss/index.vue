@@ -73,7 +73,7 @@
         border
         :header-cell-class-name="handleHeaderClass"
         @selection-change="handleSelectionChange"
-        @header-click="handleHeaderCLick"
+        @header-click="handleHeaderClick"
       >
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="文件名" align="center" prop="fileName" />
@@ -232,12 +232,19 @@ function handleSelectionChange(selection: OssVO[]) {
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
+interface SortableColumn {
+  order?: string;
+  multiOrder?: string;
+  sortable?: string | boolean;
+  property: string;
+}
+
 /** 设置列的排序为我们自定义的排序 */
-const handleHeaderClass = ({ column }: any): any => {
+const handleHeaderClass = ({ column }: { column: SortableColumn }): void => {
   column.order = column.multiOrder;
 };
 /** 点击表头进行排序 */
-const handleHeaderCLick = (column: any) => {
+const handleHeaderClick = (column: SortableColumn) => {
   if (column.sortable !== 'custom') {
     return;
   }
@@ -253,6 +260,10 @@ const handleHeaderCLick = (column: any) => {
       break;
   }
   handleOrderChange(column.property, column.multiOrder);
+};
+// 兼容旧测试与已有调用命名
+const handleHeaderCLick = (column: SortableColumn) => {
+  handleHeaderClick(column);
 };
 const handleOrderChange = (prop: string, order: string) => {
   const orderByArr = queryParams.value.orderByColumn ? queryParams.value.orderByColumn.split(',') : [];

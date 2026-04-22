@@ -6,7 +6,16 @@ import { LoadingInstance } from 'element-plus/es/components/loading/src/loading'
 import { globalHeaders } from '@/utils/request';
 
 const baseURL = import.meta.env.VITE_APP_BASE_API;
-let downloadLoadingInstance: LoadingInstance;
+let downloadLoadingInstance: LoadingInstance | undefined;
+
+interface DownloadErrorPayload {
+  code?: string | number;
+  msg?: string;
+}
+
+interface TextReadableBlob {
+  text: () => Promise<string>;
+}
 export default {
   async oss(ossId: string | number) {
     const url = baseURL + '/resource/oss/download/' + ossId;
@@ -25,11 +34,11 @@ export default {
       } else {
         this.printErrMsg(res.data);
       }
-      downloadLoadingInstance.close();
+      downloadLoadingInstance?.close();
     } catch (r) {
       console.error(r);
       ElMessage.error('下载文件出现错误，请联系管理员！');
-      downloadLoadingInstance.close();
+      downloadLoadingInstance?.close();
     }
   },
   async zip(url: string, name: string) {
@@ -49,16 +58,16 @@ export default {
       } else {
         this.printErrMsg(res.data);
       }
-      downloadLoadingInstance.close();
+      downloadLoadingInstance?.close();
     } catch (r) {
       console.error(r);
       ElMessage.error('下载文件出现错误，请联系管理员！');
-      downloadLoadingInstance.close();
+      downloadLoadingInstance?.close();
     }
   },
-  async printErrMsg(data: any) {
+  async printErrMsg(data: Blob | TextReadableBlob) {
     const resText = await data.text();
-    const rspObj = JSON.parse(resText);
+    const rspObj = JSON.parse(resText) as DownloadErrorPayload;
     const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
     ElMessage.error(errMsg);
   }

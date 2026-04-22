@@ -39,7 +39,7 @@ const menuMocks = vi.hoisted(() => ({
       status: '0',
       createTime: '2026-03-07 10:00:00'
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('@/api/system/menu', () => ({
@@ -109,7 +109,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, expose }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     expose({
       updateKeyChildren: menuMocks.updateKeyChildren
@@ -158,7 +158,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || { createTime: '' }, $index: 0 })) || []);
@@ -285,13 +285,13 @@ describe('views/system/menu/index', () => {
                 leave: ''
               }
             },
-            handleTree: (data: any[]) => data,
+            handleTree: (data: unknown[]) => data,
             $modal: {
               confirm: menuMocks.modalConfirm,
               msgSuccess: menuMocks.msgSuccess,
               msgWarning: menuMocks.msgWarning
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},

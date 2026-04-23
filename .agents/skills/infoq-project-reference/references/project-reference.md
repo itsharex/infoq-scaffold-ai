@@ -1,158 +1,214 @@
 # InfoQ Project Reference
 
+## Table of Contents
+
+- Project Scope
+- Backend Reference
+- Admin Frontend Reference
+  - React Admin
+  - Vue Admin
+- Mini Program Frontend Reference
+  - React Weapp
+  - Vue Weapp
+- Infrastructure And Operations
+- Conventions
+- Commands
+  - Backend
+  - React Admin
+  - Vue Admin
+  - React Weapp
+  - Vue Weapp
+- Validation And Delivery
+
 ## Project Scope
 
 - Project root: `./`
-- Workspaces:
-  - `infoq-scaffold-backend`: `infoq-core`, `infoq-plugin`, `infoq-modules`, `infoq-admin`
-  - `infoq-scaffold-frontend-react`: `src`, `public`, `tests`
-  - `infoq-scaffold-frontend-vue`: `src`, `public`, `html`, `tests`, `vite`
-  - `script`: `bin`, `docker`
-  - `sql`: `infoq_scaffold_2.0.0.sql`
+- Active workspaces:
+  - `infoq-scaffold-backend`
+  - `infoq-scaffold-frontend-react`
+  - `infoq-scaffold-frontend-vue`
+  - `infoq-scaffold-frontend-weapp-react`
+  - `infoq-scaffold-frontend-weapp-vue`
+  - `openspec`
+  - `script`
+  - `sql`
+  - `doc`
 - Workspace instruction files:
+  - `AGENTS.md`
   - `infoq-scaffold-backend/AGENTS.md`
   - `infoq-scaffold-frontend-react/AGENTS.md`
   - `infoq-scaffold-frontend-vue/AGENTS.md`
+  - `infoq-scaffold-frontend-weapp-react/AGENTS.md`
+  - `infoq-scaffold-frontend-weapp-vue/AGENTS.md`
 
 ## Backend Reference
 
 - Backend modules:
   - `infoq-core`: `infoq-core-bom`, `infoq-core-common`, `infoq-core-data`
-  - `infoq-plugin`: `encrypt`, `excel`, `jackson`, `log`, `mail`, `mybatis`, `oss`, `redis`, `satoken`, `security`, `sensitive`, `sse`, `tenant`, `translation`, `web`, `websocket`, `doc`
+  - `infoq-plugin`: `encrypt`, `excel`, `jackson`, `log`, `mail`, `mybatis`, `oss`, `redis`, `satoken`, `security`, `sensitive`, `sse`, `translation`, `web`, `websocket`, `doc`
   - `infoq-modules`: `system`
-  - `infoq-admin`: `boot`, `api`
+  - `infoq-admin`
 - Backend entry: `infoq-scaffold-backend/infoq-admin/src/main/java/cc/infoq/admin/SysAdminApplication.java`
-- Backend artifact: `infoq-scaffold-backend/infoq-admin/target/infoq-admin.jar`
 - Backend config files:
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/application.yml`
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/application-dev.yml`
+  - `infoq-scaffold-backend/infoq-admin/src/main/resources/application-local.yml`
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml`
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/logback-plus.xml`
-  - `infoq-scaffold-backend/infoq-admin/src/main/resources/banner.txt`
 
-## Frontend Vue Reference
+## Admin Frontend Reference
 
-- Vue source directories:
-  - `infoq-scaffold-frontend-vue/src/api`
-  - `infoq-scaffold-frontend-vue/src/views`
-  - `infoq-scaffold-frontend-vue/src/components`
-  - `infoq-scaffold-frontend-vue/src/store`
-  - `infoq-scaffold-frontend-vue/src/router`
-  - `infoq-scaffold-frontend-vue/src/utils`
-  - `infoq-scaffold-frontend-vue/src/assets`
-  - `infoq-scaffold-frontend-vue/src/types`
-  - `infoq-scaffold-frontend-vue/src/plugins`
-  - `infoq-scaffold-frontend-vue/src/hooks`
-  - `infoq-scaffold-frontend-vue/src/lang`
-- Vue config files:
-  - `infoq-scaffold-frontend-vue/package.json`
-  - `infoq-scaffold-frontend-vue/vite.config.ts`
-  - `infoq-scaffold-frontend-vue/eslint.config.ts`
-  - `infoq-scaffold-frontend-vue/.prettierrc`
-  - `infoq-scaffold-frontend-vue/.editorconfig`
-  - `infoq-scaffold-frontend-vue/.env.development`
-  - `infoq-scaffold-frontend-vue/.env.production`
-  - `infoq-scaffold-frontend-vue/tsconfig.json`
+### React Admin
 
-## Frontend React Reference
-
-- React source directories:
-  - `infoq-scaffold-frontend-react/src/api`
+- Key directories:
   - `infoq-scaffold-frontend-react/src/pages`
   - `infoq-scaffold-frontend-react/src/components`
+  - `infoq-scaffold-frontend-react/src/api`
   - `infoq-scaffold-frontend-react/src/store`
   - `infoq-scaffold-frontend-react/src/router`
   - `infoq-scaffold-frontend-react/src/utils`
-  - `infoq-scaffold-frontend-react/src/hooks`
-  - `infoq-scaffold-frontend-react/src/lang`
-  - `infoq-scaffold-frontend-react/src/layouts`
-  - `infoq-scaffold-frontend-react/src/types`
-- React config files:
+  - `infoq-scaffold-frontend-react/tests`
+- Key files:
   - `infoq-scaffold-frontend-react/package.json`
   - `infoq-scaffold-frontend-react/vite.config.ts`
   - `infoq-scaffold-frontend-react/eslint.config.js`
-  - `infoq-scaffold-frontend-react/tsconfig.json`
-  - `infoq-scaffold-frontend-react/tsconfig.app.json`
-  - `infoq-scaffold-frontend-react/tsconfig.node.json`
   - `infoq-scaffold-frontend-react/tests/setup.ts`
+  - `infoq-scaffold-frontend-react/.env.development`
 
-## Infrastructure Reference
+### Vue Admin
 
-- Infrastructure files:
+- Key directories:
+  - `infoq-scaffold-frontend-vue/src/views`
+  - `infoq-scaffold-frontend-vue/src/components`
+  - `infoq-scaffold-frontend-vue/src/api`
+  - `infoq-scaffold-frontend-vue/src/store`
+  - `infoq-scaffold-frontend-vue/src/router`
+  - `infoq-scaffold-frontend-vue/src/utils`
+  - `infoq-scaffold-frontend-vue/src/plugins`
+  - `infoq-scaffold-frontend-vue/tests`
+- Key files:
+  - `infoq-scaffold-frontend-vue/package.json`
+  - `infoq-scaffold-frontend-vue/vite.config.ts`
+  - `infoq-scaffold-frontend-vue/eslint.config.ts`
+  - `infoq-scaffold-frontend-vue/.env.development`
+  - `infoq-scaffold-frontend-vue/tests/setup.ts`
+
+## Mini Program Frontend Reference
+
+### React Weapp
+
+- Key directories:
+  - `infoq-scaffold-frontend-weapp-react/src/pages`
+  - `infoq-scaffold-frontend-weapp-react/src/components`
+  - `infoq-scaffold-frontend-weapp-react/src/api`
+  - `infoq-scaffold-frontend-weapp-react/src/store`
+  - `infoq-scaffold-frontend-weapp-react/src/utils`
+  - `infoq-scaffold-frontend-weapp-react/src/styles`
+  - `infoq-scaffold-frontend-weapp-react/tests`
+- Key files:
+  - `infoq-scaffold-frontend-weapp-react/package.json`
+  - `infoq-scaffold-frontend-weapp-react/config/index.ts`
+  - `infoq-scaffold-frontend-weapp-react/.env.development`
+  - `infoq-scaffold-frontend-weapp-react/project.config.json`
+
+### Vue Weapp
+
+- Key directories:
+  - `infoq-scaffold-frontend-weapp-vue/src/pages`
+  - `infoq-scaffold-frontend-weapp-vue/src/components`
+  - `infoq-scaffold-frontend-weapp-vue/src/api`
+  - `infoq-scaffold-frontend-weapp-vue/src/store`
+  - `infoq-scaffold-frontend-weapp-vue/src/utils`
+  - `infoq-scaffold-frontend-weapp-vue/src/styles`
+  - `infoq-scaffold-frontend-weapp-vue/tests`
+- Key files:
+  - `infoq-scaffold-frontend-weapp-vue/package.json`
+  - `infoq-scaffold-frontend-weapp-vue/vite.config.ts`
+  - `infoq-scaffold-frontend-weapp-vue/.env.development`
+  - `infoq-scaffold-frontend-weapp-vue/manifest.json`
+  - `infoq-scaffold-frontend-weapp-vue/pages.json`
+
+## Infrastructure And Operations
+
+- Scripts:
+  - `script/generate-app-icon.js`
+  - `script/build-open-wechat-devtools.mjs`
+  - `script/bin/infoq.sh`
+  - `script/bin/deploy-frontend.sh`
+- Compose and gateway:
   - `script/docker/docker-compose.yml`
   - `script/docker/nginx/conf/nginx.conf`
   - `script/docker/redis/conf/redis.conf`
-  - `script/docker/redis/data/README.md`
-  - `script/bin/infoq.sh`
-  - `script/bin/deploy-frontend.sh`
-- Database file: `sql/infoq_scaffold_2.0.0.sql`
+- SQL bootstrap:
+  - `sql/infoq_scaffold_2.0.0.sql`
 
 ## Conventions
 
 - Architecture: `Controller -> Service -> Mapper -> Entity`
-- Package convention: `cc.infoq.{module}.{layer}` where `layer` is `controller`, `service`, `mapper`, or `domain`
-- Naming:
-  - Java entities and mappers use `Sys*`
-  - Vue components use PascalCase
-  - React components use PascalCase
-  - TypeScript utils and hooks use camelCase
-- Formatting:
-  - All project files must use UTF-8 encoding
-  - Backend `.editorconfig` uses 4 spaces
-  - Frontend `.editorconfig` uses 2 spaces
-  - Frontend formatting uses each workspace's local eslint + prettier configuration
-
-## Tech Stack
-
-- Backend: Spring Boot `3.5.10`, JDK `17`, MyBatis-Plus `3.5.16`, Sa-Token `1.44.0`, Redisson `3.52.0`
-- Frontend Vue: Vue `3.5.30`, TypeScript, Vite `6.4.1`, Element Plus `2.11.9`, Vitest `2.1.9`
-- Frontend React: React `19.2.4`, TypeScript, Vite `7.3.1`, Ant Design `6.3.3`, React Router `7.13.1`, Vitest `4.1.0`
+- Java package convention: `cc.infoq.{module}.{layer}`
+- Java entities and mappers commonly use `Sys*`
+- Vue and React components use PascalCase
+- TypeScript utils and hooks use camelCase
+- All project files use UTF-8
+- Backend `.editorconfig` uses 4 spaces; frontend uses 2 spaces
+- Frontend package manager policy: prefer `pnpm`; if unavailable, fall back to equivalent `npm` commands
 
 ## Commands
 
-- Frontend package manager policy: prefer `pnpm`; if `pnpm` is unavailable, fall back to equivalent `npm` commands
-- Fallback mapping: `pnpm install -> npm install`, `pnpm run <script> -> npm run <script>`
+### Backend
 
-- Backend build: `cd infoq-scaffold-backend && mvn clean package -P dev`
-- Backend run: `cd infoq-scaffold-backend && mvn spring-boot:run -pl infoq-admin`
-- Backend test: `cd infoq-scaffold-backend && mvn test -pl infoq-modules/infoq-system -DskipTests=false`
-- Vue install: `cd infoq-scaffold-frontend-vue && pnpm install`
-- Vue dev: `cd infoq-scaffold-frontend-vue && pnpm run dev`
-- Vue test: `cd infoq-scaffold-frontend-vue && pnpm run test:unit`
-- Vue coverage: `cd infoq-scaffold-frontend-vue && pnpm run test:unit:coverage`
-- Vue lint fix: `cd infoq-scaffold-frontend-vue && pnpm run lint:eslint:fix`
-- Vue prettier: `cd infoq-scaffold-frontend-vue && pnpm run prettier`
-- Vue production build: `cd infoq-scaffold-frontend-vue && pnpm run build:prod`
-- React install: `cd infoq-scaffold-frontend-react && pnpm install`
-- React dev: `cd infoq-scaffold-frontend-react && pnpm run dev`
-- React test: `cd infoq-scaffold-frontend-react && pnpm run test`
-- React coverage: `cd infoq-scaffold-frontend-react && pnpm run test:coverage`
-- React lint fix: `cd infoq-scaffold-frontend-react && pnpm run lint:fix`
-- React production build: `cd infoq-scaffold-frontend-react && pnpm run build:prod`
-- Deploy backend: `bash script/bin/infoq.sh deploy`
-- Deploy frontend: `bash script/bin/deploy-frontend.sh deploy`
+- Build: `cd infoq-scaffold-backend && mvn clean package -P dev`
+- Run: `cd infoq-scaffold-backend && mvn spring-boot:run -pl infoq-admin`
+- Targeted test: `cd infoq-scaffold-backend && mvn -pl infoq-modules/infoq-system -am -DskipTests=false test`
+
+### React Admin
+
+- Install: `cd infoq-scaffold-frontend-react && pnpm install`
+- Dev: `cd infoq-scaffold-frontend-react && pnpm run dev`
+- Test: `cd infoq-scaffold-frontend-react && pnpm run test`
+- Coverage: `cd infoq-scaffold-frontend-react && pnpm run test:coverage`
+- Lint: `cd infoq-scaffold-frontend-react && pnpm run lint`
+- Build: `cd infoq-scaffold-frontend-react && pnpm run build:prod`
+
+### Vue Admin
+
+- Install: `cd infoq-scaffold-frontend-vue && pnpm install`
+- Dev: `cd infoq-scaffold-frontend-vue && pnpm run dev`
+- Test: `cd infoq-scaffold-frontend-vue && pnpm run test:unit`
+- Coverage: `cd infoq-scaffold-frontend-vue && pnpm run test:unit:coverage`
+- Lint: `cd infoq-scaffold-frontend-vue && pnpm run lint:eslint`
+- Build: `cd infoq-scaffold-frontend-vue && pnpm run build:prod`
+
+### React Weapp
+
+- Install: `cd infoq-scaffold-frontend-weapp-react && pnpm install`
+- Unit tests: `cd infoq-scaffold-frontend-weapp-react && pnpm run test`
+- Coverage: `cd infoq-scaffold-frontend-weapp-react && pnpm run test:coverage`
+- Lint: `cd infoq-scaffold-frontend-weapp-react && pnpm run lint`
+- Build dev bundle: `cd infoq-scaffold-frontend-weapp-react && pnpm run build:weapp:dev`
+- Open WeChat DevTools dev bundle: `pnpm --dir infoq-scaffold-frontend-weapp-react build-open:weapp:dev`
+- Local runtime gate: `cd infoq-scaffold-frontend-weapp-react && pnpm run verify:local`
+
+Before `build-open:weapp:dev`, update `infoq-scaffold-frontend-weapp-react/.env.development` `TARO_APP_ID` to your own AppID.
+
+### Vue Weapp
+
+- Install: `cd infoq-scaffold-frontend-weapp-vue && pnpm install`
+- Typecheck: `cd infoq-scaffold-frontend-weapp-vue && pnpm run typecheck`
+- Unit tests: `cd infoq-scaffold-frontend-weapp-vue && pnpm run test`
+- Coverage: `cd infoq-scaffold-frontend-weapp-vue && pnpm run test:coverage`
+- Build dev bundle: `cd infoq-scaffold-frontend-weapp-vue && pnpm run build:weapp:dev`
+- Open WeChat DevTools dev bundle: `pnpm --dir infoq-scaffold-frontend-weapp-vue build-open:weapp:dev`
+- Local runtime gate: `cd infoq-scaffold-frontend-weapp-vue && pnpm run verify:local`
+
+Before `build-open:weapp:dev`, update `infoq-scaffold-frontend-weapp-vue/.env.development` `TARO_APP_ID` to your own AppID.
 
 ## Validation And Delivery
 
-- Backend tests use JUnit 5 under `infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/...`
-- Surefire uses `groups=${profiles.active}` and `excludedGroups=exclude`
-- Backend tests use `@Tag(local|dev|prod)`
-- Vue frontend uses Vitest plus Vue Test Utils with entry commands `pnpm run test:unit` and `pnpm run test:unit:coverage`
-- React frontend uses Vitest via `vite.config.ts` plus Testing Library with entry commands `pnpm run test` and `pnpm run test:coverage`
-- Frontend changes should run the relevant workspace lint and production build before handoff
-- Delivery planning should define one acceptance contract covering functional scope, non-goals, exception handling, required logs or observability, and rollback trigger or rollback conditions
-- Default execution loop is `main-flow verification -> targeted tests -> lint/build -> diff review`, with one change category per loop unless the user explicitly requests a bundled change
-- Releasable changes must verify environment/config prerequisites and external dependencies before deployment, and keep dependency versions plus lockfiles aligned when lockfiles exist
+- Default execution loop: `main-flow verification -> targeted tests -> lint/build -> diff review`
+- Delivery planning should define one acceptance contract covering functional scope, non-goals, exception handling, required logs or observability, and rollback conditions
+- Releasable changes must verify environment/config prerequisites and external dependencies before deployment
 - Destructive or high-risk operations affecting shared environments, data, or deployment state require explicit confirmation
-- Commit convention: `feat`, `update`, `modify`
-- Branch convention: `feature/*`, for example `feature/upgrade_5.5.3`
-- PR checklist:
-  - Changed modules
-  - Config, SQL, or dependency impact
-  - Verification commands
-  - Performance impact summary
-  - Alerting or observability impact
-  - Rollback plan or rollback script
-  - Residual risks or skipped checks
-  - UI screenshots for frontend changes
-  - Linked issue or task
+- Backend runtime/login changes should use `infoq-login-success-check` and `infoq-backend-smoke-test`
+- Admin runtime verification belongs to `infoq-react-runtime-verification` or `infoq-vue-runtime-verification`
+- Weapp runtime verification belongs to the same React or Vue family runtime skill via `references/weapp/*`

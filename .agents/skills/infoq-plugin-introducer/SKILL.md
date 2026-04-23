@@ -105,7 +105,7 @@ cd infoq-scaffold-frontend-vue && pnpm run build:prod
 If plugin impacts login/auth/runtime routes, run related smoke checks:
 - `infoq-backend-smoke-test`
 - `infoq-login-success-check`
-- `infoq-vue-browser-automation` or `infoq-react-browser-automation` for the impacted frontend
+- `infoq-vue-runtime-verification` or `infoq-react-runtime-verification` for the impacted frontend
 
 ## Exit Criteria
 

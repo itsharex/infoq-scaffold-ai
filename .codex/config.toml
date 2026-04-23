@@ -2,10 +2,6 @@
 max_threads = 6
 max_depth = 1
 
-# Disable built-in ChatGPT Apps MCP in this repository to avoid startup handshaking errors.
-[features]
-apps = false
-
 # Project-scoped MCP servers for this repository.
 # Keep secrets out of version control. Configure optional tokens via environment variables.
 
@@ -13,14 +9,6 @@ apps = false
 command = "npx"
 args = ["@playwright/mcp@latest"]
 enabled = true
-startup_timeout_sec = 20
-tool_timeout_sec = 120
-
-[mcp_servers.context7]
-command = "npx"
-args = ["-y", "@upstash/context7-mcp@latest"]
-env_vars = ["CONTEXT7_API_KEY"]
-enabled = false
 startup_timeout_sec = 20
 tool_timeout_sec = 120
 
@@ -80,7 +68,7 @@ env_vars = [
   "MYSQL_SSL_CA",
   "MYSQL_TIMEOUT",
 ]
-enabled = true
+enabled = false
 startup_timeout_sec = 20
 tool_timeout_sec = 120
 
@@ -137,7 +125,7 @@ env_vars = [
   "REDIS_TLS_CERT",
   "REDIS_TLS_KEY",
 ]
-enabled = true
+enabled = false
 startup_timeout_sec = 20
 tool_timeout_sec = 120
 
@@ -167,14 +155,3 @@ approval_mode = "approve"
 
 [mcp_servers.redis.tools.zrange]
 approval_mode = "approve"
-
-[mcp_servers.figma-desktop]
-url = "http://127.0.0.1:3845/mcp"
-enabled = false
-tool_timeout_sec = 120
-
-[mcp_servers.github]
-url = "https://api.githubcopilot.com/mcp/"
-bearer_token_env_var = "GITHUB_MCP_PAT"
-enabled = false
-tool_timeout_sec = 120

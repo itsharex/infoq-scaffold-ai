@@ -29,8 +29,9 @@ const urlCheckEnabled = resolveUrlCheckSetting();
 
 ensureProjectRoot();
 
+const envFilePath = resolveEnvFilePath(mode);
 const appId = resolveAppId(cliAppId, mode);
-ensureAppId(appId);
+ensureAppId(appId, envFilePath);
 const apiOrigin = resolveApiOrigin(mode);
 
 const devtoolsCli = resolveDevtoolsCli();
@@ -232,10 +233,10 @@ function resolveAppId(cliAppId, mode) {
   return envFileAppId.trim();
 }
 
-function ensureAppId(candidate) {
+function ensureAppId(candidate, envFilePath) {
   if (!candidate || candidate === 'touristappid') {
     fail(
-      'A real WeChat mini-program AppID is required. Pass --appid <wx...>, set TARO_APP_ID in the shell, or configure TARO_APP_ID in the mini-program workspace .env.production file before running this script.',
+      `A real WeChat mini-program AppID is required. Pass --appid <wx...>, set TARO_APP_ID in the shell, or configure TARO_APP_ID in the mini-program workspace ${envFilePath} file before running this script.`,
     );
   }
 }

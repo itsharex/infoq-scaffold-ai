@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ UI UX Three Phase Protocol"
+  short_description: "Help with InfoQ UI UX Three Phase Protocol tasks"
+  default_prompt: "Use $infoq-ui-ux-three-phase-protocol to run the repository UI approval workflow before implementation."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Codebase Index"
+  short_description: "Help with InfoQ Codebase Index tasks"
+  default_prompt: "Use $infoq-codebase-index to locate backend, React, or Vue files and refresh the repository indexes when paths change."

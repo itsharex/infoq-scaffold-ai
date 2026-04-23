@@ -1,6 +1,12 @@
 # infoq-scaffold-frontend-react index
 Read this file only when the task targets React file, component, or route lookup.
 
+## Table of Contents
+
+- File Path List
+
+## File Path List
+
 infoq-scaffold-frontend-react/.editorconfig
 infoq-scaffold-frontend-react/.env.development
 infoq-scaffold-frontend-react/.env.production

@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Backend Unit Test Patterns"
+  short_description: "Help with InfoQ Backend Unit Test Patterns tasks"
+  default_prompt: "Use $infoq-backend-unit-test-patterns to add or refactor deterministic backend tests for this repository."

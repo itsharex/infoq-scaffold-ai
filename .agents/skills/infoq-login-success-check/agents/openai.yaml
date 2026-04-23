@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Login Success Check"
+  short_description: "Help with InfoQ Login Success Check tasks"
+  default_prompt: "Use $infoq-login-success-check to verify login success, token issuance, and protected endpoint access in this repository."

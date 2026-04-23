@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Plugin Introducer"
+  short_description: "Help with InfoQ Plugin Introducer tasks"
+  default_prompt: "Use $infoq-plugin-introducer to introduce or refactor a plugin with this repository's governance model."

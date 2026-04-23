@@ -1,6 +1,12 @@
 # infoq-scaffold-frontend-vue index
 Read this file only when the task targets Vue file, component, or route lookup.
 
+## Table of Contents
+
+- File Path List
+
+## File Path List
+
 infoq-scaffold-frontend-vue/.editorconfig
 infoq-scaffold-frontend-vue/.env.development
 infoq-scaffold-frontend-vue/.env.production

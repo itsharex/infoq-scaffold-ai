@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Project Reference"
+  short_description: "Help with InfoQ Project Reference tasks"
+  default_prompt: "Use $infoq-project-reference to load the repository structure, commands, conventions, and delivery rules before implementation."

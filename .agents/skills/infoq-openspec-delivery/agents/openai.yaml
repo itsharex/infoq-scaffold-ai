@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ OpenSpec Delivery"
+  short_description: "Help with InfoQ OpenSpec Delivery tasks"
+  default_prompt: "Use $infoq-openspec-delivery to run the OpenSpec workflow for a feature, contract change, or cross-workspace delivery."

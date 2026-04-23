@@ -1,5 +1,14 @@
 # Mapper XML Integration Pattern
 
+## Table of Contents
+
+- Scope
+- Dependencies
+- Template
+- Naming And Split Rules
+- SQL Fixture Rules
+- Page Return Methods
+
 ## Scope
 
 Use for declaration-only mapper methods under:

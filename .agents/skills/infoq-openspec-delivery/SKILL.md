@@ -12,6 +12,7 @@ Use this skill for L3/L2 OpenSpec work (high-impact or explicitly requested Open
 - `openspec/project.md` stores durable project context
 - `openspec/specs/` stores the current source of truth
 - `openspec/changes/<change-id>/` stores active planning artifacts and spec deltas
+- `.codex/agents/` stores the repo-scoped custom agent truth for multi-expert mode
 
 ## Workflow
 
@@ -26,16 +27,13 @@ bash .agents/skills/infoq-openspec-delivery/scripts/init_change_dir.sh <change-i
 4. If the user did not ask for subagents, create or update `proposal.md`, `tasks.md`, and necessary spec deltas before implementation (for L2 Lite, `proposal.md` + `tasks.md` are the minimum).
 5. If the user explicitly asks for subagents or multi-expert execution, spawn these custom agents in order:
    - `requirements_expert`
-   - `product_designer` when UI or interaction decisions matter
    - `technical_designer`
-   - `material_curator` only when copy, mock data, or icon guidance is materially helpful
    - `code_implementer`
    - `auto_fixer`
-   - `delivery_auditor`
 6. Keep the dependency order strict when subagents are used:
-   - `requirements_expert -> product_designer(optional) -> technical_designer`
-   - `material_curator` may run after `design.md` exists, or after the parent agent decides that no design file is needed
-   - `code_implementer -> auto_fixer -> delivery_auditor`
+   - `requirements_expert -> technical_designer`
+   - if UI or interaction decisions matter, the parent agent should create `design.md` directly or switch to `infoq-ui-ux-three-phase-protocol`
+   - `code_implementer -> auto_fixer`
 7. Keep all active planning artifacts inside `openspec/changes/<change-id>/`.
 8. Structure `proposal.md` with explicit `Why` and `What Changes` sections before the acceptance contract;OpenSpec 文档正文默认中文，路径名称、命令、文件名保持英文原样。
 9. If the user explicitly defers a later phase, record that deferred scope in `proposal.md`, `design.md`, or `tasks.md` instead of silently dropping it.
@@ -79,7 +77,7 @@ Each active change directory should end with:
 - `materials.md` when needed
 - spec deltas under `specs/.../spec.md`
 
-After acceptance, archive the change so approved updates become part of `openspec/specs/`.
+After acceptance, the parent agent decides whether to archive the change and whether `review.md` is needed to record blockers.
 
 ## Reference
 

@@ -1,6 +1,12 @@
 # infoq-scaffold-backend index
 Read this file only when the task targets backend file or class lookup.
 
+## Table of Contents
+
+- File Path List
+
+## File Path List
+
 infoq-scaffold-backend/.editorconfig
 infoq-scaffold-backend/infoq-admin/Dockerfile
 infoq-scaffold-backend/infoq-admin/pom.xml

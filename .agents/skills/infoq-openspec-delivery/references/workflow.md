@@ -9,6 +9,7 @@ This skill standardizes how Codex handles feature work through OpenSpec artifact
 - Durable project context lives in `openspec/project.md`
 - Current truth specs live in `openspec/specs/`
 - Active change artifacts live in `openspec/changes/<change-id>/`
+- Repo-scoped custom agent truth lives in `.codex/agents/`
 
 ## Execution Modes
 
@@ -20,12 +21,13 @@ This skill standardizes how Codex handles feature work through OpenSpec artifact
 | Agent | Primary output |
 | --- | --- |
 | `requirements_expert` | `proposal.md` + spec deltas |
-| `product_designer` | `design.md` when UX decisions matter |
 | `technical_designer` | `tasks.md` |
-| `material_curator` | `materials.md` when copy/mock/icon guidance matters |
 | `code_implementer` | repository code + task checklist updates |
 | `auto_fixer` | repository code fixes + verification reruns |
-| `delivery_auditor` | archive decision or explicit blockers |
+
+UI-heavy changes should use `infoq-ui-ux-three-phase-protocol` or have the parent agent maintain `design.md` directly.
+
+`materials.md` and `review.md` stay available, but the parent agent creates them only when the change actually needs them.
 
 ## Cross-Workspace Rule
 

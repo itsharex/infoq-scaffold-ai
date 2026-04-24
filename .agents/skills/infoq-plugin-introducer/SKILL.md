@@ -1,17 +1,17 @@
 ---
 name: infoq-plugin-introducer
-description: Introduce or refactor plugins in this repository with the established governance model (基座必需 / 通用能力 / 可配置软开关), including backend+frontend wiring and verification. Use when users ask for 新增插件, 引入插件, 插件开关化, 可拔插插件, plugin scaffold, plugin onboarding, or plugin governance updates.
+description: 依据仓库既定治理模型（基座必需 / 通用能力 / 可配置软开关）引入或重构插件，覆盖 backend+frontend 接线与验证。适用于新增插件、插件引入、插件开关化、可拔插改造、插件脚手架与插件治理更新等请求。
 ---
 
-# Infoq Plugin Introducer
+# Infoq 插件引入器
 
-## Scope
+## 适用范围
 
-Use this skill when adding a new plugin module, migrating an existing capability into `infoq-plugin`, or deciding whether a plugin should be fixed, reusable, or switchable.
+当你需要新增插件模块、把现有能力迁移到 `infoq-plugin`，或判断插件应该是固定依赖、可复用能力、还是可开关能力时，使用此技能。
 
-## Quick Execute
+## 快速执行
 
-Generate a concrete onboarding plan first:
+先生成一份可执行的插件接入计划：
 
 ```bash
 bash .agents/skills/infoq-plugin-introducer/scripts/generate_plugin_plan.sh \
@@ -20,12 +20,12 @@ bash .agents/skills/infoq-plugin-introducer/scripts/generate_plugin_plan.sh \
   --frontend auto
 ```
 
-Class options:
+分类参数可选值：
 - `fixed`
 - `reusable`
 - `toggle`
 
-Optional output file:
+可选输出文件：
 
 ```bash
 bash .agents/skills/infoq-plugin-introducer/scripts/generate_plugin_plan.sh \
@@ -34,91 +34,91 @@ bash .agents/skills/infoq-plugin-introducer/scripts/generate_plugin_plan.sh \
   --out /tmp/plugin-plan.md
 ```
 
-## Decision First
+## 先分类再编码
 
-Classify the plugin before coding:
+编码前先对插件分类：
 
 1. `基座固定保留`:
-- Core runtime dependency, removal will break base app boot/auth/data path.
-- Keep as stable dependency, no runtime toggle required.
+- 属于核心运行时依赖，移除会破坏基础启动/鉴权/数据主链路。
+- 作为稳定依赖保留，不需要运行期开关。
 
 2. `通用能力插件`:
-- Reusable capability for multiple business modules (annotation/tool/event style).
-- Keep plugin module and let business module opt in by dependency.
+- 为多个业务模块提供可复用能力（注解/工具/事件等形态）。
+- 保留插件模块，由业务模块通过依赖选择接入。
 
 3. `可配置软关闭插件`:
-- Feature can be enabled/disabled by config without deleting dependency.
-- Keep dependency in system module; default `enabled=false`.
-- If frontend relies on it, add paired `VITE_APP_*` toggle.
+- 能力可通过配置启用/关闭，且无需删除依赖。
+- 在系统模块保留依赖，默认 `enabled=false`。
+- 如前端依赖该能力，增加配套 `VITE_APP_*` 开关。
 
-If classification is unclear, read:
+若分类不清晰，请先阅读：
 - `doc/plugin-catalog.md`
 - `references/plugin-matrix.md`
 
-## Backend Integration
+## 后端集成
 
-For a new plugin module `infoq-plugin-xxx`:
+以新插件模块 `infoq-plugin-xxx` 为例：
 
-1. Module registration:
-- Add module under `infoq-scaffold-backend/infoq-plugin/pom.xml`.
+1. 模块注册：
+- 在 `infoq-scaffold-backend/infoq-plugin/pom.xml` 注册模块。
 
-2. Version management:
-- Add version property/dependency management in `infoq-scaffold-backend/infoq-core/infoq-core-bom/pom.xml`.
+2. 版本管理：
+- 在 `infoq-scaffold-backend/infoq-core/infoq-core-bom/pom.xml` 增加版本属性/依赖管理。
 
-3. Consumer dependency:
-- Add dependency in target business module `pom.xml` (usually `infoq-scaffold-backend/infoq-modules/infoq-system/pom.xml`).
-- For shared domain capabilities, prefer consuming from `infoq-core-data` or specific module that truly needs it.
+3. 消费方依赖：
+- 在目标业务模块 `pom.xml` 增加依赖（通常是 `infoq-scaffold-backend/infoq-modules/infoq-system/pom.xml`）。
+- 对共享领域能力，优先由 `infoq-core-data` 或确实需要它的模块接入。
 
-4. Configuration:
-- For soft-toggle plugin, define backend key in `application.yml` and default to `false`.
-- Avoid hard-coding plugin startup in non-conditional configs.
+4. 配置：
+- 对软开关插件，在 `application.yml` 定义后端开关并默认 `false`。
+- 避免在非条件化配置中硬编码插件启动逻辑。
 
-5. Coupling control:
-- Keep plugin API narrow (annotation, interface, facade, auto-config).
-- Do not leak plugin internals to business modules.
+5. 耦合控制：
+- 保持插件 API 边界收敛（注解、接口、门面、自动配置）。
+- 不向业务模块泄露插件内部实现细节。
 
-## Frontend Integration (Only if needed)
+## 前端集成（仅在需要时）
 
-If plugin affects client runtime behavior:
+当插件影响客户端运行时行为时：
 
-1. Add env toggles:
+1. 增加 env 开关：
 - `infoq-scaffold-frontend-vue/.env.development`
 - `infoq-scaffold-frontend-vue/.env.production`
 - `infoq-scaffold-frontend-react/.env.development`
 - `infoq-scaffold-frontend-react/.env.production`
 
-2. Gate runtime logic in the impacted frontend bootstrap/hooks/utils with env toggle.
+2. 在受影响前端的 bootstrap/hooks/utils 中，通过 env 开关控制运行时逻辑。
 
-3. Keep fallback path when toggle is `false` (no broken UI or hanging requests).
+3. 当开关为 `false` 时，必须保留可用回退路径（避免 UI 断裂或请求悬挂）。
 
-## Verification Baseline
+## 验证基线
 
-Prefer `pnpm` for frontend verification. If `pnpm` is unavailable in the current environment, use the equivalent `npm` command.
+前端验证优先使用 `pnpm`。若当前环境不可用，则使用等价 `npm` 命令。
 
-Run at least:
+至少执行：
 
 ```bash
 cd infoq-scaffold-backend && mvn clean package -P dev -pl infoq-modules/infoq-system -am
 cd infoq-scaffold-frontend-vue && pnpm run build:prod
 ```
 
-If plugin impacts login/auth/runtime routes, run related smoke checks:
+如果插件影响登录/鉴权/运行时路由，执行相关冒烟验证：
 - `infoq-backend-smoke-test`
 - `infoq-login-success-check`
-- `infoq-vue-runtime-verification` or `infoq-react-runtime-verification` for the impacted frontend
+- 受影响前端对应的 `infoq-vue-runtime-verification` 或 `infoq-react-runtime-verification`
 
-## Exit Criteria
+## 退出标准
 
-All must be true:
+以下条件必须全部满足：
 
-1. Plugin classification is documented (fixed/reusable/config-toggle).
-2. POM wiring is complete and minimal.
-3. Backend toggle defaults are correct (`false` for switchable plugins).
-4. Frontend toggle is paired when client behavior is involved.
-5. Backend package and frontend build both pass.
-6. If runtime changed, smoke checks pass and no obvious regression.
+1. 插件分类已记录（固定基座/可复用通用/可配置软开关）。
+2. POM 接线完整且最小化。
+3. 后端开关默认值正确（可开关插件默认 `false`）。
+4. 涉及客户端行为时，前端开关已配套。
+5. 后端打包与前端构建均通过。
+6. 若运行时行为发生变化，冒烟验证通过且无明显回归。
 
-## Resources
+## 参考资源
 
-- Governance source: `doc/plugin-catalog.md`
-- Quick matrix: `references/plugin-matrix.md`
+- 治理真值：`doc/plugin-catalog.md`
+- 快速矩阵：`references/plugin-matrix.md`

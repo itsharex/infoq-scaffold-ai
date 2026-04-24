@@ -1,32 +1,32 @@
 ---
 name: infoq-vue-unit-test-patterns
-description: Build and scale unit tests for the Vue family in this repository, covering both `infoq-scaffold-frontend-vue` admin and `infoq-scaffold-frontend-weapp-vue` mini-program code. Use when users request Vue-family unit tests, coverage backfill, regression tests, deterministic bug reproduction by tests, or test-first fixes. Choose `admin` vs `weapp` through this skill's client-specific references and keep runtime follow-up inside `infoq-vue-runtime-verification`.
+description: 为本仓库 Vue 家族构建并扩展单元测试，覆盖 `infoq-scaffold-frontend-vue` 管理端与 `infoq-scaffold-frontend-weapp-vue` 小程序端。适用于 Vue 单测、覆盖率回补、回归验证、确定性缺陷复现与 test-first 修复；按 `admin`/`weapp` 参考分流，并将运行态后续交给 `infoq-vue-runtime-verification`。
 ---
 
-# InfoQ Vue Unit Test Patterns
+# InfoQ Vue 单测模式
 
-This skill owns one job only: Vue-family unit-test work.
-It covers two clients:
+本技能只负责一件事：Vue 家族单元测试工作。
+覆盖两个客户端：
 
 - `admin`: `infoq-scaffold-frontend-vue`
 - `weapp`: `infoq-scaffold-frontend-weapp-vue`
 
-## Client Selection
+## 客户端选择
 
-1. Use the `admin` references for Vue 3 + Element Plus + Pinia + Vue Router pages and utilities.
-2. Use the `weapp` references for uni-app Vue mini-program pages, request wrappers, stores, and API contracts.
-3. If the task is runtime verification instead of unit testing, switch to `infoq-vue-runtime-verification`.
+1. `admin` 端参考适用于 Vue 3 + Element Plus + Pinia + Vue Router 页面与工具。
+2. `weapp` 端参考适用于 uni-app Vue 小程序页面、请求封装、store 与 API 契约。
+3. 若任务是运行态验证而非单测，请切换到 `infoq-vue-runtime-verification`。
 
-## Workflow
+## 工作流程
 
-1. Identify the client and load only the matching `references/admin/*` or `references/weapp/*` material.
-2. Reuse the existing test baseline before adding new helpers or mocks.
-3. Start with user-observable behavior and boundary cases instead of implementation details.
-4. Run targeted tests first; if source defects are exposed, fix product code before widening the suite.
-5. When runtime behavior changed, finish with `infoq-vue-runtime-verification`.
-6. Close with the client-specific quality gate.
+1. 识别客户端，只加载匹配的 `references/admin/*` 或 `references/weapp/*` 材料。
+2. 新增 helper 或 mock 前，优先复用现有测试基线。
+3. 先测用户可观察行为与边界场景，而非实现细节。
+4. 先跑定向测试；若暴露源码缺陷，先修产品代码，再扩大测试集。
+5. 若运行时行为发生变化，收尾时执行 `infoq-vue-runtime-verification`。
+6. 最终通过客户端对应质量门禁。
 
-## Finish Criteria
+## 完成标准
 
 ### Admin
 
@@ -49,15 +49,15 @@ pnpm run build:weapp:dev
 pnpm run build:weapp
 ```
 
-Use `pnpm run verify:local` when the change also affects the mini-program runtime path.
+当改动同时影响小程序运行路径时，执行 `pnpm run verify:local`。
 
-## Guardrails
+## 护栏
 
-- Do not split Vue admin tests and Vue weapp tests into separate skills again unless the workflows truly diverge.
-- Do not weaken assertions, broaden mocks, or add fake-success paths to force coverage.
-- Do not use runtime smoke as a substitute for missing unit coverage.
+- 除非流程确实分叉，否则不要再把 Vue admin 与 Vue weapp 单测拆成两个技能。
+- 禁止通过弱化断言、放宽 mock、伪造成功路径来硬凑覆盖率。
+- 禁止用运行态 smoke 替代缺失的单测覆盖。
 
-## References
+## 参考
 
 - `references/admin/commands.md`
 - `references/admin/setup-baseline.md`

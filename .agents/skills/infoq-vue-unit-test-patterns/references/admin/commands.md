@@ -1,22 +1,22 @@
-# Admin Commands
+# Admin 命令
 
-Prefer `pnpm` for the commands below. If `pnpm` is unavailable in the current environment, replace them with the equivalent `npm` commands.
+以下命令优先使用 `pnpm`。若当前环境不可用，可替换为等价 `npm` 命令。
 
-## Install And Bootstrap
+## 安装与初始化
 
 ```bash
 cd infoq-scaffold-frontend-vue
 pnpm install
 ```
 
-## Run One Test File
+## 运行单个测试文件
 
 ```bash
 cd infoq-scaffold-frontend-vue
 npx vitest --config vitest.config.ts --run tests/utils/request.test.ts
 ```
 
-## Run P1 Plugin Or Realtime Batch
+## 运行 P1 插件与实时能力批次
 
 ```bash
 cd infoq-scaffold-frontend-vue
@@ -28,7 +28,7 @@ npx vitest --config vitest.config.ts --run \
   tests/utils/websocket.test.ts
 ```
 
-## Run P2 Components And Lightweight Views
+## 运行 P2 组件与轻量页面
 
 ```bash
 cd infoq-scaffold-frontend-vue
@@ -44,7 +44,7 @@ npx vitest --config vitest.config.ts --run \
   tests/views/index.test.ts
 ```
 
-## Run P3 Heavy System Or Monitor Views
+## 运行 P3 重型系统/监控页面
 
 ```bash
 cd infoq-scaffold-frontend-vue
@@ -63,7 +63,7 @@ npx vitest --config vitest.config.ts --run \
   tests/views/monitor/operLog/oper-info-dialog.test.ts
 ```
 
-## Runtime Follow-Up
+## 运行态后续验证
 
 ```bash
 bash .agents/skills/infoq-vue-runtime-verification/scripts/start_admin_dev_stack.sh
@@ -71,7 +71,7 @@ bash .agents/skills/infoq-vue-runtime-verification/scripts/print_admin_login_inj
 bash .agents/skills/infoq-vue-runtime-verification/scripts/fetch_admin_routes_with_token.sh
 ```
 
-## Full Quality Gate
+## 全量质量门禁
 
 ```bash
 cd infoq-scaffold-frontend-vue

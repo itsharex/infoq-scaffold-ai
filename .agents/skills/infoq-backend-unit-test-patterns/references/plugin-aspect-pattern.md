@@ -1,10 +1,10 @@
-# Plugin And Aspect Pattern
+# Plugin 与 Aspect 测试模式
 
-## Scope
+## 适用范围
 
-Use for `infoq-plugin-*` utility/aspect classes that can be tested without full runtime wiring.
+用于无需完整运行时装配即可测试的 `infoq-plugin-*` 工具类与 aspect 类。
 
-## Plugin Utility Template
+## Plugin 工具类模板
 
 ```java
 @Tag("dev")
@@ -19,7 +19,7 @@ class PageAndTableDataInfoTest {
 }
 ```
 
-## Aspect Helper Template
+## Aspect 辅助方法模板
 
 ```java
 @Tag("dev")
@@ -35,8 +35,8 @@ class RepeatSubmitAspectTest {
 }
 ```
 
-## Checklist
+## 检查清单
 
-- Prefer pure method coverage (`build`, helper predicates, formatter methods).
-- For AOP pointcut logic depending on runtime context, isolate helper methods first.
-- Add integration tests only when helper-level tests cannot cover core risk.
+- 优先覆盖纯方法（`build`、辅助谓词、格式化方法）。
+- 对依赖运行时上下文的 AOP 切点逻辑，先拆分并验证辅助方法。
+- 仅当辅助层测试不足以覆盖核心风险时，再补集成测试。

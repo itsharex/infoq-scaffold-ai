@@ -1,87 +1,87 @@
 ---
 name: infoq-openspec-delivery
-description: Orchestrate this repository's high-impact OpenSpec workflow. Use for new features, API contract changes, cross-workspace delivery, explicit OpenSpec/spec-driven requests, or subagents/multi-expert work across backend/React/Vue.
+description: 编排本仓库高影响级别的 OpenSpec 工作流。适用于新功能、API 契约变更、跨工作区交付、明确的 OpenSpec/spec 驱动请求，或 backend/React/Vue 的 subagent 多专家协作。
 ---
 
-# InfoQ OpenSpec Delivery
+# InfoQ OpenSpec 交付流程
 
-Use this skill for L3/L2 OpenSpec work (high-impact or explicitly requested OpenSpec tasks). For L1 small scoped fixes without contract changes, this skill is optional. If the user explicitly asks for subagents or multi-expert execution, follow the expert sequence below.
+此技能用于 L3/L2 的 OpenSpec 工作（高影响或用户明确要求 OpenSpec）。对于不涉及契约变化的 L1 小范围修复，可选使用。若用户明确要求 subagent 或多专家执行，按下述专家序列执行。
 
-## Preconditions
+## 前置条件
 
-- `openspec/project.md` stores durable project context
-- `openspec/specs/` stores the current source of truth
-- `openspec/changes/<change-id>/` stores active planning artifacts and spec deltas
-- `.codex/agents/` stores the repo-scoped custom agent truth for multi-expert mode
+- `openspec/project.md`：存放长期项目上下文
+- `openspec/specs/`：存放当前真值规范
+- `openspec/changes/<change-id>/`：存放进行中的规划产物与 spec delta
+- `.codex/agents/`：存放仓库级多专家模式自定义 agent 真值
 
-## Workflow
+## 工作流程
 
-1. Read `AGENTS.md`, `openspec/project.md`, the relevant specs, and the real repository files before delegating.
-2. Create a change id in the form `verb-noun` or `YYYY-MM-DD-short-topic`.
-3. Initialize the change directory with:
+1. 在委派前先阅读 `AGENTS.md`、`openspec/project.md`、相关 specs 和真实仓库文件。
+2. 创建 `change-id`，格式建议 `verb-noun` 或 `YYYY-MM-DD-short-topic`。
+3. 使用下列命令初始化变更目录：
 
 ```bash
 bash .agents/skills/infoq-openspec-delivery/scripts/init_change_dir.sh <change-id>
 ```
 
-4. If the user did not ask for subagents, create or update `proposal.md`, `tasks.md`, and necessary spec deltas before implementation (for L2 Lite, `proposal.md` + `tasks.md` are the minimum).
-5. If the user explicitly asks for subagents or multi-expert execution, spawn these custom agents in order:
+4. 若用户未要求 subagent，先创建或更新 `proposal.md`、`tasks.md` 及必要 spec delta，再进入实现（L2 Lite 最低要求为 `proposal.md` + `tasks.md`）。
+5. 若用户明确要求 subagent 或多专家执行，按顺序拉起以下自定义 agent：
    - `requirements_expert`
    - `technical_designer`
    - `code_implementer`
    - `auto_fixer`
-6. Keep the dependency order strict when subagents are used:
+6. 使用 subagent 时必须保持严格依赖顺序：
    - `requirements_expert -> technical_designer`
-   - if UI or interaction decisions matter, the parent agent should create `design.md` directly or switch to `infoq-ui-ux-three-phase-protocol`
+   - 若 UI 或交互决策重要，父线程应直接产出 `design.md` 或切换到 `infoq-ui-ux-three-phase-protocol`
    - `code_implementer -> auto_fixer`
-7. Keep all active planning artifacts inside `openspec/changes/<change-id>/`.
-8. Structure `proposal.md` with explicit `Why` and `What Changes` sections before the acceptance contract;OpenSpec 文档正文默认中文，路径名称、命令、文件名保持英文原样。
-9. If the user explicitly defers a later phase, record that deferred scope in `proposal.md`, `design.md`, or `tasks.md` instead of silently dropping it.
+7. 所有进行中的规划产物必须存放在 `openspec/changes/<change-id>/`。
+8. 在 `proposal.md` 中先写清晰的 `Why` 与 `What Changes`，再写 acceptance contract；OpenSpec 文档正文默认中文，路径名称、命令、文件名保持英文原样。
+9. 若用户明确延期后续阶段，必须在 `proposal.md`、`design.md` 或 `tasks.md` 中记录延期范围，禁止静默丢弃。
 
 ## Acceptance Contract
 
-Before implementation, define one acceptance contract in `proposal.md` that covers:
+实现前，在 `proposal.md` 中定义一个 acceptance contract，至少覆盖：
 
-- functional scope
-- non-goals
-- exception handling and explicit blockers
-- required logs or verification evidence
-- rollback trigger or rollback conditions
+- functional scope（功能范围）
+- non-goals（非目标）
+- exception handling and explicit blockers（异常处理与显式阻塞）
+- required logs or verification evidence（所需日志/验证证据）
+- rollback trigger or rollback conditions（回滚触发条件）
 
-If any part is missing or conflicting, stop and surface the gap before coding.
+若任一项缺失或冲突，先停止并暴露问题，再编码。
 
-## Validation
+## 验证
 
-Use `tasks.md` and the spec delta as the source of truth for verification, then validate in this order:
+以 `tasks.md` 和 spec delta 作为验证真值，按以下顺序验证：
 
-1. Main flow verification
-2. Targeted tests
-3. Lint or build for impacted workspaces
-4. Diff review
+1. 主流程验证
+2. 定向测试
+3. 受影响工作区的 lint/build
+4. Diff 审核
 
-Minimum expectations by workspace when changed:
+发生改动时，各工作区最低验证要求：
 
-- Backend: targeted Maven tests plus compilation for the affected module(s)
-- React: `pnpm test` and `pnpm build`
-- Vue: `pnpm test:unit` and `pnpm run build:prod`
+- Backend：受影响模块的 Maven 定向测试 + 编译
+- React：`pnpm test` 与 `pnpm build`
+- Vue：`pnpm test:unit` 与 `pnpm run build:prod`
 
-If a check is not applicable or cannot run, leave the change active and record the blocker explicitly instead of claiming archive readiness.
+若某项检查不适用或无法执行，保持 change 处于 active 状态并显式记录 blocker，禁止宣称可归档。
 
-## Output Contract
+## 产出契约
 
-Each active change directory should end with:
+每个 active change 目录最终应包含：
 
 - `proposal.md`
-- `design.md` when needed
+- `design.md`（需要时）
 - `tasks.md`
-- `materials.md` when needed
-- spec deltas under `specs/.../spec.md`
+- `materials.md`（需要时）
+- `specs/.../spec.md` 下的 spec delta
 
-After acceptance, the parent agent decides whether to archive the change and whether `review.md` is needed to record blockers.
+验收后，由父线程决定是否归档该 change，以及是否需要 `review.md` 记录 blocker。
 
-## Reference
+## 参考
 
-Read:
+请阅读：
 
 - `references/workflow.md`
 - `openspec/project.md`

@@ -1,22 +1,22 @@
-# InfoQ OpenSpec Delivery Workflow
+# InfoQ OpenSpec 交付流程
 
-## Purpose
+## 目的
 
-This skill standardizes how Codex handles feature work through OpenSpec artifacts and code changes, with subagents as an explicit multi-expert mode when requested.
+此技能用于规范 Codex 如何通过 OpenSpec 产物与代码变更推进功能交付；当用户明确要求时，可切换到 subagent 多专家模式。
 
-## Directory Rules
+## 目录规则
 
-- Durable project context lives in `openspec/project.md`
-- Current truth specs live in `openspec/specs/`
-- Active change artifacts live in `openspec/changes/<change-id>/`
-- Repo-scoped custom agent truth lives in `.codex/agents/`
+- 长期项目上下文放在 `openspec/project.md`
+- 当前真值 specs 放在 `openspec/specs/`
+- 进行中的 change 产物放在 `openspec/changes/<change-id>/`
+- 仓库级自定义 agent 真值放在 `.codex/agents/`
 
-## Execution Modes
+## 执行模式
 
-- Default mode: the main agent creates or updates `proposal.md`, `tasks.md`, and relevant spec deltas locally before implementation
-- Multi-expert mode: when the user explicitly requests subagents or multi-expert execution, use the expert ownership model below
+- 默认模式：主线程先在本地创建或更新 `proposal.md`、`tasks.md` 与相关 spec delta，再进入实现
+- 多专家模式：当用户明确要求 subagent 或多专家执行时，使用下方专家职责模型
 
-## Expert Ownership
+## 专家职责
 
 | Agent | Primary output |
 | --- | --- |
@@ -25,27 +25,27 @@ This skill standardizes how Codex handles feature work through OpenSpec artifact
 | `code_implementer` | repository code + task checklist updates |
 | `auto_fixer` | repository code fixes + verification reruns |
 
-UI-heavy changes should use `infoq-ui-ux-three-phase-protocol` or have the parent agent maintain `design.md` directly.
+UI 密集型改动应使用 `infoq-ui-ux-three-phase-protocol`，或由父线程直接维护 `design.md`。
 
-`materials.md` and `review.md` stay available, but the parent agent creates them only when the change actually needs them.
+`materials.md` 与 `review.md` 可选保留，仅在变更确实需要时由父线程创建。
 
-## Cross-Workspace Rule
+## 跨工作区规则
 
-Every change must explicitly assess all three application workspaces:
+每个 change 都必须显式评估以下三个应用工作区：
 
 - `infoq-scaffold-backend`
 - `infoq-scaffold-frontend-react`
 - `infoq-scaffold-frontend-vue`
 
-If a workspace is not impacted, record that in `tasks.md` with the reason.
+若某个工作区不受影响，必须在 `tasks.md` 中写明原因。
 
-## Planning Rule
+## 规划规则
 
-When the user says a later phase should not be implemented yet, keep it in the active OpenSpec artifacts as deferred scope. Do not silently remove it.
+当用户要求暂不实现后续阶段时，应在 active OpenSpec 产物中保留为 deferred scope，禁止静默删除。
 
-## Verification Rule
+## 验证规则
 
-The delivery loop is not complete until the active change records:
+交付闭环只有在 active change 显式记录以下内容后才算完成：
 
 - verification commands
 - verification outcomes

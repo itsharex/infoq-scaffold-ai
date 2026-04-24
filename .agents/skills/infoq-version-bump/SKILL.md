@@ -1,19 +1,19 @@
 ---
 name: infoq-version-bump
-description: Bump this repository's project version consistently across backend Maven revision, frontend package versions, docker image tags, release docs, and version assertions. Use whenever the user asks to 升级版本号, 更新项目版本, 发布到某个 x.y.z 版本, 同步 README/docker/pom/package 的版本号, or wants a repo-wide version bump. Default policy keeps the existing SQL bootstrap file name unchanged; do not rename SQL files automatically unless the user explicitly requests a separate SQL-file task.
+description: 在本仓库内统一升级项目版本，覆盖后端 Maven revision、前端 package 版本、Docker 镜像标签、发布文档与版本断言。适用于升级版本号、发布到指定 x.y.z、同步 README/docker/pom/package 版本等仓库级版本升级需求。默认策略保持现有 SQL 初始化文件名不变，除非用户明确提出独立 SQL 文件改名任务。
 ---
 
-# Infoq Version Bump
+# Infoq 版本升级
 
-## Execute
+## 执行
 
-Run:
+执行：
 
 ```bash
 bash .agents/skills/infoq-version-bump/scripts/bump_version.sh 2.0.3
 ```
 
-Common variants:
+常用变体：
 
 ```bash
 # Preview checks without editing files
@@ -25,9 +25,9 @@ bash .agents/skills/infoq-version-bump/scripts/bump_version.sh \
   2.0.3
 ```
 
-## What This Skill Changes
+## 本技能会修改什么
 
-The script updates only the repository-owned release version fields:
+脚本仅更新仓库内受管的发布版本字段：
 
 - `infoq-scaffold-backend/pom.xml`
 - `infoq-scaffold-backend/infoq-core/infoq-core-bom/pom.xml`
@@ -39,43 +39,43 @@ The script updates only the repository-owned release version fields:
 - `infoq-scaffold-backend/infoq-plugin/infoq-plugin-doc/.../SpringDocConfigTest.java`
 - `infoq-scaffold-backend/infoq-plugin/infoq-plugin-doc/.../SpringDocPropertiesTest.java`
 
-## Default SQL Policy
+## 默认 SQL 策略
 
-- Detect the current SQL bootstrap file from `sql/infoq_scaffold_*.sql`.
-- Keep that filename unchanged.
-- Validate that README, deploy docs, backend deploy script, docker compose, and project reference still point to that same SQL file.
-- If SQL references drift, fail explicitly instead of renaming SQL files behind the user's back.
+- 从 `sql/infoq_scaffold_*.sql` 识别当前 SQL 初始化文件。
+- 保持该文件名不变。
+- 校验 README、部署文档、后端部署脚本、docker compose、项目参考仍指向同一 SQL 文件。
+- 若 SQL 引用漂移，必须显式失败，禁止在用户不知情时改名 SQL 文件。
 
-This policy is deliberate for this repository: project version bumps and SQL baseline file renames are separate decisions.
+这是本仓库的明确策略：项目版本升级与 SQL 基线文件重命名是两个独立决策。
 
-## Failure Rules
+## 失败规则
 
-Fail immediately when any of these is true:
+以下任一条件成立时立即失败：
 
-- target version is not `x.y.z`
-- repository root cannot be resolved
-- required target files are missing
-- zero or multiple `sql/infoq_scaffold_*.sql` files exist
-- SQL references do not match the detected SQL file
-- any managed version field cannot be verified after replacement
+- 目标版本不符合 `x.y.z`
+- 无法解析仓库根目录
+- 缺少必需目标文件
+- `sql/infoq_scaffold_*.sql` 文件数量为 0 或大于 1
+- SQL 引用与识别出的 SQL 文件不一致
+- 任一受管版本字段替换后无法校验
 
-## Validation
+## 验证
 
-After a real run:
+真实执行后：
 
 ```bash
 bash .agents/skills/infoq-version-bump/scripts/test_bump_version.sh
 ```
 
-Optional project-level checks after a bump:
+升级后可选的项目级检查：
 
 ```bash
 rg -n "2\\.0\\.3" README.md doc script infoq-scaffold-backend infoq-scaffold-frontend-react infoq-scaffold-frontend-vue
 mvn -pl infoq-plugin/infoq-plugin-doc -am -DskipTests=false -Dsurefire.failIfNoSpecifiedTests=false -Dtest=SpringDocConfigTest,SpringDocPropertiesTest test
 ```
 
-## Resources
+## 参考资源
 
-- Managed targets and guardrails: `references/targets.md`
-- Main script: `scripts/bump_version.sh`
-- Regression smoke check for the script: `scripts/test_bump_version.sh`
+- 受管目标与护栏：`references/targets.md`
+- 主脚本：`scripts/bump_version.sh`
+- 脚本回归冒烟：`scripts/test_bump_version.sh`

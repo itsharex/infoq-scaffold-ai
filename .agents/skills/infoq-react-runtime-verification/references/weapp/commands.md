@@ -1,47 +1,47 @@
-# Weapp Commands
+# Weapp 命令
 
-## AppID Prerequisite
+## AppID 前置条件
 
-Before any DevTools open command, replace `TARO_APP_ID` in `infoq-scaffold-frontend-weapp-react/.env.development` with your own WeChat mini-program AppID.
-The launcher script rejects empty values and `touristappid`.
+执行任何 DevTools 打开命令前，先将 `infoq-scaffold-frontend-weapp-react/.env.development` 中的 `TARO_APP_ID` 替换为你自己的微信小程序 AppID。  
+启动脚本会拒绝空值与 `touristappid`。
 
-## Exact DevTools Open Command
+## 精确 DevTools 打开命令
 
 ```bash
 pnpm --dir infoq-scaffold-frontend-weapp-react build-open:weapp:dev
 ```
 
-## Optional Shell Override
+## 可选 Shell 覆盖
 
 ```bash
 TARO_APP_ID=wx_your_appid pnpm --dir infoq-scaffold-frontend-weapp-react build-open:weapp:dev
 ```
 
-## Default Full Smoke
+## 默认完整冒烟
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh
 ```
 
-## Core Smoke
+## 核心冒烟
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh --suite core
 ```
 
-## Reuse Existing Session
+## 复用已有会话
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh --keep-existing-session
 ```
 
-## Enable WeChat Legal-Domain Check
+## 启用微信合法域名校验
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh --url-check
 ```
 
-## Explicit Backend Login Target
+## 显式指定后端登录目标
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh \
@@ -50,7 +50,7 @@ bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh 
   --password admin123
 ```
 
-## Login Success To Home Only
+## 仅验证“登录成功进入首页”
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh \

@@ -1,62 +1,62 @@
-# Video Recording
+# 录屏
 
-Capture browser automation as video for debugging, documentation, or verification.
+将浏览器自动化过程录制为视频，用于调试、文档与验证留档。
 
-**Related**: [commands.md](commands.md) for full command reference, [SKILL.md](../SKILL.md) for quick start.
+**关联文档**：[commands.md](commands.md)（完整命令参考），[SKILL.md](../SKILL.md)（快速入口）。
 
-## Contents
+## 目录
 
-- [Basic Recording](#basic-recording)
-- [Recording Commands](#recording-commands)
-- [Use Cases](#use-cases)
-- [Best Practices](#best-practices)
-- [Output Format](#output-format)
-- [Limitations](#limitations)
+- 基础录制
+- 录制命令
+- 使用场景
+- 最佳实践
+- 输出格式
+- 限制说明
 
-## Basic Recording
+## 基础录制
 
 ```bash
-# Start recording
+# 开始录制
 agent-browser record start ./demo.webm
 
-# Perform actions
+# 执行动作
 agent-browser open https://example.com
 agent-browser snapshot -i
 agent-browser click @e1
 agent-browser fill @e2 "test input"
 
-# Stop and save
+# 停止并保存
 agent-browser record stop
 ```
 
-## Recording Commands
+## 录制命令
 
 ```bash
-# Start recording to file
+# 开始录制到文件
 agent-browser record start ./output.webm
 
-# Stop current recording
+# 停止当前录制
 agent-browser record stop
 
-# Restart with new file (stops current + starts new)
+# 使用新文件重启录制（先停当前，再开启新录制）
 agent-browser record restart ./take2.webm
 ```
 
-## Use Cases
+## 使用场景
 
-### Debugging Failed Automation
+### 调试自动化失败
 
 ```bash
 #!/bin/bash
-# Record automation for debugging
+# 录制自动化过程用于调试
 
 agent-browser record start ./debug-$(date +%Y%m%d-%H%M%S).webm
 
-# Run your automation
+# 执行自动化步骤
 agent-browser open https://app.example.com
 agent-browser snapshot -i
 agent-browser click @e1 || {
-    echo "Click failed - check recording"
+    echo "点击失败，请检查录屏"
     agent-browser record stop
     exit 1
 }
@@ -64,16 +64,16 @@ agent-browser click @e1 || {
 agent-browser record stop
 ```
 
-### Documentation Generation
+### 文档素材生成
 
 ```bash
 #!/bin/bash
-# Record workflow for documentation
+# 录制流程用于文档素材
 
 agent-browser record start ./docs/how-to-login.webm
 
 agent-browser open https://app.example.com/login
-agent-browser wait 1000  # Pause for visibility
+agent-browser wait 1000  # 停顿便于观看
 
 agent-browser snapshot -i
 agent-browser fill @e1 "demo@example.com"
@@ -84,16 +84,16 @@ agent-browser wait 500
 
 agent-browser click @e3
 agent-browser wait --load networkidle
-agent-browser wait 1000  # Show result
+agent-browser wait 1000  # 展示结果
 
 agent-browser record stop
 ```
 
-### CI/CD Test Evidence
+### CI/CD 测试证据
 
 ```bash
 #!/bin/bash
-# Record E2E test runs for CI artifacts
+# 录制 E2E 测试过程，作为 CI 产物
 
 TEST_NAME="${1:-e2e-test}"
 RECORDING_DIR="./test-recordings"
@@ -101,35 +101,35 @@ mkdir -p "$RECORDING_DIR"
 
 agent-browser record start "$RECORDING_DIR/$TEST_NAME-$(date +%s).webm"
 
-# Run test
+# 执行测试
 if run_e2e_test; then
-    echo "Test passed"
+    echo "测试通过"
 else
-    echo "Test failed - recording saved"
+    echo "测试失败，已保存录屏"
 fi
 
 agent-browser record stop
 ```
 
-## Best Practices
+## 最佳实践
 
-### 1. Add Pauses for Clarity
+### 1. 为可读性增加停顿
 
 ```bash
-# Slow down for human viewing
+# 降速便于人工回看
 agent-browser click @e1
-agent-browser wait 500  # Let viewer see result
+agent-browser wait 500  # 让观看者看清结果
 ```
 
-### 2. Use Descriptive Filenames
+### 2. 使用可读文件名
 
 ```bash
-# Include context in filename
+# 文件名带上上下文信息
 agent-browser record start ./recordings/login-flow-2024-01-15.webm
 agent-browser record start ./recordings/checkout-test-run-42.webm
 ```
 
-### 3. Handle Recording in Error Cases
+### 3. 在错误场景处理录制
 
 ```bash
 #!/bin/bash
@@ -145,10 +145,10 @@ agent-browser record start ./automation.webm
 # ... automation steps ...
 ```
 
-### 4. Combine with Screenshots
+### 4. 与截图结合使用
 
 ```bash
-# Record video AND capture key frames
+# 同时录视频并截关键帧
 agent-browser record start ./flow.webm
 
 agent-browser open https://example.com
@@ -160,14 +160,14 @@ agent-browser screenshot ./screenshots/step2-after-click.png
 agent-browser record stop
 ```
 
-## Output Format
+## 输出格式
 
-- Default format: WebM (VP8/VP9 codec)
-- Compatible with all modern browsers and video players
-- Compressed but high quality
+- 默认格式：WebM（VP8/VP9 编码）
+- 兼容主流浏览器与视频播放器
+- 压缩率高且画质可用
 
-## Limitations
+## 限制说明
 
-- Recording adds slight overhead to automation
-- Large recordings can consume significant disk space
-- Some headless environments may have codec limitations
+- 录屏会给自动化流程增加少量开销
+- 长时间录制可能占用较多磁盘空间
+- 部分 headless 环境可能存在编解码限制

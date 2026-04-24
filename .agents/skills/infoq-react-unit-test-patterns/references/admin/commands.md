@@ -1,22 +1,22 @@
-# Admin Commands
+# Admin 命令
 
-Prefer `pnpm` for the commands below. If `pnpm` is unavailable in the current environment, replace them with the equivalent `npm` commands.
+以下命令优先使用 `pnpm`。若当前环境不可用，可替换为等价 `npm` 命令。
 
-## Install And Bootstrap
+## 安装与初始化
 
 ```bash
 cd infoq-scaffold-frontend-react
 pnpm install
 ```
 
-## Run One Test File
+## 运行单个测试文件
 
 ```bash
 cd infoq-scaffold-frontend-react
 npx vitest --run tests/utils/request.test.ts
 ```
 
-## Run P0 Foundation Batch
+## 运行 P0 基线批次
 
 ```bash
 cd infoq-scaffold-frontend-react
@@ -32,7 +32,7 @@ npx vitest --run \
   tests/router/route-transform.test.ts
 ```
 
-## Run P1 Layout And Reusable Components
+## 运行 P1 布局与复用组件
 
 ```bash
 cd infoq-scaffold-frontend-react
@@ -46,7 +46,7 @@ npx vitest --run \
   tests/layout/tags-view-bar.test.tsx
 ```
 
-## Run P2 Representative Pages
+## 运行 P2 代表性页面
 
 ```bash
 cd infoq-scaffold-frontend-react
@@ -59,7 +59,7 @@ npx vitest --run \
   tests/pages/monitor-auth-profile.test.tsx
 ```
 
-## Runtime Follow-Up
+## 运行态后续验证
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/start_admin_dev_stack.sh
@@ -67,7 +67,7 @@ bash .agents/skills/infoq-react-runtime-verification/scripts/print_admin_login_i
 bash .agents/skills/infoq-react-runtime-verification/scripts/fetch_admin_routes_with_token.sh
 ```
 
-## Full Quality Gate
+## 全量质量门禁
 
 ```bash
 cd infoq-scaffold-frontend-react

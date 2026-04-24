@@ -1,19 +1,19 @@
 ---
 name: infoq-login-success-check
-description: Verify backend login success deterministically for this project, including encrypted/plain /auth/login fallback, token validation, and protected endpoint checks. Use when users ask for 登录成功验证, 登录接口验证, auth/login 检查, 登录冒烟, 登录失败排查, or confirm backend can log in.
+description: 对本项目后端执行可确定的登录成功校验，覆盖加密/明文 `/auth/login` 回退、token 校验与受保护接口检查。适用于登录成功验证、登录接口验证、auth/login 排查、登录冒烟与登录失败诊断场景。
 ---
 
-# Infoq Login Success Check
+# Infoq 登录成功校验
 
-## Execute
+## 执行
 
-Run login verification against local backend:
+对本地后端执行登录校验：
 
 ```bash
 bash .agents/skills/infoq-login-success-check/scripts/verify_login.sh
 ```
 
-Common variants:
+常用变体：
 
 ```bash
 # Build backend jar first if needed
@@ -31,26 +31,26 @@ bash .agents/skills/infoq-login-success-check/scripts/verify_login.sh \
 bash .agents/skills/infoq-login-success-check/scripts/verify_login.sh --print-token
 ```
 
-## Behavior
+## 行为说明
 
-- Prefer checking existing backend at `http://127.0.0.1:8080`.
-- If backend is unreachable, or `captchaEnabled=true`, auto-start temp backend with `--captcha.enable=false` (default port `18081`).
-- Attempt `/auth/login` in encrypted mode first, then plain mode fallback.
-- Confirm token validity with:
+- 优先检查 `http://127.0.0.1:8080` 的现有后端。
+- 若后端不可达，或 `captchaEnabled=true`，自动以 `--captcha.enable=false` 启动临时后端（默认端口 `18081`）。
+- 先尝试加密模式 `/auth/login`，失败后回退明文模式。
+- 通过以下接口确认 token 有效性：
   - `GET /system/user/getInfo`
   - `GET /system/menu/getRouters`
 
-## Defaults
+## 默认值
 
-- Client ID: `e5cd7e4891bf95d1d19206ce24a7b32e`
-- Login candidates:
+- Client ID：`e5cd7e4891bf95d1d19206ce24a7b32e`
+- 登录候选账号：
   - `admin / admin123`
   - `dept / 666666`
   - `owner / 666666`
   - `admin / 123456`
 
-## Resources
+## 参考资源
 
-- Entrypoint: `scripts/verify_login.sh`
-- API logic: `scripts/login_check.mjs`
-- Endpoint notes: `references/endpoints.md`
+- 入口脚本：`scripts/verify_login.sh`
+- API 逻辑：`scripts/login_check.mjs`
+- 接口说明：`references/endpoints.md`

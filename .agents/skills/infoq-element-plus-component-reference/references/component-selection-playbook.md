@@ -1,65 +1,65 @@
-# Component Selection Playbook
+# 组件选型手册
 
-Use this playbook after reading `component-overview-zh-cn.md`.
+请在阅读 `component-overview-zh-cn.md` 后使用本手册。
 
-## Typical Requests -> Recommended Components
+## 典型需求 -> 推荐组件
 
-1. Build a CRUD management page
+1. 构建 CRUD 管理页
 - `Table` + `Pagination` + `Dialog` + `Form` + `Message` + `Popconfirm`
 
-2. Build a settings page
+2. 构建设置页
 - `Form` + `Input`/`Select`/`Switch` + `Card` + `Divider` (optional from Typography/Layout patterns)
 
-3. Build a wizard/step flow
+3. 构建向导/步骤流
 - `Steps` + `Form` + `Button`
-- Use `Result` for completion state
+- 完成态使用 `Result`
 
-4. Build a data dashboard
+4. 构建数据看板
 - `Card` + `Statistic` + `Progress` + `Table` or `Descriptions`
-- Add `Skeleton` for loading and `Empty` for no data
+- 加载态使用 `Skeleton`，空数据使用 `Empty`
 
-5. Build side-panel editing
+5. 构建侧边栏编辑
 - `Drawer` + `Form`
-- Prefer `Dialog` only when hard focus is needed
+- 仅在需要强焦点阻塞时优先 `Dialog`
 
-6. Build search/filter toolbar
+6. 构建搜索/筛选工具栏
 - `Form` (inline) + `Input` + `Select` + `Date Picker`
-- Add `Tag` for active filters
+- 活跃筛选项使用 `Tag`
 
-## Decision Heuristics
+## 决策启发
 
-- Need strict form validation:
-- Use `Form` with rules; avoid custom validation frameworks first.
+- 需要严格表单校验时：
+- 使用带 rules 的 `Form`；优先避免自建校验框架。
 
-- Need destructive action safety:
-- Use `Popconfirm` for inline actions and `Message Box` for blocking confirms.
+- 需要破坏性操作保护时：
+- 行内操作使用 `Popconfirm`，阻塞确认使用 `Message Box`。
 
-- Need global feedback after async calls:
-- Use `Message` for short success/error and `Notification` for longer notices.
+- 需要异步调用后的全局反馈时：
+- 短成功/失败用 `Message`，较长通知用 `Notification`。
 
-- Need rendering performance with very large lists:
-- Evaluate `Virtualized Select`, `Table V2`, or `Virtualized Tree`.
+- 需要超大列表渲染性能时：
+- 评估 `Virtualized Select`、`Table V2` 或 `Virtualized Tree`。
 
-## Implementation Checklist
+## 实现检查清单
 
-Before coding:
-- Confirm component exists in official docs.
-- Confirm local `element-plus` version supports selected component.
+编码前：
+- 确认官方文档存在该组件。
+- 确认本地 `element-plus` 版本支持所选组件。
 
-While coding:
-- Use semantic slots rather than deep DOM overrides.
-- Keep custom CSS minimal and scoped.
-- Keep keyboard/focus behavior intact for overlays and forms.
+编码中：
+- 优先语义化 slots，避免深层 DOM 覆盖。
+- 自定义 CSS 保持最小且局部。
+- 保持浮层与表单的键盘/焦点行为完整。
 
-Before final response:
-- Provide component list + key API choices.
-- Mention version assumptions.
-- Include concise Vue 3 example only for the requested scope.
+最终回复前：
+- 给出组件列表 + 关键 API 选择。
+- 说明版本假设。
+- 仅在用户请求范围内提供简洁 Vue 3 示例。
 
-## Version Check Command
+## 版本检查命令
 
 ```bash
 rg '"element-plus"' package.json pnpm-lock.yaml yarn.lock package-lock.json
 ```
 
-If no result appears in lock files, check the package manager in use and inspect workspace root plus app subdirectories.
+若 lock 文件中无结果，请检查当前使用的包管理器，并同时检查工作区根目录及应用子目录。

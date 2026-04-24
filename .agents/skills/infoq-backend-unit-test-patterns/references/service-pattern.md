@@ -1,10 +1,10 @@
-# Service Pattern
+# Service 测试模式
 
-## Scope
+## 适用范围
 
-Use for `cc.infoq.system.service.impl.*` classes when logic is mapper/service collaboration with branch conditions.
+用于 `cc.infoq.system.service.impl.*` 类，关注 mapper/service 协作与分支条件。
 
-## Template
+## 模板
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -31,8 +31,8 @@ class XxxServiceImplTest {
 }
 ```
 
-## Checklist
+## 检查清单
 
-- Cover at least one normal branch and one exception/empty branch.
-- Verify mapper interaction only when behavior depends on it.
-- If a test reveals `NullPointerException` or branch leakage, patch service code and rerun.
+- 至少覆盖 1 个正常分支和 1 个异常/空分支。
+- 仅在行为依赖时验证 mapper 交互。
+- 若测试暴露 `NullPointerException` 或分支泄漏，先修 service 代码再重跑。

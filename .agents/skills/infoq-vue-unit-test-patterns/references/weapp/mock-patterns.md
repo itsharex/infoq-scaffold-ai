@@ -1,36 +1,36 @@
-# Mock Patterns
+# Mock 模式
 
-## Reuse Global Runtime Mocks
+## 复用全局运行时 Mock
 
-`tests/setup.ts` already provides:
+`tests/setup.ts` 已提供：
 - `uni` storage and navigation stubs
 - `request` and `uploadFile` stubs
 - `wx.env.USER_DATA_PATH`
 
-Use these defaults first. Add per-test overrides only when a specific branch needs it.
+优先复用上述默认能力。仅在特定分支需要时，才增加按用例覆盖。
 
-## Branch-Isolated Module Mocks
+## 分支隔离的模块 Mock
 
-For `src/api/request.ts` and similar modules:
+针对 `src/api/request.ts` 及类似模块：
 
-1. `vi.resetModules()` before importing target module.
-2. `vi.doMock(...)` dependencies (`env/auth/crypto/rsa` modules).
-3. Import target module after mocks are installed.
+1. 在导入目标模块前执行 `vi.resetModules()`。
+2. 通过 `vi.doMock(...)` 注入依赖（`env/auth/crypto/rsa` 模块）。
+3. mock 安装后再导入目标模块。
 
-This pattern keeps branch tests deterministic and avoids cross-test state pollution.
+该模式可保证分支测试确定性，并避免跨用例状态污染。
 
-## Store Testing Pattern
+## Store 测试模式
 
-For `src/store/session.ts`:
+针对 `src/store/session.ts`：
 
-1. Mock `@/api` methods with `vi.hoisted`.
-2. Use `setActivePinia(createPinia())` in `beforeEach`.
-3. Assert state transitions and helper method delegation through store APIs.
+1. 用 `vi.hoisted` mock `@/api` 方法。
+2. 在 `beforeEach` 中执行 `setActivePinia(createPinia())`。
+3. 通过 store API 断言状态迁移与 helper 委派行为。
 
-## Failure Branches
+## 失败分支
 
-Always add explicit error-path assertions:
-- network/request rejects
-- logout rejects
-- token missing branches
-- malformed env or unsupported runtime branches
+必须补充显式错误路径断言：
+- network/request reject
+- logout reject
+- token 缺失分支
+- env 异常或不支持运行时分支

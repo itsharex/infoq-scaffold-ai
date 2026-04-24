@@ -1,11 +1,11 @@
-# infoq-scaffold-frontend-vue index
-Read this file only when the task targets Vue file, component, or route lookup.
+# infoq-scaffold-frontend-vue 索引
+仅在任务需要定位 Vue 文件、组件或路由时阅读此文件。
 
-## Table of Contents
+## 目录
 
-- File Path List
+- 文件路径列表
 
-## File Path List
+## 文件路径列表
 
 infoq-scaffold-frontend-vue/.editorconfig
 infoq-scaffold-frontend-vue/.env.development

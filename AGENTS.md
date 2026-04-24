@@ -16,6 +16,7 @@
 |Instruction Layering:根 `AGENTS.md` 只保留跨仓规则。|backend、Vue admin、React admin、weapp React、weapp Vue 使用更近的 `AGENTS.md` 或 `AGENTS.override.md` 写栈内细则。|当更近文件与根规则冲突时，以更近文件为准。
 |Workspace AGENTS:infoq-scaffold-backend/AGENTS.md|infoq-scaffold-frontend-vue/AGENTS.md|infoq-scaffold-frontend-react/AGENTS.md|infoq-scaffold-frontend-weapp-react/AGENTS.md|infoq-scaffold-frontend-weapp-vue/AGENTS.md
 |Repo Skill Policy:每个 skill 只解决一个工作。|除 `skill-creator` 外，仓库级 skill 统一使用 `infoq-` 前缀。|每个 skill 目录必须包含 `SKILL.md`。|所有仓库级 skill 默认维护 `agents/openai.yaml`，更新 `SKILL.md` 时必须同步校验 UI metadata 是否 stale。|`agents/openai.yaml` 的 `default_prompt` 必须显式包含 `$skill-name`。|`.agents/skills` 下不保留共享底座型、仅 README 型、或 helper-only skill 目录。|React 家族和 Vue 家族技能允许通过 `references/admin` 与 `references/weapp` 区分客户端，但仍必须保持单一职责。
+|Skill Docs Localization:仓库级 skill（`.agents/skills`）的描述性文档默认中文优先（含 `SKILL.md`、`references/*.md`、`agents/openai.yaml` 的说明字段）。|翻译仅覆盖说明性自然语言；命令、路径、环境变量、标识符、代码块、API 参数、组件名与版本号保持原文。|新增或更新 skill 时必须同步执行中文化与术语一致性检查，避免文档中英混杂与语义漂移。
 |Repo Skill Location:仓库级 skills 统一放在 `.agents/skills`。|相关 references、helper scripts 和发现逻辑保持与该路径一致。
 |Docs Sync:变更 skill 名称、命令、env 前置条件、工作区入口路径、`.codex/config.toml` 中的 MCP server/工具白名单/审批模式/超时设置后，必须同步更新 `/AGENTS.md`、更近 `AGENTS.md`、`README.md` 与相关 `doc/*.md`，禁止出现文档和 skill 实际行为漂移。
 |MCP Config Truth:`.codex/config.toml` 是仓库级 MCP 真值源。|`doc/mcp-servers.md` 只能描述当前显式配置出来的 MCP server、tool、默认启用状态与只读范围。|文档中的 MCP server/tool 名称、审批模式、超时设置和本地启动脚本路径必须与 `.codex/config.toml`、`.codex/scripts/*` 保持一致。

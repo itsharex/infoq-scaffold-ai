@@ -1,23 +1,23 @@
-# Element Plus Component Overview (zh-CN)
+# Element Plus 组件总览（zh-CN）
 
 ## 目录
 
-- Source
+- 来源
 - Basic 基础组件 (11)
 - Form 表单组件 (24)
 - Data 数据展示组件 (16)
 - Navigation 导航组件 (9)
 - Feedback 反馈组件 (10)
 - Others 其它组件 (5)
-- Version-tagged Components Quick List
+- 带版本标记的组件速查
 
-## Source
+## 来源
 
 - URL: `https://element-plus.org/zh-CN/component/overview`
-- Checked: `2026-03-12`
-- Displayed version on page: `2.13.5`
+- 校验日期：`2026-03-12`
+- 页面展示版本：`2.13.5`
 
-Use this file as a quick index, then open official component pages to confirm exact APIs.
+本文件用于快速索引；具体 API 以对应官方组件页面为准。
 
 ## Basic 基础组件 (11)
 
@@ -112,9 +112,9 @@ Use this file as a quick index, then open official component pages to confirm ex
 - Result
 - Watermark (>= 2.4.0)
 
-## Version-tagged Components Quick List
+## 带版本标记的组件速查
 
-Use these checks when a requested component is not available in local code:
+当本地代码中缺失所需组件时，使用以下版本检查：
 
 - Text `>= 2.3.0`
 - TreeSelect `>= 2.1.8`

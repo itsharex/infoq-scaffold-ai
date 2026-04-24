@@ -1,17 +1,17 @@
-# Mock Patterns
+# Mock 模式
 
-## Table of Contents
+## 目录
 
-- 1) Login API module mock
-- 2) Zustand store baseline
-- 3) Router wrapper helper
-- 4) Auth guard verification with `MemoryRouter`
-- 5) Request adapter override without network
-- 6) Fullscreen API exact stub
-- 7) ResizeObserver override for chart pages
-- 8) Page-level component stub pattern
+- 1) 登录 API 模块 mock
+- 2) Zustand store 基线
+- 3) Router 包装辅助函数
+- 4) 使用 `MemoryRouter` 验证鉴权守卫
+- 5) 无网络 request adapter 覆盖
+- 6) Fullscreen API 精确桩
+- 7) 图表页 ResizeObserver 覆盖
+- 8) 页面级组件桩模式
 
-## 1) Login API module mock
+## 1) 登录 API 模块 mock
 
 ```ts
 vi.mock('@/api/login', () => ({
@@ -25,7 +25,7 @@ vi.mock('@/api/login', () => ({
 }));
 ```
 
-## 2) Zustand store baseline
+## 2) Zustand store 基线
 
 ```ts
 beforeEach(() => {
@@ -41,7 +41,7 @@ beforeEach(() => {
 });
 ```
 
-## 3) Router wrapper helper
+## 3) Router 包装辅助函数
 
 ```ts
 import { renderWithRouter } from '../helpers/renderWithRouter';
@@ -49,7 +49,7 @@ import { renderWithRouter } from '../helpers/renderWithRouter';
 renderWithRouter(<CachePage />, '/monitor/cache');
 ```
 
-## 4) Auth guard verification with `MemoryRouter`
+## 4) 使用 `MemoryRouter` 验证鉴权守卫
 
 ```ts
 render(
@@ -69,7 +69,7 @@ render(
 );
 ```
 
-## 5) Request adapter override without network
+## 5) 无网络 request adapter 覆盖
 
 ```ts
 (service.defaults as { adapter: unknown }).adapter = async (config: InternalAxiosRequestConfig) =>
@@ -79,7 +79,7 @@ render(
   });
 ```
 
-## 6) Fullscreen API exact stub
+## 6) Fullscreen API 精确桩
 
 ```ts
 Object.defineProperty(document, 'fullscreenElement', {
@@ -96,7 +96,7 @@ Object.defineProperty(document, 'exitFullscreen', {
 });
 ```
 
-## 7) ResizeObserver override for chart pages
+## 7) 图表页 ResizeObserver 覆盖
 
 ```ts
 class ResizeObserverMock {
@@ -108,7 +108,7 @@ class ResizeObserverMock {
 globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 ```
 
-## 8) Page-level component stub pattern
+## 8) 页面级组件桩模式
 
 ```ts
 vi.mock('@/components/Pagination', () => ({

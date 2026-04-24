@@ -1,24 +1,24 @@
-# Mapper XML Integration Pattern
+# Mapper XML 集成测试模式
 
-## Table of Contents
+## 目录
 
-- Scope
-- Dependencies
-- Template
-- Naming And Split Rules
-- SQL Fixture Rules
-- Page Return Methods
+- 适用范围
+- 依赖
+- 模板
+- 命名与拆分规则
+- SQL Fixture 规则
+- Page 返回方法
 
-## Scope
+## 适用范围
 
-Use for declaration-only mapper methods under:
+适用于以下目录中仅声明型 mapper 方法：
 - `infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper`
 
-These methods are SQL contracts backed by XML and should be validated with integration tests, not Mockito-only unit tests.
+这类方法是由 XML 驱动的 SQL 契约，应通过集成测试验证，不适合仅用 Mockito 单测。
 
-## Dependencies
+## 依赖
 
-Add test dependencies in `infoq-modules/infoq-system/pom.xml`:
+在 `infoq-modules/infoq-system/pom.xml` 添加测试依赖：
 
 ```xml
 <dependency>
@@ -40,7 +40,7 @@ Add test dependencies in `infoq-modules/infoq-system/pom.xml`:
 </dependency>
 ```
 
-## Template
+## 模板
 
 ```java
 // src/test/java/cc/infoq/system/mapper/support/MapperXmlIT.java
@@ -93,25 +93,25 @@ class SysDictDataMapperXmlIntegrationTest {
 }
 ```
 
-## Naming And Split Rules
+## 命名与拆分规则
 
-- Put mapper XML integration tests under `src/test/java/cc/infoq/system/mapper/xml`.
-- Use one class per mapper contract: `Sys<Domain>MapperXmlIntegrationTest`.
-- Keep assertions focused on that mapper (or a tightly coupled mapper pair in one class if a query spans both mappers).
+- mapper XML 集成测试放在 `src/test/java/cc/infoq/system/mapper/xml`。
+- 每个 mapper 契约对应一个测试类：`Sys<Domain>MapperXmlIntegrationTest`。
+- 断言尽量聚焦单 mapper（若查询跨两个强耦合 mapper，可在一个类内联合断言）。
 
-## SQL Fixture Rules
+## SQL Fixture 规则
 
-- Create isolated test scripts:
+- 创建隔离测试脚本：
   - `src/test/resources/sql/<suite>/schema.sql`
   - `src/test/resources/sql/<suite>/data.sql`
-- Keep only required tables/columns for target queries.
-- Seed only necessary rows to prove filter, sort, join, and null/empty branch behavior.
-- In this project, default fixture path is `sql/mapper-it/{schema.sql,data.sql}` via `@MapperXmlIT`; switch to dedicated suite fixtures only when assertions conflict.
+- 仅保留目标查询所需表/列。
+- 仅注入必要数据行，用于验证筛选、排序、关联、空值/空集分支。
+- 本仓默认 fixture 路径是 `sql/mapper-it/{schema.sql,data.sql}`（由 `@MapperXmlIT` 指定）；仅在断言冲突时切换为专用 suite fixtures。
 
-## Page Return Methods
+## Page 返回方法
 
-For XML statements whose mapper signature returns `Page<T>`, `@MybatisTest` slice may miss MyBatis-Plus pagination runtime behavior.
-In this case, verify SQL semantics via `SqlSessionTemplate`:
+对于 mapper 签名返回 `Page<T>` 的 XML 语句，`@MybatisTest` 切片可能缺失 MyBatis-Plus 分页运行时行为。
+此时可通过 `SqlSessionTemplate` 验证 SQL 语义：
 
 ```java
 List<SysUserVo> rows = sqlSessionTemplate.selectList(
@@ -120,4 +120,4 @@ List<SysUserVo> rows = sqlSessionTemplate.selectList(
 );
 ```
 
-This validates XML SQL and wrapper behavior without binding to runtime pagination interceptors.
+该方式可验证 XML SQL 与 wrapper 行为，且不绑定运行时分页拦截器。

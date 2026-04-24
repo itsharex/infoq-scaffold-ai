@@ -1,29 +1,29 @@
-# Mock Patterns
+# Mock 模式
 
-## Table of Contents
+## 目录
 
-- 1) API module mock
+- 1) API 模块 mock
 - 2) FileSaver mock
-- 3) Element Plus message mock (in setup)
-- 4) Pinia store baseline
-- 5) Request interceptor access
-- 6) Route object helper for tagsView
-- 7) Router + tagsView plugin mock (tab.ts)
-- 8) SSE / WebSocket mock (@vueuse/core)
-- 9) Business bug regression example (websocket ping)
-- 10) getCurrentInstance proxy injection (views/401)
-- 11) requestAnimationFrame + fake timers (scroll-to)
-- 12) Class-style constructor mock resilient to mockReset (jsencrypt)
-- 13) Directive stubs for complex pages (`v-loading`, `v-hasPermi`)
-- 14) Inject `proxy.animate` dependency for transition bindings
-- 15) `el-card` named-slot stub (`header` + `default`)
-- 16) `el-table` + `el-table-column` scoped slot bridge (provide/inject)
-- 17) Force-replace local import component (`vue-cropper`) at module level
-- 18) Child dialog ref/expose mock (`openDialog`/`closeDialog`)
-- 19) ECharts module mock for monitor dashboards
-- 20) Table-column fallback row for optional fields
+- 3) Element Plus message mock（在 setup 中）
+- 4) Pinia store 基线
+- 5) Request interceptor 访问
+- 6) tagsView 路由对象辅助函数
+- 7) Router + tagsView 插件 mock（tab.ts）
+- 8) SSE / WebSocket mock（@vueuse/core）
+- 9) 业务缺陷回归示例（websocket ping）
+- 10) getCurrentInstance proxy 注入（views/401）
+- 11) requestAnimationFrame + fake timers（scroll-to）
+- 12) 对 mockReset 具备韧性的 class 风格构造器 mock（jsencrypt）
+- 13) 复杂页面指令桩（`v-loading`, `v-hasPermi`）
+- 14) 注入 `proxy.animate` 依赖用于过渡绑定
+- 15) `el-card` 命名插槽桩（`header` + `default`）
+- 16) `el-table` + `el-table-column` scoped slot 桥接（provide/inject）
+- 17) 在模块级强制替换本地导入组件（`vue-cropper`）
+- 18) 子弹窗 ref/expose mock（`openDialog`/`closeDialog`）
+- 19) 监控看板 ECharts 模块 mock
+- 20) 可选字段表格列兜底行
 
-## 1) API module mock
+## 1) API 模块 mock
 
 ```ts
 vi.mock('@/api/login', () => ({
@@ -41,7 +41,7 @@ vi.mock('file-saver', () => ({
 }));
 ```
 
-## 3) Element Plus message mock (in setup)
+## 3) Element Plus message mock（在 setup 中）
 
 ```ts
 vi.mock('element-plus/es', () => ({
@@ -59,7 +59,7 @@ vi.mock('element-plus', () => ({
 }));
 ```
 
-## 4) Pinia store baseline
+## 4) Pinia store 基线
 
 ```ts
 beforeEach(() => {
@@ -67,7 +67,7 @@ beforeEach(() => {
 });
 ```
 
-## 5) Request interceptor access
+## 5) Request interceptor 访问
 
 ```ts
 const req = (service as any).interceptors.request.handlers[0].fulfilled;
@@ -75,7 +75,7 @@ const resp = (service as any).interceptors.response.handlers[0].fulfilled;
 const respErr = (service as any).interceptors.response.handlers[0].rejected;
 ```
 
-## 6) Route object helper for tagsView
+## 6) tagsView 路由对象辅助函数
 
 ```ts
 const route = {
@@ -92,7 +92,7 @@ const route = {
 } as unknown as RouteLocationNormalized;
 ```
 
-## 7) Router + tagsView plugin mock (tab.ts)
+## 7) Router + tagsView 插件 mock（tab.ts）
 
 ```ts
 const tabMocks = vi.hoisted(() => ({
@@ -116,7 +116,7 @@ vi.mock('@/router', () => ({ default: tabMocks.router }));
 vi.mock('@/store/modules/tagsView', () => ({ useTagsViewStore: vi.fn(() => tabMocks.store) }));
 ```
 
-## 8) SSE / WebSocket mock (@vueuse/core)
+## 8) SSE / WebSocket mock（@vueuse/core）
 
 ```ts
 const wsMocks = vi.hoisted(() => ({
@@ -134,7 +134,7 @@ vi.mock('@/utils/auth', () => ({ getToken: wsMocks.getToken }));
 vi.mock('@/store/modules/notice', () => ({ useNoticeStore: vi.fn(() => ({ addNotice: wsMocks.addNotice })) }));
 ```
 
-## 9) Business bug regression example (websocket ping)
+## 9) 业务缺陷回归示例（websocket ping）
 
 ```ts
 initWebSocket('/ws/notice');
@@ -143,7 +143,7 @@ options.onMessage({}, { data: 'ping' });
 expect(wsMocks.addNotice).not.toHaveBeenCalled();
 ```
 
-## 10) getCurrentInstance proxy injection (views/401)
+## 10) getCurrentInstance proxy 注入（views/401）
 
 ```ts
 mount(Error401View, {
@@ -158,7 +158,7 @@ mount(Error401View, {
 });
 ```
 
-## 11) requestAnimationFrame + fake timers (scroll-to)
+## 11) requestAnimationFrame + fake timers（scroll-to）
 
 ```ts
 vi.useFakeTimers();
@@ -169,7 +169,7 @@ scrollTo(120, 40, done);
 vi.runAllTimers();
 ```
 
-## 12) Class-style constructor mock resilient to mockReset (jsencrypt)
+## 12) 对 mockReset 具备韧性的 class 风格构造器 mock（jsencrypt）
 
 ```ts
 vi.mock('jsencrypt', () => {
@@ -183,7 +183,7 @@ vi.mock('jsencrypt', () => {
 });
 ```
 
-## 13) Directive stubs for complex pages (`v-loading`, `v-hasPermi`)
+## 13) 复杂页面指令桩（`v-loading`, `v-hasPermi`）
 
 ```ts
 mount(ViewComp, {
@@ -196,7 +196,7 @@ mount(ViewComp, {
 });
 ```
 
-## 14) Inject `proxy.animate` dependency for transition bindings
+## 14) 注入 `proxy.animate` 依赖用于过渡绑定
 
 ```ts
 mount(ViewComp, {
@@ -212,7 +212,7 @@ mount(ViewComp, {
 });
 ```
 
-## 15) `el-card` named-slot stub (`header` + `default`)
+## 15) `el-card` 命名插槽桩（`header` + `default`）
 
 ```ts
 const ElCardStub = defineComponent({
@@ -223,7 +223,7 @@ const ElCardStub = defineComponent({
 });
 ```
 
-## 16) `el-table` + `el-table-column` scoped slot bridge (provide/inject)
+## 16) `el-table` + `el-table-column` scoped slot 桥接（provide/inject）
 
 ```ts
 const TABLE_DATA_SYMBOL = Symbol('table-data');
@@ -246,7 +246,7 @@ const ElTableColumnStub = defineComponent({
 });
 ```
 
-## 17) Force-replace local import component (`vue-cropper`) at module level
+## 17) 在模块级强制替换本地导入组件（`vue-cropper`）
 
 ```ts
 const mocks = vi.hoisted(() => ({
@@ -264,7 +264,7 @@ vi.mock('vue-cropper', () => ({
 }));
 ```
 
-## 18) Child dialog ref/expose mock (`openDialog`/`closeDialog`)
+## 18) 子弹窗 ref/expose mock（`openDialog`/`closeDialog`）
 
 ```ts
 const mocks = vi.hoisted(() => ({
@@ -282,7 +282,7 @@ vi.mock('@/views/monitor/operLog/oper-info-dialog.vue', () => ({
 }));
 ```
 
-## 19) ECharts module mock for monitor dashboards
+## 19) 监控看板 ECharts 模块 mock
 
 ```ts
 const chartMocks = vi.hoisted(() => ({
@@ -299,7 +299,7 @@ chartMocks.init.mockReturnValue({
 });
 ```
 
-## 20) Table-column fallback row for optional fields
+## 20) 可选字段表格列兜底行
 
 ```ts
 const ElTableColumnStub = defineComponent({

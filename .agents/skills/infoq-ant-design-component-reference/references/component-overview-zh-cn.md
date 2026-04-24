@@ -1,8 +1,8 @@
-# Ant Design Component Overview (zh-CN)
+# Ant Design 组件总览（zh-CN）
 
 ## 目录
 
-- Source
+- 来源
 - 通用组件 (4)
 - 布局 (7)
 - 导航 (7)
@@ -12,15 +12,15 @@
 - 其他 (4)
 - 重型组件 (6)
 - Deprecated 快速参考
-- Version-tagged Components Quick List
+- 带版本标记的组件速查
 
-## Source
+## 来源
 
 - URL: `https://ant.design/components/overview-cn/`
-- Checked: `2026-03-12`
-- Displayed version on this page: `6.3.2`
+- 校验日期：`2026-03-12`
+- 页面展示版本：`6.3.2`
 
-Use this file as a quick index, then open official component pages to confirm exact APIs.
+本文件用于快速索引；具体 API 以对应官方组件页面为准。
 
 ## 通用组件 (4)
 
@@ -127,8 +127,8 @@ Use this file as a quick index, then open official component pages to confirm ex
 
 - List (Deprecated)
 
-## Version-tagged Components Quick List
+## 带版本标记的组件速查
 
-Use these checks when a requested component or feature is missing locally:
+当本地代码缺少某组件/特性时，使用以下版本检查：
 
 - Masonry `>= 6.0.0` (shown in sidebar, outside overview categories)

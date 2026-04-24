@@ -1,64 +1,64 @@
-# Profiling
+# 性能分析
 
-Capture Chrome DevTools performance profiles during browser automation for performance analysis.
+在浏览器自动化过程中采集 Chrome DevTools 性能 profile，用于性能分析。
 
-**Related**: [commands.md](commands.md) for full command reference, [SKILL.md](../SKILL.md) for quick start.
+**关联文档**：[commands.md](commands.md)（完整命令参考），[SKILL.md](../SKILL.md)（快速入口）。
 
-## Contents
+## 目录
 
-- [Basic Profiling](#basic-profiling)
-- [Profiler Commands](#profiler-commands)
-- [Categories](#categories)
-- [Use Cases](#use-cases)
-- [Output Format](#output-format)
-- [Viewing Profiles](#viewing-profiles)
-- [Limitations](#limitations)
+- 基础采样
+- Profiler 命令
+- 分类说明
+- 使用场景
+- 输出格式
+- 查看 Profile
+- 限制说明
 
-## Basic Profiling
+## 基础采样
 
 ```bash
-# Start profiling
+# 开始采样
 agent-browser profiler start
 
-# Perform actions
+# 执行动作
 agent-browser navigate https://example.com
 agent-browser click "#button"
 agent-browser wait 1000
 
-# Stop and save
+# 停止并保存
 agent-browser profiler stop ./trace.json
 ```
 
-## Profiler Commands
+## Profiler 命令
 
 ```bash
-# Start profiling with default categories
+# 使用默认 categories 启动采样
 agent-browser profiler start
 
-# Start with custom trace categories
+# 使用自定义 trace categories 启动采样
 agent-browser profiler start --categories "devtools.timeline,v8.execute,blink.user_timing"
 
-# Stop profiling and save to file
+# 停止采样并保存到文件
 agent-browser profiler stop ./trace.json
 ```
 
-## Categories
+## 分类说明
 
-The `--categories` flag accepts a comma-separated list of Chrome trace categories. Default categories include:
+`--categories` 参数接受逗号分隔的 Chrome trace 分类列表。默认包括：
 
-- `devtools.timeline` -- standard DevTools performance traces
-- `v8.execute` -- time spent running JavaScript
-- `blink` -- renderer events
-- `blink.user_timing` -- `performance.mark()` / `performance.measure()` calls
-- `latencyInfo` -- input-to-latency tracking
-- `renderer.scheduler` -- task scheduling and execution
-- `toplevel` -- broad-spectrum basic events
+- `devtools.timeline` -- 标准 DevTools 性能 trace
+- `v8.execute` -- JavaScript 执行耗时
+- `blink` -- 渲染器事件
+- `blink.user_timing` -- `performance.mark()` / `performance.measure()` 调用
+- `latencyInfo` -- 输入到延迟链路追踪
+- `renderer.scheduler` -- 任务调度与执行
+- `toplevel` -- 广谱基础事件
 
-Several `disabled-by-default-*` categories are also included for detailed timeline, call stack, and V8 CPU profiling data.
+同时包含若干 `disabled-by-default-*` 分类，用于更细粒度的 timeline、调用栈与 V8 CPU 采样数据。
 
-## Use Cases
+## 使用场景
 
-### Diagnosing Slow Page Loads
+### 诊断页面加载缓慢
 
 ```bash
 agent-browser profiler start
@@ -67,7 +67,7 @@ agent-browser wait --load networkidle
 agent-browser profiler stop ./page-load-profile.json
 ```
 
-### Profiling User Interactions
+### 分析用户交互性能
 
 ```bash
 agent-browser navigate https://app.example.com
@@ -77,7 +77,7 @@ agent-browser wait 2000
 agent-browser profiler stop ./interaction-profile.json
 ```
 
-### CI Performance Regression Checks
+### CI 性能回归检查
 
 ```bash
 #!/bin/bash
@@ -87,9 +87,9 @@ agent-browser wait --load networkidle
 agent-browser profiler stop "./profiles/build-${BUILD_ID}.json"
 ```
 
-## Output Format
+## 输出格式
 
-The output is a JSON file in Chrome Trace Event format:
+输出是 Chrome Trace Event 格式的 JSON 文件：
 
 ```json
 {
@@ -103,18 +103,18 @@ The output is a JSON file in Chrome Trace Event format:
 }
 ```
 
-The `metadata.clock-domain` field is set based on the host platform (Linux or macOS). On Windows it is omitted.
+`metadata.clock-domain` 字段会按宿主平台（Linux/macOS）设置；Windows 下会省略。
 
-## Viewing Profiles
+## 查看 Profile
 
-Load the output JSON file in any of these tools:
+可通过以下工具加载输出 JSON：
 
-- **Chrome DevTools**: Performance panel > Load profile (Ctrl+Shift+I > Performance)
-- **Perfetto UI**: https://ui.perfetto.dev/ -- drag and drop the JSON file
-- **Trace Viewer**: `chrome://tracing` in any Chromium browser
+- **Chrome DevTools**：Performance panel > Load profile（Ctrl+Shift+I > Performance）
+- **Perfetto UI**：https://ui.perfetto.dev/ -- 将 JSON 文件拖入
+- **Trace Viewer**：任意 Chromium 浏览器中的 `chrome://tracing`
 
-## Limitations
+## 限制说明
 
-- Only works with Chromium-based browsers (Chrome, Edge). Not supported on Firefox or WebKit.
-- Trace data accumulates in memory while profiling is active (capped at 5 million events). Stop profiling promptly after the area of interest.
-- Data collection on stop has a 30-second timeout. If the browser is unresponsive, the stop command may fail.
+- 仅支持 Chromium 内核浏览器（Chrome、Edge），不支持 Firefox/WebKit。
+- 采样期间 trace 数据会在内存累积（上限 500 万 events），完成目标区间后应及时停止。
+- 停止时的数据采集有 30 秒超时；浏览器无响应时，stop 命令可能失败。

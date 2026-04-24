@@ -1,6 +1,6 @@
-# Maintenance Guide
+# 维护指南
 
-## When to Re-compress
+## 何时需要重新压缩
 
 - 新增/重命名模块、目录结构变化。
 - 构建或测试命令变化。
@@ -8,14 +8,14 @@
 - docs root、workspace `AGENTS.md`、skill root 或真值文件入口变化。
 - AGENTS 行数明显膨胀，出现解释性段落或长 SOP 回流。
 
-## Warning Signals
+## 预警信号
 
 - 出现多个 `##` 小节、长段落或完整 SOP。
 - 索引行与代码实际路径不一致。
 - 同一规则在多行重复。
 - 动作型 workflow 重新堆回根 `AGENTS.md`。
 
-## Maintenance Flow
+## 维护流程
 
 1. 备份当前 `AGENTS.md`。
 2. 对照现有仓库结构和真值文件核验路径。

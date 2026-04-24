@@ -1,6 +1,6 @@
-# Priority Matrix
+# 优先级矩阵
 
-## P0 (must first)
+## P0（必须优先）
 
 - `src/utils/request.ts`
 - `src/utils/auth.ts`
@@ -17,34 +17,34 @@
 
 ## P1
 
-- Shared components: `ScreenFull`, `SvgIcon`, `Editor`, `FileUpload`, `ImageUpload`
-- Layout pieces: `MainLayout`, `TagsViewBar`, keep-alive behavior
-- Bridge or shell components that connect router/layout/runtime state
+- 共享组件：`ScreenFull`, `SvgIcon`, `Editor`, `FileUpload`, `ImageUpload`
+- 布局部件：`MainLayout`, `TagsViewBar`, keep-alive 行为
+- 连接 router/layout/runtime 状态的桥接或壳层组件
 
 ## P2
 
-- Authentication and entry pages: `pages/login`, `pages/home`
-- Representative monitored pages: `pages/monitor/cache`
-- Then grouped domain pages with stable mocks: `pages/system/*`, `pages/monitor/*`
+- 鉴权与入口页面：`pages/login`, `pages/home`
+- 代表性监控页面：`pages/monitor/cache`
+- 再扩展到 mock 稳定的分组业务页：`pages/system/*`, `pages/monitor/*`
 
 ## P3
 
-- Dense CRUD and authorization pages covered by grouped suites:
+- 复杂 CRUD 与鉴权页面由分组套件覆盖：
   - `tests/pages/system-pages.test.tsx`
   - `tests/pages/ops-pages.test.tsx`
   - `tests/pages/monitor-auth-profile.test.tsx`
-- Prefer extending an existing grouped suite before creating a fragmented one-off file unless the page has unique runtime requirements.
+- 除非页面存在独特运行时需求，否则优先扩展已有分组套件，避免碎片化 one-off 文件。
 
-### Current Coverage Shape
+### 当前覆盖形态
 
-- Foundations already covered: utils, stores, router guards, route transforms
-- Reusable UI already covered: common components, upload/editor wrappers, layout chrome
-- Representative pages already covered: login, cache, system, monitor, auth/profile flows
-- Use the matrix to fill business branches and regressions first, not to chase arbitrary percentage bumps
+- 已覆盖基线：utils、stores、router guards、route transforms
+- 已覆盖复用 UI：通用组件、upload/editor 包装器、布局外壳
+- 已覆盖代表页：login、cache、system、monitor、auth/profile 流程
+- 使用矩阵优先补业务分支与回归，不要追逐无意义的覆盖率数字
 
-## Definition of Done per file
+## 单文件完成定义
 
-- Happy path plus at least one meaningful error or guard branch
-- User-visible output, redirect, or notification asserted
-- Store mutation, router transition, request header, or download side effect asserted when applicable
-- Browser-only APIs stubbed exactly, not broadly silenced
+- Happy path + 至少一个有意义的错误分支或守卫分支
+- 断言用户可见输出、重定向或通知
+- 适用时断言 store 变更、路由跳转、请求头或下载副作用
+- 浏览器专属 API 必须精确 stub，禁止粗暴静音

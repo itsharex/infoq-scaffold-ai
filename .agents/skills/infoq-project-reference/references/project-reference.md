@@ -1,29 +1,29 @@
-# InfoQ Project Reference
+# InfoQ 项目参考
 
-## Table of Contents
+## 目录
 
-- Project Scope
-- Backend Reference
-- Admin Frontend Reference
+- 项目范围
+- 后端参考
+- 管理端前端参考
   - React Admin
   - Vue Admin
-- Mini Program Frontend Reference
+- 小程序前端参考
   - React Weapp
   - Vue Weapp
-- Infrastructure And Operations
-- Conventions
-- Commands
+- 基础设施与运维
+- 约定
+- 命令
   - Backend
   - React Admin
   - Vue Admin
   - React Weapp
   - Vue Weapp
-- Validation And Delivery
+- 验证与交付
 
-## Project Scope
+## 项目范围
 
-- Project root: `./`
-- Active workspaces:
+- 项目根目录：`./`
+- 活跃工作区：
   - `infoq-scaffold-backend`
   - `infoq-scaffold-frontend-react`
   - `infoq-scaffold-frontend-vue`
@@ -33,7 +33,7 @@
   - `script`
   - `sql`
   - `doc`
-- Workspace instruction files:
+- 工作区指令文件：
   - `AGENTS.md`
   - `infoq-scaffold-backend/AGENTS.md`
   - `infoq-scaffold-frontend-react/AGENTS.md`
@@ -41,26 +41,26 @@
   - `infoq-scaffold-frontend-weapp-react/AGENTS.md`
   - `infoq-scaffold-frontend-weapp-vue/AGENTS.md`
 
-## Backend Reference
+## 后端参考
 
-- Backend modules:
+- 后端模块：
   - `infoq-core`: `infoq-core-bom`, `infoq-core-common`, `infoq-core-data`
   - `infoq-plugin`: `encrypt`, `excel`, `jackson`, `log`, `mail`, `mybatis`, `oss`, `redis`, `satoken`, `security`, `sensitive`, `sse`, `translation`, `web`, `websocket`, `doc`
   - `infoq-modules`: `system`
   - `infoq-admin`
-- Backend entry: `infoq-scaffold-backend/infoq-admin/src/main/java/cc/infoq/admin/SysAdminApplication.java`
-- Backend config files:
+- 后端入口：`infoq-scaffold-backend/infoq-admin/src/main/java/cc/infoq/admin/SysAdminApplication.java`
+- 后端配置文件：
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/application.yml`
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/application-dev.yml`
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/application-local.yml`
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml`
   - `infoq-scaffold-backend/infoq-admin/src/main/resources/logback-plus.xml`
 
-## Admin Frontend Reference
+## 管理端前端参考
 
 ### React Admin
 
-- Key directories:
+- 关键目录：
   - `infoq-scaffold-frontend-react/src/pages`
   - `infoq-scaffold-frontend-react/src/components`
   - `infoq-scaffold-frontend-react/src/api`
@@ -68,7 +68,7 @@
   - `infoq-scaffold-frontend-react/src/router`
   - `infoq-scaffold-frontend-react/src/utils`
   - `infoq-scaffold-frontend-react/tests`
-- Key files:
+- 关键文件：
   - `infoq-scaffold-frontend-react/package.json`
   - `infoq-scaffold-frontend-react/vite.config.ts`
   - `infoq-scaffold-frontend-react/eslint.config.js`
@@ -77,7 +77,7 @@
 
 ### Vue Admin
 
-- Key directories:
+- 关键目录：
   - `infoq-scaffold-frontend-vue/src/views`
   - `infoq-scaffold-frontend-vue/src/components`
   - `infoq-scaffold-frontend-vue/src/api`
@@ -86,18 +86,18 @@
   - `infoq-scaffold-frontend-vue/src/utils`
   - `infoq-scaffold-frontend-vue/src/plugins`
   - `infoq-scaffold-frontend-vue/tests`
-- Key files:
+- 关键文件：
   - `infoq-scaffold-frontend-vue/package.json`
   - `infoq-scaffold-frontend-vue/vite.config.ts`
   - `infoq-scaffold-frontend-vue/eslint.config.ts`
   - `infoq-scaffold-frontend-vue/.env.development`
   - `infoq-scaffold-frontend-vue/tests/setup.ts`
 
-## Mini Program Frontend Reference
+## 小程序前端参考
 
 ### React Weapp
 
-- Key directories:
+- 关键目录：
   - `infoq-scaffold-frontend-weapp-react/src/pages`
   - `infoq-scaffold-frontend-weapp-react/src/components`
   - `infoq-scaffold-frontend-weapp-react/src/api`
@@ -105,7 +105,7 @@
   - `infoq-scaffold-frontend-weapp-react/src/utils`
   - `infoq-scaffold-frontend-weapp-react/src/styles`
   - `infoq-scaffold-frontend-weapp-react/tests`
-- Key files:
+- 关键文件：
   - `infoq-scaffold-frontend-weapp-react/package.json`
   - `infoq-scaffold-frontend-weapp-react/config/index.ts`
   - `infoq-scaffold-frontend-weapp-react/.env.development`
@@ -113,7 +113,7 @@
 
 ### Vue Weapp
 
-- Key directories:
+- 关键目录：
   - `infoq-scaffold-frontend-weapp-vue/src/pages`
   - `infoq-scaffold-frontend-weapp-vue/src/components`
   - `infoq-scaffold-frontend-weapp-vue/src/api`
@@ -121,94 +121,94 @@
   - `infoq-scaffold-frontend-weapp-vue/src/utils`
   - `infoq-scaffold-frontend-weapp-vue/src/styles`
   - `infoq-scaffold-frontend-weapp-vue/tests`
-- Key files:
+- 关键文件：
   - `infoq-scaffold-frontend-weapp-vue/package.json`
   - `infoq-scaffold-frontend-weapp-vue/vite.config.ts`
   - `infoq-scaffold-frontend-weapp-vue/.env.development`
   - `infoq-scaffold-frontend-weapp-vue/manifest.json`
   - `infoq-scaffold-frontend-weapp-vue/pages.json`
 
-## Infrastructure And Operations
+## 基础设施与运维
 
-- Scripts:
+- 脚本：
   - `script/generate-app-icon.js`
   - `script/build-open-wechat-devtools.mjs`
   - `script/bin/infoq.sh`
   - `script/bin/deploy-frontend.sh`
-- Compose and gateway:
+- Compose 与网关：
   - `script/docker/docker-compose.yml`
   - `script/docker/nginx/conf/nginx.conf`
   - `script/docker/redis/conf/redis.conf`
-- SQL bootstrap:
+- SQL 初始化文件：
   - `sql/infoq_scaffold_2.0.0.sql`
 
-## Conventions
+## 约定
 
-- Architecture: `Controller -> Service -> Mapper -> Entity`
-- Java package convention: `cc.infoq.{module}.{layer}`
-- Java entities and mappers commonly use `Sys*`
-- Vue and React components use PascalCase
-- TypeScript utils and hooks use camelCase
-- All project files use UTF-8
-- Backend `.editorconfig` uses 4 spaces; frontend uses 2 spaces
-- Frontend package manager policy: prefer `pnpm`; if unavailable, fall back to equivalent `npm` commands
+- 架构：`Controller -> Service -> Mapper -> Entity`
+- Java 包命名约定：`cc.infoq.{module}.{layer}`
+- Java 实体与 mapper 通常使用 `Sys*`
+- Vue 与 React 组件使用 PascalCase
+- TypeScript utils 与 hooks 使用 camelCase
+- 项目文件统一 UTF-8
+- 后端 `.editorconfig` 使用 4 空格；前端使用 2 空格
+- 前端包管理策略：优先 `pnpm`，不可用时回退等价 `npm` 命令
 
-## Commands
+## 命令
 
 ### Backend
 
-- Build: `cd infoq-scaffold-backend && mvn clean package -P dev`
-- Run: `cd infoq-scaffold-backend && mvn spring-boot:run -pl infoq-admin`
-- Targeted test: `cd infoq-scaffold-backend && mvn -pl infoq-modules/infoq-system -am -DskipTests=false test`
+- 构建：`cd infoq-scaffold-backend && mvn clean package -P dev`
+- 运行：`cd infoq-scaffold-backend && mvn spring-boot:run -pl infoq-admin`
+- 定向测试：`cd infoq-scaffold-backend && mvn -pl infoq-modules/infoq-system -am -DskipTests=false test`
 
 ### React Admin
 
-- Install: `cd infoq-scaffold-frontend-react && pnpm install`
-- Dev: `cd infoq-scaffold-frontend-react && pnpm run dev`
-- Test: `cd infoq-scaffold-frontend-react && pnpm run test`
-- Coverage: `cd infoq-scaffold-frontend-react && pnpm run test:coverage`
-- Lint: `cd infoq-scaffold-frontend-react && pnpm run lint`
-- Build: `cd infoq-scaffold-frontend-react && pnpm run build:prod`
+- 安装：`cd infoq-scaffold-frontend-react && pnpm install`
+- 开发：`cd infoq-scaffold-frontend-react && pnpm run dev`
+- 测试：`cd infoq-scaffold-frontend-react && pnpm run test`
+- 覆盖率：`cd infoq-scaffold-frontend-react && pnpm run test:coverage`
+- Lint：`cd infoq-scaffold-frontend-react && pnpm run lint`
+- 构建：`cd infoq-scaffold-frontend-react && pnpm run build:prod`
 
 ### Vue Admin
 
-- Install: `cd infoq-scaffold-frontend-vue && pnpm install`
-- Dev: `cd infoq-scaffold-frontend-vue && pnpm run dev`
-- Test: `cd infoq-scaffold-frontend-vue && pnpm run test:unit`
-- Coverage: `cd infoq-scaffold-frontend-vue && pnpm run test:unit:coverage`
-- Lint: `cd infoq-scaffold-frontend-vue && pnpm run lint:eslint`
-- Build: `cd infoq-scaffold-frontend-vue && pnpm run build:prod`
+- 安装：`cd infoq-scaffold-frontend-vue && pnpm install`
+- 开发：`cd infoq-scaffold-frontend-vue && pnpm run dev`
+- 测试：`cd infoq-scaffold-frontend-vue && pnpm run test:unit`
+- 覆盖率：`cd infoq-scaffold-frontend-vue && pnpm run test:unit:coverage`
+- Lint：`cd infoq-scaffold-frontend-vue && pnpm run lint:eslint`
+- 构建：`cd infoq-scaffold-frontend-vue && pnpm run build:prod`
 
 ### React Weapp
 
-- Install: `cd infoq-scaffold-frontend-weapp-react && pnpm install`
-- Unit tests: `cd infoq-scaffold-frontend-weapp-react && pnpm run test`
-- Coverage: `cd infoq-scaffold-frontend-weapp-react && pnpm run test:coverage`
-- Lint: `cd infoq-scaffold-frontend-weapp-react && pnpm run lint`
-- Build dev bundle: `cd infoq-scaffold-frontend-weapp-react && pnpm run build:weapp:dev`
-- Open WeChat DevTools dev bundle: `pnpm --dir infoq-scaffold-frontend-weapp-react build-open:weapp:dev`
-- Local runtime gate: `cd infoq-scaffold-frontend-weapp-react && pnpm run verify:local`
+- 安装：`cd infoq-scaffold-frontend-weapp-react && pnpm install`
+- 单测：`cd infoq-scaffold-frontend-weapp-react && pnpm run test`
+- 覆盖率：`cd infoq-scaffold-frontend-weapp-react && pnpm run test:coverage`
+- Lint：`cd infoq-scaffold-frontend-weapp-react && pnpm run lint`
+- 构建 dev 包：`cd infoq-scaffold-frontend-weapp-react && pnpm run build:weapp:dev`
+- 打开微信开发者工具 dev 包：`pnpm --dir infoq-scaffold-frontend-weapp-react build-open:weapp:dev`
+- 本地运行门禁：`cd infoq-scaffold-frontend-weapp-react && pnpm run verify:local`
 
-Before `build-open:weapp:dev`, update `infoq-scaffold-frontend-weapp-react/.env.development` `TARO_APP_ID` to your own AppID.
+在 `build-open:weapp:dev` 之前，将 `infoq-scaffold-frontend-weapp-react/.env.development` 中 `TARO_APP_ID` 改为你的 AppID。
 
 ### Vue Weapp
 
-- Install: `cd infoq-scaffold-frontend-weapp-vue && pnpm install`
-- Typecheck: `cd infoq-scaffold-frontend-weapp-vue && pnpm run typecheck`
-- Unit tests: `cd infoq-scaffold-frontend-weapp-vue && pnpm run test`
-- Coverage: `cd infoq-scaffold-frontend-weapp-vue && pnpm run test:coverage`
-- Build dev bundle: `cd infoq-scaffold-frontend-weapp-vue && pnpm run build:weapp:dev`
-- Open WeChat DevTools dev bundle: `pnpm --dir infoq-scaffold-frontend-weapp-vue build-open:weapp:dev`
-- Local runtime gate: `cd infoq-scaffold-frontend-weapp-vue && pnpm run verify:local`
+- 安装：`cd infoq-scaffold-frontend-weapp-vue && pnpm install`
+- 类型检查：`cd infoq-scaffold-frontend-weapp-vue && pnpm run typecheck`
+- 单测：`cd infoq-scaffold-frontend-weapp-vue && pnpm run test`
+- 覆盖率：`cd infoq-scaffold-frontend-weapp-vue && pnpm run test:coverage`
+- 构建 dev 包：`cd infoq-scaffold-frontend-weapp-vue && pnpm run build:weapp:dev`
+- 打开微信开发者工具 dev 包：`pnpm --dir infoq-scaffold-frontend-weapp-vue build-open:weapp:dev`
+- 本地运行门禁：`cd infoq-scaffold-frontend-weapp-vue && pnpm run verify:local`
 
-Before `build-open:weapp:dev`, update `infoq-scaffold-frontend-weapp-vue/.env.development` `TARO_APP_ID` to your own AppID.
+在 `build-open:weapp:dev` 之前，将 `infoq-scaffold-frontend-weapp-vue/.env.development` 中 `TARO_APP_ID` 改为你的 AppID。
 
-## Validation And Delivery
+## 验证与交付
 
-- Default execution loop: `main-flow verification -> targeted tests -> lint/build -> diff review`
-- Delivery planning should define one acceptance contract covering functional scope, non-goals, exception handling, required logs or observability, and rollback conditions
-- Releasable changes must verify environment/config prerequisites and external dependencies before deployment
-- Destructive or high-risk operations affecting shared environments, data, or deployment state require explicit confirmation
-- Backend runtime/login changes should use `infoq-login-success-check` and `infoq-backend-smoke-test`
-- Admin runtime verification belongs to `infoq-react-runtime-verification` or `infoq-vue-runtime-verification`
-- Weapp runtime verification belongs to the same React or Vue family runtime skill via `references/weapp/*`
+- 默认执行闭环：`main-flow verification -> targeted tests -> lint/build -> diff review`
+- 交付规划应定义 acceptance contract，覆盖功能范围、非目标、异常处理、所需日志/可观测性、回滚条件
+- 可发布变更在部署前必须验证环境/配置前置条件与外部依赖
+- 影响共享环境、数据或部署状态的破坏性/高风险操作必须显式确认
+- 后端运行时/登录改动应使用 `infoq-login-success-check` 与 `infoq-backend-smoke-test`
+- Admin 运行态验证归属 `infoq-react-runtime-verification` 或 `infoq-vue-runtime-verification`
+- Weapp 运行态验证归属同家族 React/Vue 运行态技能（通过 `references/weapp/*`）

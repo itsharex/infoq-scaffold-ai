@@ -1,6 +1,6 @@
-# AGENTS.md Templates & Examples
+# AGENTS.md 模板与示例
 
-## 1) Minimal Vercel-Style Passive Index Template
+## 1) 最小化 Vercel 风格被动索引模板
 
 以下模板受 Vercel 压缩 docs-index 模式启发，目标是让根 `AGENTS.md` 成为稳定的被动上下文和检索入口，而不是展开式教程文档。
 
@@ -18,7 +18,7 @@
 |PR Checklist:scope|verification|linked issue
 ```
 
-## 2) Backend + Frontend Root Index Template
+## 2) Backend + Frontend 根索引模板
 
 ```markdown
 # AGENTS.md
@@ -37,7 +37,7 @@
 |PR Checklist:changed modules|verification commands|config/sql impact
 ```
 
-## 3) High-Signal Compression Pattern
+## 3) 高信号压缩模式
 
 - 先写 `|IMPORTANT:`，再写作用域与分层，再写 docs root / workspace AGENTS / skill root，再写命令与门禁。
 - 一行一个主题，避免复合语义。

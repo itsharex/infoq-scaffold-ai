@@ -1,6 +1,6 @@
-# Weapp Commands
+# Weapp 命令
 
-## Full Validation
+## 全量验证
 
 ```bash
 cd infoq-scaffold-frontend-weapp-react
@@ -11,29 +11,29 @@ pnpm run build:weapp:dev
 pnpm run build:weapp
 ```
 
-## Targeted Test
+## 定向测试
 
 ```bash
 cd infoq-scaffold-frontend-weapp-react
 pnpm exec vitest --run --config vitest.config.ts tests/core/request.test.ts
 ```
 
-## Local Runtime Follow-Up
+## 本地运行态后续验证
 
 ```bash
 cd infoq-scaffold-frontend-weapp-react
 pnpm run verify:local
 ```
 
-## Exact DevTools Open Command
+## 精确 DevTools 打开命令
 
 ```bash
 pnpm --dir infoq-scaffold-frontend-weapp-react build-open:weapp:dev
 ```
 
-Before this command, update `infoq-scaffold-frontend-weapp-react/.env.development` `TARO_APP_ID` to your own AppID.
+执行前先将 `infoq-scaffold-frontend-weapp-react/.env.development` 中 `TARO_APP_ID` 改为你自己的 AppID。
 
-## Runtime Smoke Skill Entry
+## 运行态冒烟技能入口
 
 ```bash
 bash .agents/skills/infoq-react-runtime-verification/scripts/run_weapp_smoke.sh --suite core

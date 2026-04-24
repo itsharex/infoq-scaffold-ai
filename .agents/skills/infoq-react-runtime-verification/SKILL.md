@@ -1,52 +1,52 @@
 ---
 name: infoq-react-runtime-verification
-description: Run repository-specific runtime verification for the React family in this project, covering `infoq-scaffold-frontend-react` admin and `infoq-scaffold-frontend-weapp-react` mini-program flows. Use when users ask for React login checks, route checks, local stack startup or restart, screenshots, console diagnostics, or React weapp smoke/e2e verification. Choose `admin` vs `weapp` through this skill's client-specific references and scripts. Prefer `infoq-browser-automation` for generic non-repository browser work.
+description: 执行本项目 React 家族的仓库专用运行态验证，覆盖 `infoq-scaffold-frontend-react` 管理端与 `infoq-scaffold-frontend-weapp-react` 小程序流程。适用于 React 登录校验、路由校验、本地栈启动/重启、截图、控制台诊断与小程序 smoke/e2e；按 `admin`/`weapp` 参考与脚本分流，通用站点浏览器任务优先使用 `infoq-browser-automation`。
 ---
 
-# InfoQ React Runtime Verification
+# InfoQ React 运行态验证
 
-This skill owns one job only: runtime verification for the React family in this repository.
-It requires the local backend plus the relevant React client runtime. Admin verification relies on browser automation; mini-program verification relies on WeChat DevTools and the workspace `build-open` scripts.
-It covers two clients:
+本技能只负责一件事：本仓库 React 家族的运行态验证。
+它依赖本地后端和相应 React 客户端运行时。Admin 验证依赖浏览器自动化；小程序验证依赖微信开发者工具与工作区 `build-open` 脚本。
+覆盖两个客户端：
 
 - `admin`: `infoq-scaffold-frontend-react`
 - `weapp`: `infoq-scaffold-frontend-weapp-react`
 
-Do not split this work into a separate run-dev-stack skill and a separate weapp smoke skill. Keep the workflow here and select the client-specific references that match the task.
+不要把这项工作再次拆成 run-dev-stack 技能和 weapp smoke 技能。流程统一放在这里，并按任务选择对应客户端参考文档。
 
-## Client Selection
+## 客户端选择
 
-1. If the task targets browser login, route guards, page screenshots, console diagnostics, or backend + admin startup, use the `admin` path.
-2. If the task targets WeChat DevTools open flow, mini-program login, route traversal, API contract coverage, or e2e smoke, use the `weapp` path.
-3. If the request is generic website automation without repository-specific bootstrap, use `infoq-browser-automation` instead.
+1. 若任务涉及浏览器登录、路由守卫、页面截图、控制台诊断、后端+admin 启动，使用 `admin` 路径。
+2. 若任务涉及微信开发者工具打开流程、小程序登录、路由遍历、API 契约覆盖或 e2e 冒烟，使用 `weapp` 路径。
+3. 若是非仓库特定启动流程的通用网站自动化，改用 `infoq-browser-automation`。
 
-## Admin Workflow
+## Admin 工作流
 
-1. Start or restart the backend + React admin stack with `scripts/start_admin_dev_stack.sh`.
-2. Acquire a deterministic login token with `scripts/print_admin_login_inject_snippet.sh`.
-3. Enumerate real backend routes with `scripts/fetch_admin_routes_with_token.sh` instead of guessing route paths.
-4. Use `infoq-browser-automation` or Playwright MCP to open `http://127.0.0.1:5174/login`, inject the token, navigate target routes, capture screenshots, and inspect console errors.
-5. Stop only the processes started by this skill with `scripts/stop_admin_dev_stack.sh`.
+1. 使用 `scripts/start_admin_dev_stack.sh` 启动或重启 backend + React admin 栈。
+2. 使用 `scripts/print_admin_login_inject_snippet.sh` 获取可复现登录 token。
+3. 通过 `scripts/fetch_admin_routes_with_token.sh` 枚举真实后端路由，禁止猜测路径。
+4. 使用 `infoq-browser-automation` 或 Playwright MCP 打开 `http://127.0.0.1:5174/login`，注入 token、跳转目标路由、截图并检查控制台错误。
+5. 使用 `scripts/stop_admin_dev_stack.sh` 仅停止本技能启动的进程。
 
-## Weapp Workflow
+## Weapp 工作流
 
-1. Before any `build-open:weapp` command, replace `TARO_APP_ID` in `infoq-scaffold-frontend-weapp-react/.env.development` with your own mini-program AppID. Empty values and `touristappid` are rejected by the launcher script.
-2. Use the exact local open command when the task is “自动化启动小程序” or “打开微信开发者工具联调”:
+1. 在任何 `build-open:weapp` 命令前，将 `infoq-scaffold-frontend-weapp-react/.env.development` 中的 `TARO_APP_ID` 替换为你自己的小程序 AppID。空值和 `touristappid` 会被启动脚本拒绝。
+2. 当任务是“自动化启动小程序”或“打开微信开发者工具联调”时，使用以下精确本地命令：
    - `pnpm --dir infoq-scaffold-frontend-weapp-react build-open:weapp:dev`
-3. For deterministic smoke or e2e verification, use `scripts/run_weapp_smoke.sh` and pick `--suite smoke|core|full` based on scope.
-4. When the smoke flow needs backend login, keep backend reachable on `http://127.0.0.1:8080` and disable captcha.
-5. Treat `[object Object]` in smoke logs as a product defect, not a tolerable test artifact.
+3. 进行可复现的 smoke/e2e 验证时，使用 `scripts/run_weapp_smoke.sh`，并根据范围选择 `--suite smoke|core|full`。
+4. 若 smoke 流程需要后端登录，确保后端 `http://127.0.0.1:8080` 可达并关闭验证码。
+5. 将 smoke 日志中的 `[object Object]` 视为产品缺陷，而非可容忍测试现象。
 
-## Guardrails
+## 护栏
 
-- Do not reintroduce a shared-base helper skill under `.agents/skills` for React runtime work.
-- Do not guess admin routes when the backend route API can be queried.
-- Do not hardcode mini-program AppID into source changes for local verification; keep it in `.env.*` or shell env.
-- Do not mark runtime verification as passed when browser or DevTools startup failed.
+- 不要在 `.agents/skills` 下为 React 运行态工作重新引入共享底座 helper skill。
+- 当后端路由 API 可查询时，禁止猜测 admin 路由。
+- 本地验证时不要把小程序 AppID 硬编码进源码，保留在 `.env.*` 或 shell 环境变量中。
+- 当浏览器或开发者工具启动失败时，禁止标记运行态验证通过。
 
-## References
+## 参考
 
-Load only what is needed:
+按需加载：
 
 - `references/admin/commands.md`
 - `references/weapp/commands.md`

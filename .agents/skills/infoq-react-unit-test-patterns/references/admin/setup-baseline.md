@@ -1,6 +1,6 @@
-# Setup Baseline (infoq-scaffold-frontend-react)
+# 基线准备（infoq-scaffold-frontend-react）
 
-## Required Files
+## 必需文件
 
 - `vite.config.ts`
 - `tests/setup.ts`
@@ -8,7 +8,7 @@
 - `tests/**/*.test.ts`
 - `tests/**/*.test.tsx`
 
-## vite.config.ts Essentials
+## `vite.config.ts` 关键项
 
 - `test.environment: 'jsdom'`
 - `test.setupFiles: ['./tests/setup.ts']`
@@ -18,16 +18,16 @@
 - `test.mockReset`, `test.clearMocks`, and `test.restoreMocks` enabled
 - Alias: `@ -> ./src`
 
-## setup.ts Essentials
+## `setup.ts` 关键项
 
-- Load `@testing-library/jest-dom/vitest`
-- Define memory `localStorage` and `sessionStorage` at top-level before app modules read them
+- 加载 `@testing-library/jest-dom/vitest`
+- 在应用模块读取前，于顶层定义内存版 `localStorage` 与 `sessionStorage`
 - Polyfill `window.matchMedia`
-- Provide `ResizeObserver`
-- Keep `window.getComputedStyle` callable in jsdom
-- Load `@/lang` once so i18n-dependent components render deterministically
+- 提供 `ResizeObserver`
+- 保证 `window.getComputedStyle` 在 jsdom 下可调用
+- 预先加载一次 `@/lang`，确保依赖 i18n 的组件渲染可确定
 
-## package.json Scripts
+## `package.json` 脚本
 
 ```json
 {

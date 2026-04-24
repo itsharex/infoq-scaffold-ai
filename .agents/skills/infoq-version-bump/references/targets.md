@@ -1,15 +1,15 @@
-# Managed Targets
+# 受管目标
 
-## Version Fields Updated
+## 版本字段更新范围
 
 - `infoq-scaffold-backend/pom.xml`
-  - root `<revision>`
+  - 根 `<revision>`
 - `infoq-scaffold-backend/infoq-core/infoq-core-bom/pom.xml`
   - BOM `<revision>`
 - `infoq-scaffold-frontend-react/package.json`
-  - top-level `"version"`
+  - 顶层 `"version"`
 - `infoq-scaffold-frontend-vue/package.json`
-  - top-level `"version"`
+  - 顶层 `"version"`
 - `README.md`
   - `![Version](https://img.shields.io/badge/Version-x.y.z-...)`
 - `doc/docker-compose-deploy.md`
@@ -25,11 +25,11 @@
   - `info.setVersion("x.y.z")`
   - `assertEquals("x.y.z", properties.getInfo().getVersion())`
 
-## SQL Filename Guard
+## SQL 文件名护栏
 
-The skill does not rename SQL files automatically.
+此技能不会自动重命名 SQL 文件。
 
-It validates that these files still reference the currently existing SQL bootstrap file:
+它会校验以下文件是否仍引用当前实际存在的 SQL 初始化文件：
 
 - `README.md`
 - `doc/docker-compose-deploy.md`
@@ -37,11 +37,11 @@ It validates that these files still reference the currently existing SQL bootstr
 - `script/docker/docker-compose.yml`
 - `.agents/skills/infoq-project-reference/references/project-reference.md`
 
-If those references drift from the real file under `sql/`, the script fails and requires a deliberate follow-up task.
+若这些引用与 `sql/` 下真实文件不一致，脚本会失败，并要求显式后续任务处理。
 
-## Non-Goals
+## 非目标
 
-- do not rename `sql/infoq_scaffold_*.sql`
-- do not update dependency versions such as third-party package or framework versions
-- do not edit lockfiles
-- do not run release, deploy, or image push steps
+- 不重命名 `sql/infoq_scaffold_*.sql`
+- 不更新依赖版本（如第三方包或框架版本）
+- 不修改 lockfile
+- 不执行 release、deploy 或镜像推送步骤

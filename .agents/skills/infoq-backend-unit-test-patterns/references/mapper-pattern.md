@@ -1,14 +1,14 @@
-# Mapper Pattern
+# Mapper 测试模式
 
-## Scope
+## 适用范围
 
-Use for interfaces under:
+适用于以下目录下的接口：
 - `infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper`
 
-Apply unit tests only to mapper `default` methods that contain Java-side logic or delegation.
-Skip pure SQL declarations in unit tests and cover them in integration tests.
+仅对包含 Java 侧逻辑或委派的 mapper `default` 方法编写单测。
+纯 SQL 声明方法不做单测，应放入集成测试覆盖。
 
-## Template (default delegation)
+## 模板（default 委派）
 
 ```java
 @Tag("dev")
@@ -28,17 +28,17 @@ class MapperDefaultMethodTest {
 }
 ```
 
-## Decision Rule
+## 决策规则
 
-- Write unit tests:
-  - `default` method delegates to `selectList/selectVoList/selectVoPage/selectCount/delete/selectVoById`.
-  - `default` method has Java aggregation/transform logic that can be verified with mocks.
-- Do not write unit tests:
-  - Interface methods without body (`abstract`) that are SQL-only mapper contracts.
-  - Methods that depend on MyBatis runtime caches and are flaky in plain Mockito context.
-  - For SQL-only contracts, use `references/mapper-integration-pattern.md`.
+- 应写单测：
+  - `default` 方法委派到 `selectList/selectVoList/selectVoPage/selectCount/delete/selectVoById`。
+  - `default` 方法包含可用 mock 验证的 Java 聚合/转换逻辑。
+- 不写单测：
+  - 无方法体（`abstract`）且仅承载 SQL 契约的接口方法。
+  - 依赖 MyBatis 运行时缓存、在纯 Mockito 场景下不稳定的方法。
+  - 纯 SQL 契约改用 `references/mapper-integration-pattern.md`。
 
-## Project-specific Notes
+## 项目特定说明
 
-- Stable `default` methods are already covered in `MapperDefaultMethodTest`.
-- Some methods are intentionally moved out of plain unit scope due to MyBatis lambda cache coupling and should be integration-tested.
+- 稳定的 `default` 方法已在 `MapperDefaultMethodTest` 中覆盖。
+- 部分方法因 MyBatis lambda 缓存耦合，刻意不在纯单测范围内，应通过集成测试验证。

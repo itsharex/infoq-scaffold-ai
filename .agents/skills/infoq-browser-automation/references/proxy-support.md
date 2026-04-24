@@ -1,85 +1,85 @@
-# Proxy Support
+# 代理支持
 
-Proxy configuration for geo-testing, rate limiting avoidance, and corporate environments.
+用于地理测试、规避限流与企业网络环境的代理配置说明。
 
-**Related**: [commands.md](commands.md) for global options, [SKILL.md](../SKILL.md) for quick start.
+**关联文档**：[commands.md](commands.md)（全局参数），[SKILL.md](../SKILL.md)（快速入口）。
 
-## Contents
+## 目录
 
-- [Basic Proxy Configuration](#basic-proxy-configuration)
-- [Authenticated Proxy](#authenticated-proxy)
-- [SOCKS Proxy](#socks-proxy)
-- [Proxy Bypass](#proxy-bypass)
-- [Common Use Cases](#common-use-cases)
-- [Verifying Proxy Connection](#verifying-proxy-connection)
-- [Troubleshooting](#troubleshooting)
-- [Best Practices](#best-practices)
+- 基础代理配置
+- 认证代理
+- SOCKS 代理
+- 代理绕过
+- 常见使用场景
+- 验证代理连接
+- 故障排查
+- 最佳实践
 
-## Basic Proxy Configuration
+## 基础代理配置
 
-Use the `--proxy` flag or set proxy via environment variable:
+使用 `--proxy` 参数或通过环境变量设置代理：
 
 ```bash
-# Via CLI flag
+# 通过 CLI 参数
 agent-browser --proxy "http://proxy.example.com:8080" open https://example.com
 
-# Via environment variable
+# 通过环境变量
 export HTTP_PROXY="http://proxy.example.com:8080"
 agent-browser open https://example.com
 
-# HTTPS proxy
+# HTTPS 代理
 export HTTPS_PROXY="https://proxy.example.com:8080"
 agent-browser open https://example.com
 
-# Both
+# 同时设置 HTTP/HTTPS
 export HTTP_PROXY="http://proxy.example.com:8080"
 export HTTPS_PROXY="http://proxy.example.com:8080"
 agent-browser open https://example.com
 ```
 
-## Authenticated Proxy
+## 认证代理
 
-For proxies requiring authentication:
+适用于需要鉴权的代理：
 
 ```bash
-# Include credentials in URL
+# 在 URL 中包含鉴权信息
 export HTTP_PROXY="http://username:password@proxy.example.com:8080"
 agent-browser open https://example.com
 ```
 
-## SOCKS Proxy
+## SOCKS 代理
 
 ```bash
-# SOCKS5 proxy
+# SOCKS5 代理
 export ALL_PROXY="socks5://proxy.example.com:1080"
 agent-browser open https://example.com
 
-# SOCKS5 with auth
+# 带鉴权的 SOCKS5
 export ALL_PROXY="socks5://user:pass@proxy.example.com:1080"
 agent-browser open https://example.com
 ```
 
-## Proxy Bypass
+## 代理绕过
 
-Skip proxy for specific domains using `--proxy-bypass` or `NO_PROXY`:
+可通过 `--proxy-bypass` 或 `NO_PROXY` 为特定域名绕过代理：
 
 ```bash
-# Via CLI flag
+# 通过 CLI 参数
 agent-browser --proxy "http://proxy.example.com:8080" --proxy-bypass "localhost,*.internal.com" open https://example.com
 
-# Via environment variable
+# 通过环境变量
 export NO_PROXY="localhost,127.0.0.1,.internal.company.com"
-agent-browser open https://internal.company.com  # Direct connection
-agent-browser open https://external.com          # Via proxy
+agent-browser open https://internal.company.com  # 直连
+agent-browser open https://external.com          # 走代理
 ```
 
-## Common Use Cases
+## 常见使用场景
 
-### Geo-Location Testing
+### 地理位置测试
 
 ```bash
 #!/bin/bash
-# Test site from different regions using geo-located proxies
+# 使用地理代理测试不同地区访问效果
 
 PROXIES=(
     "http://us-proxy.example.com:8080"
@@ -92,7 +92,7 @@ for proxy in "${PROXIES[@]}"; do
     export HTTPS_PROXY="$proxy"
 
     region=$(echo "$proxy" | grep -oP '^\w+-\w+')
-    echo "Testing from: $region"
+    echo "测试区域: $region"
 
     agent-browser --session "$region" open https://example.com
     agent-browser --session "$region" screenshot "./screenshots/$region.png"
@@ -100,11 +100,11 @@ for proxy in "${PROXIES[@]}"; do
 done
 ```
 
-### Rotating Proxies for Scraping
+### 轮换代理抓取
 
 ```bash
 #!/bin/bash
-# Rotate through proxy list to avoid rate limiting
+# 轮换代理池以规避限流
 
 PROXY_LIST=(
     "http://proxy1.example.com:8080"
@@ -127,68 +127,68 @@ for i in "${!URLS[@]}"; do
     agent-browser get text body > "output-$i.txt"
     agent-browser close
 
-    sleep 1  # Polite delay
+    sleep 1  # 礼貌延迟
 done
 ```
 
-### Corporate Network Access
+### 企业网络访问
 
 ```bash
 #!/bin/bash
-# Access internal sites via corporate proxy
+# 通过企业代理访问内外网
 
 export HTTP_PROXY="http://corpproxy.company.com:8080"
 export HTTPS_PROXY="http://corpproxy.company.com:8080"
 export NO_PROXY="localhost,127.0.0.1,.company.com"
 
-# External sites go through proxy
+# 外网走代理
 agent-browser open https://external-vendor.com
 
-# Internal sites bypass proxy
+# 内网绕过代理
 agent-browser open https://intranet.company.com
 ```
 
-## Verifying Proxy Connection
+## 验证代理连接
 
 ```bash
-# Check your apparent IP
+# 检查出口 IP
 agent-browser open https://httpbin.org/ip
 agent-browser get text body
-# Should show proxy's IP, not your real IP
+# 应显示代理出口 IP，而非本机真实 IP
 ```
 
-## Troubleshooting
+## 故障排查
 
-### Proxy Connection Failed
+### 代理连接失败
 
 ```bash
-# Test proxy connectivity first
+# 先验证代理连通性
 curl -x http://proxy.example.com:8080 https://httpbin.org/ip
 
-# Check if proxy requires auth
+# 若代理需要鉴权，补充账号密码
 export HTTP_PROXY="http://user:pass@proxy.example.com:8080"
 ```
 
-### SSL/TLS Errors Through Proxy
+### 通过代理出现 SSL/TLS 错误
 
-Some proxies perform SSL inspection. If you encounter certificate errors:
+部分代理会执行 SSL 检查。若遇到证书错误：
 
 ```bash
-# For testing only - not recommended for production
+# 仅用于测试，不建议生产使用
 agent-browser open https://example.com --ignore-https-errors
 ```
 
-### Slow Performance
+### 性能缓慢
 
 ```bash
-# Use proxy only when necessary
-export NO_PROXY="*.cdn.com,*.static.com"  # Direct CDN access
+# 仅在必要场景走代理
+export NO_PROXY="*.cdn.com,*.static.com"  # CDN 直连
 ```
 
-## Best Practices
+## 最佳实践
 
-1. **Use environment variables** - Don't hardcode proxy credentials
-2. **Set NO_PROXY appropriately** - Avoid routing local traffic through proxy
-3. **Test proxy before automation** - Verify connectivity with simple requests
-4. **Handle proxy failures gracefully** - Implement retry logic for unstable proxies
-5. **Rotate proxies for large scraping jobs** - Distribute load and avoid bans
+1. **优先使用环境变量**：不要硬编码代理凭据  
+2. **合理设置 `NO_PROXY`**：避免本地流量误走代理  
+3. **自动化前先验连通性**：用简单请求先探测  
+4. **处理代理不稳定**：为失败场景加入重试逻辑  
+5. **大规模抓取需轮换代理**：分摊流量、降低封禁风险

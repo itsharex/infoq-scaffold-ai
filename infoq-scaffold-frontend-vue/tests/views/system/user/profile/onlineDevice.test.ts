@@ -27,7 +27,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots }) {
     provide(
       TABLE_ROW_SYMBOL,
-      computed(() => ((props.data as any[]) || [])[0] || {})
+      computed(() => ((props.data as unknown[]) || [])[0] || {})
     );
     return () => h('div', { class: 'el-table-stub' }, slots.default?.());
   }
@@ -38,7 +38,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const row = inject(
       TABLE_ROW_SYMBOL,
-      computed(() => ({}) as Record<string, any>)
+      computed(() => ({}) as Record<string, unknown>)
     );
     return () => h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: row.value })) || []);
   }
@@ -103,7 +103,7 @@ describe('views/system/user/profile/onlineDevice', () => {
             $tab: {
               refreshPage: onlineDeviceMocks.refreshPage
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-table': ElTableStub,

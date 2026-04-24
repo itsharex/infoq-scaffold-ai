@@ -31,7 +31,7 @@ describe('views/error/401', () => {
           globalProperties: {
             $route: { query: {} },
             $router: router
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-button': ElButtonStub,
@@ -59,7 +59,7 @@ describe('views/error/401', () => {
           globalProperties: {
             $route: { query: { noGoBack: 'true' } },
             $router: router
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-button': ElButtonStub,

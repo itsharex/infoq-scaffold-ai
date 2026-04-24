@@ -1,10 +1,14 @@
 # AGENTS.md
-|IMPORTANT:This file applies to infoq-scaffold-frontend-react and its descendants; use it to narrow broad root guidance with React-specific rules.
+|IMPORTANT: Prefer retrieval-led reasoning over pre-training-led reasoning for any project tasks. Read repository files before relying on framework pretraining data.
+|Scope:本文件适用于 `infoq-scaffold-frontend-react` 及其子目录，用于把根规则收窄到 React admin 语境。
 |Stack:React 19|TypeScript|Vite 7|Ant Design 6|React Router 7|Zustand|Vitest|Testing Library
 |Workspace Layout:src/pages|src/components|src/api|src/store|src/router|src/utils|src/hooks|tests
-|Package And Formatting:Prefer pnpm.|Use the local eslint and prettier configuration with 2-space frontend formatting.|Keep source, env, and test files UTF-8.
-|Commands:install=cd infoq-scaffold-frontend-react && pnpm install|dev=cd infoq-scaffold-frontend-react && pnpm run dev|test=cd infoq-scaffold-frontend-react && pnpm run test|coverage=cd infoq-scaffold-frontend-react && pnpm run test:coverage|lint=cd infoq-scaffold-frontend-react && pnpm run lint:fix|build=cd infoq-scaffold-frontend-react && pnpm run build:prod
-|Component Boundary:Prefer Ant Design and existing React patterns before building custom widgets.|Use ant-design-component-reference for component API or version-support checks.|Do not apply Vue or Element Plus component rules here.
-|Testing Boundary:Use infoq-react-unit-test-patterns for React unit tests and coverage work.|Favor Vitest plus Testing Library behavior assertions, MemoryRouter helpers, and direct Zustand store setup over implementation-detail tests.|Run coverage when extending shared router, store, or utility paths, or when the user asks for coverage work.
-|Verification:For React behavior changes validate main flow, targeted or full unit tests as appropriate, lint, then production build.|Use infoq-react-browser-automation for runtime UI smoke when rendered flows such as /login or route guards are affected.|Use infoq-react-run-dev-stack when the local React stack must be started or restarted for verification.
-|Boundaries:Keep React-only rules in this workspace; Vue-specific commands, Element Plus APIs, and Vue Test Utils patterns belong in infoq-scaffold-frontend-vue.
+|Environment Baseline:Node >= 20.19.0|pnpm >= 10.0.0
+|Build Secrets:当 `VITE_APP_ENCRYPT=true` 时，React admin dev/build 环境必须提供 `VITE_APP_RSA_PUBLIC_KEY` 与 `VITE_APP_RSA_PRIVATE_KEY`。
+|Package And Formatting:默认使用 pnpm。|遵循本地 eslint 与 prettier 配置，前端使用 2-space formatting。|source、env、test files 保持 UTF-8。
+|Commands:install=cd infoq-scaffold-frontend-react && pnpm install|dev=cd infoq-scaffold-frontend-react && pnpm run dev|test=cd infoq-scaffold-frontend-react && pnpm run test|coverage=cd infoq-scaffold-frontend-react && pnpm run test:coverage|lint=cd infoq-scaffold-frontend-react && pnpm run lint|lint:fix=cd infoq-scaffold-frontend-react && pnpm run lint:fix|build=cd infoq-scaffold-frontend-react && pnpm run build:prod
+|OpenSpec Routing:分级执行。|L3(强制):React admin 新功能、API 契约变更、跨工作区交付，编码前先创建或定位 `openspec/changes/<change-id>/`。|L2(Lite):单 React admin 行为变更且不改 API 契约，至少维护 `proposal.md`+`tasks.md`。|L1(可豁免):单 React admin 小修复且不改契约、改动范围小可不建 OpenSpec，但必须先写 acceptance contract。|不确定分级时默认 L3。|OpenSpec 文档正文默认中文，路径名称/命令/文件名保持英文原样。|实现与验证以 full artifacts 或 Lite artifacts 为准。
+|Component Boundary:优先使用 Ant Design 和现有 React patterns，再考虑自定义组件。|组件 API 或版本支持检查使用 infoq-ant-design-component-reference。|本工作区不要套用 Vue 或 Element Plus 规则。
+|Testing Boundary:React 家族单测与 coverage 工作使用 infoq-react-unit-test-patterns；本工作区只加载其 `references/admin/*`。|`src/api/**/*.ts`、`src/router/**/*`、`src/store/**/*`、`src/utils/request*` 改动必须补 targeted tests。|优先 Vitest + Testing Library 的行为断言、MemoryRouter helpers 与直接 Zustand store setup，不做实现细节测试。
+|Verification:React 行为变更先验证 main flow，再根据影响范围跑 targeted 或 full unit tests，然后 lint，最后 production build。|渲染流程如 `/login`、route guards、request interceptors、页面首屏渲染 受影响时使用 infoq-react-runtime-verification。|本地 backend + React admin 栈启动或重启也归 infoq-react-runtime-verification。
+|Boundaries:React admin 专属规则只留在本工作区；weapp React 细则归 `infoq-scaffold-frontend-weapp-react`，Vue 规则归 `infoq-scaffold-frontend-vue`。

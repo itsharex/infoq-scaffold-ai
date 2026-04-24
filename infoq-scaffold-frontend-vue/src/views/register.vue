@@ -88,7 +88,9 @@ const registerForm = ref<RegisterForm>({
   userType: 'sys_user'
 });
 
-const equalToPassword = (rule: any, value: string, callback: any) => {
+type ValidatorCallback = (error?: Error) => void;
+
+const equalToPassword = (_rule: unknown, value: string, callback: ValidatorCallback) => {
   if (registerForm.value.password !== value) {
     callback(new Error(t('register.rule.confirmPassword.equalToPassword')));
   } else {

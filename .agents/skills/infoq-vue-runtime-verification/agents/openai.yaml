@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Vue Runtime Verification"
+  short_description: "Help with InfoQ Vue Runtime Verification tasks"
+  default_prompt: "Use $infoq-vue-runtime-verification to verify Vue admin or weapp runtime behavior in this repository."

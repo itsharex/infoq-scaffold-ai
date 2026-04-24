@@ -24,7 +24,7 @@ export interface RoleVO extends BaseEntity {
   deptCheckStrictly: boolean;
   status: string;
   delFlag: string;
-  remark?: any;
+  remark?: string;
   flag: boolean;
   menuIds?: Array<string | number>;
   deptIds?: Array<string | number>;
@@ -46,7 +46,22 @@ export interface RoleForm {
   deptCheckStrictly: boolean;
   remark: string;
   dataScope?: string;
-  roleId: string | undefined;
+  roleId: string | number | undefined;
   menuIds: Array<string | number>;
   deptIds: Array<string | number>;
+}
+
+export interface RoleDataScopePayload extends Partial<RoleForm> {
+  roleId?: string | number;
+  deptIds: Array<string | number>;
+}
+
+export interface RoleAuthUserPayload {
+  roleId: string | number;
+  userId: string | number;
+}
+
+export interface RoleAuthUserBatchPayload {
+  roleId: string | number;
+  userIds: string;
 }

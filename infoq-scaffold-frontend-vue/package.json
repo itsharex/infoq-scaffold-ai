@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package",
-  "name": "infoq-scaffold-backend",
-  "version": "2.0.3",
-  "description": "infoq-scaffold-backend后台管理系统",
+  "name": "infoq-scaffold-frontend-vue",
+  "version": "2.1.0",
+  "description": "infoq-scaffold-frontend-vue后台管理系统",
   "author": "Pontus",
   "license": "MIT",
   "type": "module",

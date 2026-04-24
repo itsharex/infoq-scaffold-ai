@@ -2,47 +2,90 @@
 
 ## 1. AGENTS.md 是什么
 
-`AGENTS.md` 是这个仓库面向 AI 协作的第一层执行协议。它不只是补充文档，而是告诉 Codex:
+`AGENTS.md` 是这个仓库面向 AI 协作的第一层执行协议。它不只是补充文档，而是告诉 Codex：
 
 - 进入仓库后先读什么
 - 哪些规则优先级最高
 - 哪类任务该触发哪个 skill
-- 哪些目录才是这次任务真正应该工作的地方
+- 哪些目录才是本次任务真正应该工作的地方
 
 在 `infoq-scaffold-ai` 中，`AGENTS.md` 的目标不是“写很多解释”，而是用尽量短的索引行，把高优先级规则稳定放进上下文。
 
-## 2. 它解决什么问题
+## 2. 当前分层方式
 
-如果没有 `AGENTS.md`，AI 虽然能读代码，但很难稳定知道：
+本仓库现在是六层入口：
 
-- 哪些工作区分别对应后端、Vue 前端、React 前端、脚本和 SQL
-- 用户说“启动项目”“冒烟测试”“找类名”“新增插件”时，应该先走哪条 SOP
-- 哪些是必须遵守的工程规则，哪些只是参考信息
-- 哪些信息应保留在顶层规则，哪些应下沉到 skills 或 references
+- 根规则：`/AGENTS.md`
+- 后端：`infoq-scaffold-backend/AGENTS.md`
+- React 管理端：`infoq-scaffold-frontend-react/AGENTS.md`
+- Vue 管理端：`infoq-scaffold-frontend-vue/AGENTS.md`
+- React 小程序端：`infoq-scaffold-frontend-weapp-react/AGENTS.md`
+- Vue 小程序端：`infoq-scaffold-frontend-weapp-vue/AGENTS.md`
 
-`AGENTS.md` 的作用，就是把这些关键信息变成显式、可检索、可执行的入口。
+原则只有一条：**越靠近代码越优先**。
 
-## 3. 当前 AGENTS 的核心内容
+## 3. AGENTS.md 里应该放什么
 
-本仓库当前的 `AGENTS.md` 主要承载五类信息：
+适合放进 `AGENTS.md` 的内容：
 
-| 类别 | 作用 |
-| --- | --- |
-| 全局工程规则 | 检索优先、UTF-8、错误处理、最小改动、发布前检查 |
-| 接受标准 | 在任务开始前定义 acceptance contract，结束前说明残余风险 |
-| 执行顺序 | main-flow verification -> targeted tests -> lint/build -> diff review |
-| skill 路由 | 定义本地 skills 列表、触发语义和 skill 目录索引 |
-| 刷新约束 | 例如代码索引何时必须同步 |
+- 全局工程规则
+- acceptance contract 约束
+- 默认验证顺序
+- OpenSpec 路由
+- skill 路由与优先级
+- 本工作区最关键的命令和边界
 
-## 4. 为什么它采用压缩索引格式
+不适合堆进 `AGENTS.md` 的内容：
 
-当前仓库使用的是压缩后的 AGENTS 结构，而不是长篇叙述文档，原因很直接：
+- 详细 SOP
+- 冗长背景解释
+- 大量示例代码
+- 低频参考资料
 
-- 顶层规则需要稳定命中，不能被长文本稀释
-- AI 每轮都会读取顶层规则，越短越利于保持一致性
-- 静态但非高优先级的信息应迁移到 `doc/` 或 skill `references/`
+这些内容更适合放进 `doc/` 或 skill `references/`。
 
-因此，`AGENTS.md` 只保留必须常驻上下文的内容，解释性材料放到文档目录或 skill 内部。
+## 4. 当前仓库对 AGENTS 的补充约束
+
+### 根 AGENTS
+
+根 `AGENTS.md` 只保留跨仓规则，并额外承担三件事：
+
+- skill 命名与路由真相
+- skill 元数据约束真相
+- `OpenSpec` 分级路由
+- 文档同步约束
+
+### 工作区 AGENTS
+
+更近的 `AGENTS.md` 负责：
+
+- 技术栈与命令
+- 测试边界
+- 运行态验证入口
+- 本工作区不能误用的其他栈规则
+
+### 文档同步
+
+一旦改了以下任何一项，必须同步文档：
+
+- skill 名称
+- skill 路径
+- 工作区启动命令
+- build-open 或 DevTools 前置条件
+- env 前置条件
+- `.codex/config.toml` 中的 MCP server 名称、启用状态、`enabled_tools`、审批模式或超时设置
+
+至少要同步：
+
+- `/AGENTS.md`
+- 相关工作区 `AGENTS.md`
+- `README.md`
+- 受影响的 `doc/*.md`
+
+其中 MCP 相关变更还要额外满足两条：
+
+- `.codex/config.toml` 是仓库级 MCP 真值源，`doc/mcp-servers.md` 只能描述它当前显式配置出来的内容
+- 如果文档里出现 MCP server / tool 名称、默认启用状态、只读范围、审批模式或本地启动脚本路径，这些字段必须和 `.codex/config.toml`、`.codex/scripts/*` 保持逐项一致
 
 ## 5. AGENTS 与 skill 的关系
 
@@ -51,33 +94,69 @@
 1. `AGENTS.md` 决定“该遵守什么规则”和“该触发什么能力”
 2. `.agents/skills` 决定“这类任务具体怎么做”
 
-也就是说：
+在这个仓库里，两者必须一起维护。只改 skill 不改 `AGENTS.md`，或者只改 `AGENTS.md` 不改文档，最后都会产生路由漂移。
 
-- `AGENTS.md` 负责路由
-- skill 负责 SOP
-- 仓库代码负责最终交付
+当前还多一层约束：
 
-## 6. 什么时候应该更新 AGENTS.md
+- 仓库级 skill 默认维护 `agents/openai.yaml`
+- 更新 `SKILL.md` 时，要一起检查 `agents/openai.yaml` 是否 stale
+- `default_prompt` 必须显式包含对应的 `$skill-name`
+
+## 6. AGENTS 与 `.codex/agents` 的关系
+
+repo 级 custom agents 的真值不写在 `AGENTS.md` 之外的任意散落文档里，而是由两处一起定义：
+
+1. 根 `AGENTS.md` 负责说明何时使用 subagents、默认依赖顺序和主线程职责
+2. `.codex/agents/*.toml` 负责定义每个 custom agent 的真实名称、职责边界和 developer instructions
+
+当前仓库只保留 4 个 repo 级 custom agents：
+
+- `requirements_expert`
+- `technical_designer`
+- `code_implementer`
+- `auto_fixer`
+
+以下职责默认回到主线程，而不是继续保留独立 custom agent：
+
+- `design.md`：按需维护；重大 UI/UX 任务优先走 `infoq-ui-ux-three-phase-protocol`
+- `materials.md`：确有 copy、mock data、图标建议价值时再写
+- 最终验收与 blocker 总结：主线程基于真实验证证据完成，必要时再写 `review.md`
+
+## 7. 当前 skill 路由策略
+
+当前仓库采用的是“家族 skill + 客户端 references”的策略：
+
+- React 家族运行态验证：`infoq-react-runtime-verification`
+- Vue 家族运行态验证：`infoq-vue-runtime-verification`
+- React 家族单测：`infoq-react-unit-test-patterns`
+- Vue 家族单测：`infoq-vue-unit-test-patterns`
+
+admin 和 weapp 的差异留在 skill 的 `references/admin` 与 `references/weapp`，而不是重新拆 skill。
+
+## 8. AGENTS 什么时候需要更新
 
 适合更新 `AGENTS.md` 的情况：
 
-- 新增了一个应该自动触发的本地 skill
-- 项目级规则、校验顺序、发布边界发生变化
-- 某项高优先级约束需要进入每轮上下文
+- 新增或删除了仓库级 skill
+- 旧 skill 被合并、改名或迁移
+- repo 级 custom agent 被新增、删除或调整职责
+- 栈内验证顺序发生变化
+- 小程序启动前置条件发生变化
+- `.codex/config.toml` 中的仓库级 MCP 路由或默认启用集合发生变化
+- 发布或回滚规则发生变化
 
 不适合继续堆进 `AGENTS.md` 的情况：
 
-- 详细的启动命令说明
-- 冗长的背景解释
-- 某类任务的长流程 SOP
-- 低频使用的静态参考材料
+- 解释“为什么这么设计”的长段背景
+- 某类任务的完整 SOP
+- 历史方案对比
+- 与当前仓库无直接关系的通用教程
 
-这些内容更适合写进 `doc/` 或 skill 的 `references/`
-
-## 7. 相关入口
+## 9. 相关入口
 
 - 顶层规则文件：`/AGENTS.md`
+- repo 级 custom agents：`/.codex/agents/`
 - skill 指南：`./skills-guide.md`
 - subagents 使用指南：`./subagents-guide.md`
 - 项目静态参考：`../.agents/skills/infoq-project-reference/references/project-reference.md`
-- 压缩维护 skill：`../.agents/skills/agents-md-compress/SKILL.md`
+- 压缩维护 skill：`../.agents/skills/infoq-agents-md-compress/SKILL.md`

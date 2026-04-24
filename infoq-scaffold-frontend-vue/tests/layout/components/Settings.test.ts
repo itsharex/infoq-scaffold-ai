@@ -115,7 +115,7 @@ describe('layout/components/Settings', () => {
               loading: settingsMocks.modalLoading,
               closeLoading: settingsMocks.modalCloseLoading
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-drawer': ElDrawerStub,

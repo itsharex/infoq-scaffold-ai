@@ -26,11 +26,13 @@ vi.mock('@/store/modules/notice', () => ({
 import { closeSSE, initSSE } from '@/utils/sse';
 
 describe('utils/sse', () => {
+  const notificationMock = ElNotification as unknown as ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     closeSSE();
     vi.clearAllMocks();
-    (import.meta.env as any).VITE_APP_SSE = 'true';
-    (import.meta.env as any).VITE_APP_CLIENT_ID = 'test-client-id';
+    (import.meta.env as Record<string, string>).VITE_APP_SSE = 'true';
+    (import.meta.env as Record<string, string>).VITE_APP_CLIENT_ID = 'test-client-id';
   });
 
   afterEach(() => {
@@ -38,12 +40,12 @@ describe('utils/sse', () => {
   });
 
   it('skips initialization when sse switch is disabled or token is missing', () => {
-    (import.meta.env as any).VITE_APP_SSE = 'false';
+    (import.meta.env as Record<string, string>).VITE_APP_SSE = 'false';
     sseMocks.getToken.mockReturnValue('token-a');
     initSSE('/system/sse');
     expect(sseMocks.useEventSource).not.toHaveBeenCalled();
 
-    (import.meta.env as any).VITE_APP_SSE = 'true';
+    (import.meta.env as Record<string, string>).VITE_APP_SSE = 'true';
     sseMocks.getToken.mockReturnValue('');
     initSSE('/system/sse');
     expect(sseMocks.useEventSource).not.toHaveBeenCalled();
@@ -51,7 +53,7 @@ describe('utils/sse', () => {
 
   it('initializes sse and handles incoming data/error watchers', async () => {
     const data = ref<string | null>(null);
-    const error = ref<any>(null);
+    const error = ref<unknown>(null);
     const close = vi.fn();
     sseMocks.getToken.mockReturnValue('token-a');
     sseMocks.useEventSource.mockReturnValue({
@@ -75,12 +77,10 @@ describe('utils/sse', () => {
     const connectOptions = sseMocks.useEventSource.mock.calls[0][2] as {
       autoReconnect: { onFailed: () => void };
     };
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     error.value = new Event('error');
     await nextTick();
-    expect(logSpy).not.toHaveBeenCalled();
     expect(errorSpy).not.toHaveBeenCalled();
     expect(error.value).toBeNull();
 
@@ -92,7 +92,7 @@ describe('utils/sse', () => {
         read: false
       })
     );
-    expect(ElNotification as any).toHaveBeenCalledWith(
+    expect(notificationMock).toHaveBeenCalledWith(
       expect.objectContaining({
         message: '系统消息',
         type: 'success'
@@ -101,8 +101,7 @@ describe('utils/sse', () => {
     expect(data.value).toBeNull();
 
     connectOptions.autoReconnect.onFailed();
-    expect(logSpy).toHaveBeenCalledWith('Failed to connect after 5 retries');
-    logSpy.mockRestore();
+    expect(errorSpy).toHaveBeenCalledWith('Failed to connect after 5 retries');
     errorSpy.mockRestore();
 
     closeSSE();

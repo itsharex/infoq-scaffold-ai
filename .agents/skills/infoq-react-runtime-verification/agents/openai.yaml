@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ React Runtime Verification"
+  short_description: "Help with InfoQ React Runtime Verification tasks"
+  default_prompt: "Use $infoq-react-runtime-verification to verify React admin or weapp runtime behavior in this repository."

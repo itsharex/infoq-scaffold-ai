@@ -20,7 +20,7 @@ const onlineMocks = vi.hoisted(() => ({
       browser: 'Chrome',
       loginTime: '2026-03-07 10:00:00'
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('@/api/monitor/online', () => ({
@@ -58,7 +58,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     return () => h('div', { class: 'el-table-stub' }, slots.default?.());
   }
@@ -69,7 +69,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || { loginTime: '' }, $index: 0 })) || []);
@@ -147,7 +147,7 @@ describe('views/monitor/online/index', () => {
               confirm: onlineMocks.modalConfirm,
               msgSuccess: onlineMocks.msgSuccess
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},

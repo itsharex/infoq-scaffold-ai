@@ -22,7 +22,7 @@ const ossMocks = vi.hoisted(() => ({
       createByName: 'admin',
       service: 's3'
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('vue-router', () => ({
@@ -86,7 +86,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, emit }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-stub' }, [
@@ -94,7 +94,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'selection-first',
-            onClick: () => emit('selection-change', [(props.data as any[])[0]])
+            onClick: () => emit('selection-change', [(props.data as unknown[])[0]])
           },
           'selection-first'
         ),
@@ -108,7 +108,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h(
@@ -193,7 +193,7 @@ describe('views/system/oss/index', () => {
               }
             },
             parseTime: (value: string) => value,
-            addDateRange: (query: Record<string, any>, range: unknown[], suffix: string) => ({ ...query, range, suffix }),
+            addDateRange: (query: Record<string, unknown>, range: unknown[], suffix: string) => ({ ...query, range, suffix }),
             getConfigKey: ossMocks.getConfigKey,
             updateConfigByKey: ossMocks.updateConfigByKey,
             $modal: {
@@ -203,7 +203,7 @@ describe('views/system/oss/index', () => {
             $download: {
               oss: ossMocks.downloadOss
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},
@@ -316,7 +316,28 @@ describe('views/system/oss/index', () => {
     const wrapper = mountView();
     await flushPromises();
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      ids: number[];
+      single: boolean;
+      multiple: boolean;
+      queryParams: {
+        orderByColumn?: string;
+        isAsc?: string;
+      };
+      dialog: {
+        visible: boolean;
+      };
+      handleQuery: () => void;
+      handleSelectionChange: (selection: Array<{ ossId: number }>) => void;
+      handleHeaderClass: (payload: { column: { multiOrder: string } }) => void;
+      handleHeaderCLick: (column: { sortable: string; multiOrder: string; property: string }) => void;
+      handleOrderChange: (property: string, order: string) => void;
+      checkFileSuffix: (suffix: string | string[]) => boolean;
+      resetQuery: () => void;
+      handleFile: () => void;
+      cancel: () => void;
+      handlePreviewListResource: (value: boolean) => Promise<void>;
+    };
 
     vm.handleQuery();
     await flushPromises();
@@ -356,7 +377,14 @@ describe('views/system/oss/index', () => {
   it('covers cancel/delete by selected ids and preview toggle rejection path', async () => {
     const wrapper = mountView();
     await flushPromises();
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      dialog: {
+        visible: boolean;
+      };
+      handleFile: () => void;
+      cancel: () => void;
+      handlePreviewListResource: (value: boolean) => Promise<void>;
+    };
 
     vm.handleFile();
     expect(vm.dialog.visible).toBe(true);

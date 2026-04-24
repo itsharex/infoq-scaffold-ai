@@ -231,7 +231,7 @@ const data = reactive<PageData<PostForm, PostQuery>>({
 const { queryParams, form, rules } = toRefs<PageData<PostForm, PostQuery>>(data);
 
 /** 通过条件过滤节点  */
-const filterNode = (value: string, data: any) => {
+const filterNode = (value: string, data: { label: string }) => {
   if (!value) return true;
   return data.label.indexOf(value) !== -1;
 };

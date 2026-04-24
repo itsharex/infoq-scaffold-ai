@@ -38,7 +38,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, emit, expose }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     expose({
       toggleRowSelection: authRoleMocks.toggleRowSelection
@@ -50,7 +50,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'row-click-first',
-            onClick: () => emit('row-click', (props.data as any[])[0])
+            onClick: () => emit('row-click', (props.data as unknown[])[0])
           },
           'row-click-first'
         ),
@@ -58,7 +58,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'row-click-second',
-            onClick: () => emit('row-click', (props.data as any[])[1])
+            onClick: () => emit('row-click', (props.data as unknown[])[1])
           },
           'row-click-second'
         ),
@@ -66,7 +66,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'selection-first',
-            onClick: () => emit('selection-change', [(props.data as any[])[0]])
+            onClick: () => emit('selection-change', [(props.data as unknown[])[0]])
           },
           'selection-first'
         ),
@@ -80,7 +80,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || { createTime: '' }, $index: 0 })) || []);
@@ -155,7 +155,7 @@ describe('views/system/user/authRole', () => {
             $tab: {
               closeOpenPage: authRoleMocks.closeOpenPage
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {}
@@ -211,7 +211,10 @@ describe('views/system/user/authRole', () => {
   it('covers row-key/selectable helpers and non-selectable row click branch', async () => {
     const wrapper = mountView();
     await flushPromises();
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      getRowKey: (row: { roleId: number }) => string;
+      checkSelectable: (row: { status: string }) => boolean;
+    };
 
     expect(vm.getRowKey({ roleId: 99 })).toBe('99');
     expect(vm.checkSelectable({ status: '0' })).toBe(true);

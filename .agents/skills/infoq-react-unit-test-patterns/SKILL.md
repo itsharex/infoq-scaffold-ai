@@ -1,74 +1,68 @@
 ---
 name: infoq-react-unit-test-patterns
-description: Build and scale React frontend unit tests for infoq-scaffold-frontend-react (React 19 + Vite7 + TypeScript + Ant Design) using Vitest, Testing Library, jsdom, deterministic router/store/browser mocks, and strict validation with test+coverage+lint+build. Use when users request React unit tests, React coverage backfill, regression tests, bug reproduction by tests, or test-first fixes in infoq-scaffold-frontend-react. Do not use this skill for Vue test work.
+description: 为本仓库 React 家族构建并扩展单元测试，覆盖 `infoq-scaffold-frontend-react` 管理端与 `infoq-scaffold-frontend-weapp-react` 小程序端。适用于 React 单测、覆盖率回补、回归验证、确定性缺陷复现与 test-first 修复；按 `admin`/`weapp` 参考分流，并将运行态后续交给 `infoq-react-runtime-verification`。
 ---
 
-# Infoq React Unit Test Patterns
+# InfoQ React 单测模式
 
-## Scope
+本技能只负责一件事：React 家族单元测试工作。
+覆盖两个客户端：
 
-Use this skill only for `infoq-scaffold-frontend-react` test coverage expansion and regression-proof refactors.
-Vue-side test work belongs to `infoq-vue-unit-test-patterns`.
-Primary targets in order: `src/utils` -> `src/store` -> `src/router` -> `src/components` -> `src/layouts` -> `src/pages`.
+- `admin`: `infoq-scaffold-frontend-react`
+- `weapp`: `infoq-scaffold-frontend-weapp-react`
 
-Current repository signals:
-- Vitest is configured in `vite.config.ts` under the `test` key.
-- Shared browser and storage mocks live in `tests/setup.ts`.
-- Existing tests already cover utils, stores, router guards, reusable components, layouts, and representative pages such as `/login`.
+## 客户端选择
 
-Package manager rule:
-- Prefer `pnpm` for all frontend validation commands.
-- If `pnpm` is unavailable in the current environment, use the equivalent `npm` commands.
+1. `admin` 端参考适用于 React 19 + Ant Design + React Router + Zustand 页面与工具。
+2. `weapp` 端参考适用于 Taro React 小程序页面、请求封装、store 与 API 契约。
+3. 若任务是运行态验证而非单测，请切换到 `infoq-react-runtime-verification`。
 
-## Workflow
+## 工作流程
 
-1. Reuse existing React test infra first. If the baseline is broken or missing, restore it from `references/setup-baseline.md`.
-2. Keep test env deterministic: use jsdom, memory `localStorage` and `sessionStorage`, `matchMedia`, and `ResizeObserver` from `tests/setup.ts`.
-3. Add tests by priority:
-   - P0: `utils/request`, `utils/auth`, `utils/crypto`, `store/modules/*`, `router/*`
-   - P1: shared components and layouts such as `Pagination`, `RightToolbar`, `ScreenFull`, `TagsViewBar`, `MainLayout`
-   - P2: authentication and monitor/system pages such as `pages/login`, `pages/system/*`, `pages/monitor/*`
-4. Prefer Testing Library behavior assertions with user-visible output and navigation results.
-5. For router and guard tests, render with `MemoryRouter` and set Zustand store state directly with `useXxxStore.setState(...)`.
-6. For request and API-adjacent tests, mock modules with `vi.mock(...)` or override axios adapters directly instead of hitting network.
-7. If tests expose business bugs, patch source immediately and add regression assertions.
-8. Run React smoke verification on `/login` or affected guarded routes with `infoq-react-browser-automation` when runtime behavior changed.
-9. Run targeted tests first, then the full unit suite, then coverage, lint, and production build.
+1. 识别客户端，只加载匹配的 `references/admin/*` 或 `references/weapp/*` 材料。
+2. 新增 helper 或 mock 前，优先复用现有测试基线。
+3. 先测用户可观察行为与边界场景，而非实现细节。
+4. 先跑定向测试；若暴露源码缺陷，先修产品代码，再扩大测试集。
+5. 若运行时行为发生变化，收尾时执行 `infoq-react-runtime-verification`。
+6. 最终通过客户端对应质量门禁。
 
-## Guardrails
+## 完成标准
 
-- Prefer user-observable behavior assertions over implementation details or snapshots of large DOM trees.
-- Reuse `tests/helpers/renderWithRouter.tsx` when route context is needed.
-- Mock Ant Design or browser-only APIs only as far as needed for deterministic behavior; do not silence real rendering or state bugs with broad no-op stubs.
-- For fullscreen, resize, or other document APIs, use `Object.defineProperty(...)` to stub exact browser methods used by the component.
-- For login and auth flows, mock `@/api/login` and manipulate Zustand store methods directly instead of booting the whole app.
-- For request helpers, override `service.defaults.adapter` to assert headers, encryption, blobs, and relogin behavior without network traffic.
-- Do not weaken assertions, broaden mocks, mute warnings, raise thresholds, or add fake-success paths merely to make tests/build pass; fix the real issue or stop and document a user-approved exception.
-- If a source or test change is identified as wrong, revert the incorrect code immediately before continuing and do not leave dead, unreachable, or uncalled code behind.
-
-## Known Project Patterns
-
-- `tests/setup.ts` already installs `@testing-library/jest-dom/vitest`, storage mocks, `matchMedia`, `ResizeObserver`, and loads `@/lang`.
-- Router guard tests should set up `useUserStore` and `usePermissionStore` explicitly before render.
-- Component tests often succeed with direct button clicks and assertions on callbacks instead of deep Ant Design internals.
-- Request tests can verify encrypted payloads and download behavior by swapping the axios adapter.
-- Login page tests should fill rendered form controls, submit through the visible button, and assert on local storage or mocked store actions.
-
-## Finish Criteria
-
-All must pass:
+### Admin
 
 ```bash
 cd infoq-scaffold-frontend-react
 pnpm run test
 pnpm run test:coverage
-pnpm run lint:fix
+pnpm run lint
 pnpm run build:prod
 ```
 
-## References
+### Weapp
 
-- Commands: `references/commands.md`
-- Setup baseline: `references/setup-baseline.md`
-- Priority matrix: `references/priority-matrix.md`
-- Mock patterns: `references/mock-patterns.md`
+```bash
+cd infoq-scaffold-frontend-weapp-react
+pnpm run test
+pnpm run test:coverage
+pnpm run lint
+pnpm run build:weapp:dev
+pnpm run build:weapp
+```
+
+当改动同时影响小程序运行路径时，执行 `pnpm run verify:local`。
+
+## 护栏
+
+- 除非流程确实分叉，否则不要再把 React admin 与 React weapp 单测拆成两个技能。
+- 禁止通过弱化断言、放宽 mock、伪造成功路径来硬凑覆盖率。
+- 禁止用运行态 smoke 替代缺失的单测覆盖。
+
+## 参考
+
+- `references/admin/commands.md`
+- `references/admin/setup-baseline.md`
+- `references/admin/priority-matrix.md`
+- `references/admin/mock-patterns.md`
+- `references/weapp/commands.md`
+- `references/weapp/priority-matrix.md`
+- `references/weapp/mock-patterns.md`

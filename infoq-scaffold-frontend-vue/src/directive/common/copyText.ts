@@ -4,16 +4,24 @@
  */
 import { DirectiveBinding } from 'vue';
 
+type CopyBindingValue = string | ((value: string) => void);
+
+interface CopyTextElement extends HTMLElement {
+  $copyCallback?: (value: string) => void;
+  $copyValue?: string;
+  $destroyCopy?: () => void;
+}
+
 export default {
-  beforeMount(el: any, { value, arg }: DirectiveBinding) {
-    if (arg === 'callback') {
+  beforeMount(el: CopyTextElement, { value, arg }: DirectiveBinding<CopyBindingValue>) {
+    if (arg === 'callback' && typeof value === 'function') {
       el.$copyCallback = value;
     } else {
-      el.$copyValue = value;
+      el.$copyValue = typeof value === 'string' ? value : '';
       const handler = () => {
-        copyTextToClipboard(el.$copyValue);
+        copyTextToClipboard(el.$copyValue || '');
         if (el.$copyCallback) {
-          el.$copyCallback(el.$copyValue);
+          el.$copyCallback(el.$copyValue || '');
         }
       };
       el.addEventListener('click', handler);
@@ -59,7 +67,7 @@ function copyTextToClipboard(input: string, { target = document.body } = {}) {
     selection?.addRange(originalRange);
   }
 
-  // Get the focus back on the previously focused element, if any
+  // Get the focus back on the previously focused element, if it exists
   if (previouslyFocusedElement) {
     previouslyFocusedElement.focus();
   }

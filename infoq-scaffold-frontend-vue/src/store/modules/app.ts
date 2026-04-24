@@ -16,7 +16,7 @@ export const useAppStore = defineStore('app', () => {
 
   // 语言
   const language = useStorage('language', 'zh_CN');
-  const languageObj: any = {
+  const languageObj: Record<'en_US' | 'zh_CN', typeof enUS> = {
     en_US: enUS,
     zh_CN: zhCN
   };
@@ -38,7 +38,7 @@ export const useAppStore = defineStore('app', () => {
     }
   };
 
-  const closeSideBar = ({ withoutAnimation }: any): void => {
+  const closeSideBar = ({ withoutAnimation }: { withoutAnimation: boolean }): void => {
     sidebarStatus.value = '0';
     sidebar.opened = false;
     sidebar.withoutAnimation = withoutAnimation;

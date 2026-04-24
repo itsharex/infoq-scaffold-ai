@@ -1,5 +1,11 @@
-# infoq-scaffold-backend index
-Read this file only when the task targets backend file or class lookup.
+# infoq-scaffold-backend 索引
+仅在任务需要定位 backend 文件或类时阅读此文件。
+
+## 目录
+
+- 文件路径列表
+
+## 文件路径列表
 
 infoq-scaffold-backend/.editorconfig
 infoq-scaffold-backend/infoq-admin/Dockerfile

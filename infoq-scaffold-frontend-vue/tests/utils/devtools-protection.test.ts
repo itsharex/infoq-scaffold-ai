@@ -72,8 +72,6 @@ describe('utils/devtools-protection', () => {
       now += 1;
       return now;
     });
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'clear').mockImplementation(() => {});
 
     setWindowSize(1200, 1100, 900, 860);
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
@@ -97,58 +95,6 @@ describe('utils/devtools-protection', () => {
 
     setWindowSize(1200, 1100, 900, 860);
     vi.spyOn(performance, 'now').mockReturnValueOnce(0).mockReturnValueOnce(20);
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'clear').mockImplementation(() => {});
-    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
-
-    initDevToolsProtection();
-
-    expect(setIntervalSpy.mock.calls.some((call) => call[1] === 50)).toBe(true);
-  });
-
-  it('detects open devtools when console getter trap is triggered', () => {
-    vi.useFakeTimers();
-    vi.stubEnv('MODE', 'production');
-    vi.stubEnv('VITE_ENABLE_ANTI_DEBUG', 'false');
-
-    setWindowSize(1200, 1100, 900, 860);
-    let now = 0;
-    vi.spyOn(performance, 'now').mockImplementation(() => {
-      now += 1;
-      return now;
-    });
-    vi.spyOn(console, 'log').mockImplementation((arg?: any) => {
-      if (arg && typeof arg === 'object') {
-        // 触发 element.id getter，命中方法3分支
-        void arg.id;
-      }
-    });
-    vi.spyOn(console, 'clear').mockImplementation(() => {});
-    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
-
-    initDevToolsProtection();
-
-    expect(setIntervalSpy.mock.calls.some((call) => call[1] === 50)).toBe(true);
-  });
-
-  it('detects open devtools when regex toString trap is triggered', () => {
-    vi.useFakeTimers();
-    vi.stubEnv('MODE', 'production');
-    vi.stubEnv('VITE_ENABLE_ANTI_DEBUG', 'false');
-
-    setWindowSize(1200, 1100, 900, 860);
-    let now = 0;
-    vi.spyOn(performance, 'now').mockImplementation(() => {
-      now += 1;
-      return now;
-    });
-    vi.spyOn(console, 'log').mockImplementation((...args: any[]) => {
-      if (args[0] === '%c' && args[1]) {
-        // 触发 devtoolsRegex.toString，命中方法4分支
-        String(args[1]);
-      }
-    });
-    vi.spyOn(console, 'clear').mockImplementation(() => {});
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
 
     initDevToolsProtection();
@@ -162,15 +108,8 @@ describe('utils/devtools-protection', () => {
     vi.stubEnv('VITE_ENABLE_ANTI_DEBUG', 'false');
 
     setWindowSize(1200, 1100, 900, 860);
-    let now = 0;
     vi.spyOn(performance, 'now').mockImplementation(() => {
-      now += 1;
-      return now;
-    });
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'clear').mockImplementation(() => {});
-    vi.spyOn(document, 'createElement').mockImplementation(() => {
-      throw new Error('create-element-failed');
+      throw new Error('performance-now-failed');
     });
 
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
@@ -178,29 +117,6 @@ describe('utils/devtools-protection', () => {
     initDevToolsProtection();
 
     // 检测失败时不会立即开启 50ms debugger 轮询，但仍会保留 500ms 状态检测
-    expect(setIntervalSpy.mock.calls.some((call) => call[1] === 50)).toBe(false);
-    expect(setIntervalSpy.mock.calls.some((call) => call[1] === 500)).toBe(true);
-  });
-
-  it('handles console access errors in detect flow gracefully', () => {
-    vi.useFakeTimers();
-    vi.stubEnv('MODE', 'production');
-    vi.stubEnv('VITE_ENABLE_ANTI_DEBUG', 'false');
-
-    setWindowSize(1200, 1100, 900, 860);
-    let now = 0;
-    vi.spyOn(performance, 'now').mockImplementation(() => {
-      now += 1;
-      return now;
-    });
-    vi.spyOn(console, 'log').mockImplementation(() => {
-      throw new Error('console-log-failed');
-    });
-    vi.spyOn(console, 'clear').mockImplementation(() => {});
-
-    const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
-    initDevToolsProtection();
-
     expect(setIntervalSpy.mock.calls.some((call) => call[1] === 50)).toBe(false);
     expect(setIntervalSpy.mock.calls.some((call) => call[1] === 500)).toBe(true);
   });
@@ -216,8 +132,6 @@ describe('utils/devtools-protection', () => {
       now += 1;
       return now;
     });
-    vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'clear').mockImplementation(() => {});
     const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
 
     initDevToolsProtection();

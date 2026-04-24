@@ -29,39 +29,6 @@ function detectDevTools(): boolean {
     if (timeDiff > 10) {
       return true;
     }
-
-    // 方法3: 检测控制台对象
-    let devtoolsDetected = false;
-    const element = document.createElement('div');
-    Object.defineProperty(element, 'id', {
-      get: function () {
-        devtoolsDetected = true;
-        return '';
-      }
-    });
-
-    // 使用 console 来触发 getter（仅在开发者工具打开时）
-    try {
-      console.log(element);
-      console.clear();
-    } catch (e) {
-      // 忽略错误
-    }
-
-    if (devtoolsDetected) {
-      return true;
-    }
-
-    // 方法4: 检测控制台是否被重写（开发者工具打开时）
-    const devtoolsRegex = /./ as RegExp & { opened?: boolean; toString: () => string };
-    devtoolsRegex.toString = function () {
-      this.opened = true;
-      return '';
-    };
-    console.log('%c', devtoolsRegex);
-    if (devtoolsRegex.opened) {
-      return true;
-    }
   } catch (e) {
     // 如果检测过程中出错，默认返回 false
     return false;

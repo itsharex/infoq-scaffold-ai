@@ -50,7 +50,11 @@ const props = defineProps({
   }
 });
 
-const onlyOneChild = ref<any>({});
+interface SidebarRoute extends RouteRecordRaw {
+  noShowingChildren?: boolean;
+}
+
+const onlyOneChild = ref<SidebarRoute>({} as SidebarRoute);
 
 const hasOneShowingChild = (parent: RouteRecordRaw, children?: RouteRecordRaw[]) => {
   if (!children) {
@@ -78,7 +82,7 @@ const hasOneShowingChild = (parent: RouteRecordRaw, children?: RouteRecordRaw[])
   return false;
 };
 
-const resolvePath = (routePath: string, routeQuery?: string): any => {
+const resolvePath = (routePath: string, routeQuery?: string): string | { path: string; query: Record<string, unknown> } => {
   if (isExternal(routePath)) {
     return routePath;
   }
@@ -86,7 +90,7 @@ const resolvePath = (routePath: string, routeQuery?: string): any => {
     return props.basePath;
   }
   if (routeQuery) {
-    const query = JSON.parse(routeQuery);
+    const query = JSON.parse(routeQuery) as Record<string, unknown>;
     return { path: getNormalPath(props.basePath + '/' + routePath), query: query };
   }
   return getNormalPath(props.basePath + '/' + routePath);

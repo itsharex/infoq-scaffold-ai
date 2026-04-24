@@ -9,9 +9,10 @@ import createSvgIconsPlugin from './svg-icon';
 import createCompression from './compression';
 import createSetupExtend from './setup-extend';
 import path from 'path';
+import type { PluginOption } from 'vite';
 
-export default (viteEnv: any, isBuild = false): [] => {
-  const vitePlugins: any = [];
+export default (viteEnv: Record<string, string>, isBuild = false): PluginOption[] => {
+  const vitePlugins: PluginOption[] = [];
   vitePlugins.push(vue());
   if (!isBuild && viteEnv.VITE_APP_ENABLE_VUE_DEVTOOLS === 'true') {
     vitePlugins.push(vueDevTools());

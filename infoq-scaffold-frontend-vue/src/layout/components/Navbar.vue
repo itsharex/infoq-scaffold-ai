@@ -119,7 +119,7 @@ const setLayout = () => {
   emits('setLayout');
 };
 // 定义Command方法对象 通过key直接调用方法
-const commandMap: { [key: string]: any } = {
+const commandMap: Record<string, () => void | Promise<void>> = {
   setLayout,
   logout
 };
@@ -133,7 +133,8 @@ const handleCommand = (command: string) => {
 watch(
   () => noticeStore.state.value.notices,
   (newVal) => {
-    newNotice.value = newVal.filter((item: any) => !item.read).length;
+    const notices = (newVal || []) as Array<{ read?: boolean }>;
+    newNotice.value = notices.filter((item) => !item.read).length;
   },
   { deep: true }
 );

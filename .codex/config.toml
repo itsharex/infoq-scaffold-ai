@@ -12,18 +12,19 @@ enabled = true
 startup_timeout_sec = 20
 tool_timeout_sec = 120
 
-[mcp_servers.context7]
-command = "npx"
-args = ["-y", "@upstash/context7-mcp@latest"]
-env_vars = ["CONTEXT7_API_KEY"]
-enabled = true
-startup_timeout_sec = 20
-tool_timeout_sec = 120
+[mcp_servers.playwright.tools.browser_navigate]
+approval_mode = "approve"
 
 [mcp_servers.openai-docs]
 url = "https://developers.openai.com/mcp"
 enabled = true
 tool_timeout_sec = 120
+
+[mcp_servers.openai-docs.tools.search_openai_docs]
+approval_mode = "approve"
+
+[mcp_servers.openai-docs.tools.fetch_openai_doc]
+approval_mode = "approve"
 
 [mcp_servers.chrome-devtools]
 command = "npx"
@@ -32,15 +33,128 @@ enabled = true
 startup_timeout_sec = 20
 tool_timeout_sec = 120
 
+[mcp_servers.chrome-devtools.tools.take_snapshot]
+approval_mode = "approve"
+
+[mcp_servers.chrome-devtools.tools.take_screenshot]
+approval_mode = "approve"
+
+[mcp_servers.chrome-devtools.tools.evaluate_script]
+approval_mode = "approve"
+
+[mcp_servers.chrome-devtools.tools.click]
+approval_mode = "approve"
+
 # Optional MCP servers. Enable only after completing the documented local setup.
 
-[mcp_servers.figma-desktop]
-url = "http://127.0.0.1:3845/mcp"
+[mcp_servers.mysql]
+command = "bash"
+args = [".codex/scripts/start_mysql_mcp.sh"]
+enabled_tools = [
+  "show_databases",
+  "list_tables",
+  "describe_table",
+  "show_create_table",
+  "show_indexes",
+  "query",
+  "select",
+  "batch_query",
+]
+env = { MYSQL_READONLY = "true" }
+env_vars = [
+  "MYSQL_HOST",
+  "MYSQL_PORT",
+  "MYSQL_USER",
+  "MYSQL_PASSWORD",
+  "MYSQL_DATABASE",
+  "MYSQL_CONNECTION_LIMIT",
+  "MYSQL_SSL_CA",
+  "MYSQL_TIMEOUT",
+]
 enabled = false
+startup_timeout_sec = 20
 tool_timeout_sec = 120
 
-[mcp_servers.github]
-url = "https://api.githubcopilot.com/mcp/"
-bearer_token_env_var = "GITHUB_MCP_PAT"
+[mcp_servers.mysql.tools.show_databases]
+approval_mode = "approve"
+
+[mcp_servers.mysql.tools.query]
+approval_mode = "approve"
+
+[mcp_servers.mysql.tools.describe_table]
+approval_mode = "approve"
+
+[mcp_servers.mysql.tools.select]
+approval_mode = "approve"
+
+[mcp_servers.mysql.tools.batch_query]
+approval_mode = "approve"
+
+[mcp_servers.mysql.tools.list_tables]
+approval_mode = "approve"
+
+[mcp_servers.mysql.tools.show_create_table]
+approval_mode = "approve"
+
+[mcp_servers.mysql.tools.show_indexes]
+approval_mode = "approve"
+
+[mcp_servers.redis]
+command = "bash"
+args = [".codex/scripts/start_redis_mcp.sh"]
+enabled_tools = [
+  "ping",
+  "info",
+  "keys",
+  "get",
+  "hgetall",
+  "lrange",
+  "smembers",
+  "ttl",
+  "zrange",
+]
+env = { REDIS_READONLY = "true" }
+env_vars = [
+  "REDIS_HOST",
+  "REDIS_PORT",
+  "REDIS_PASSWORD",
+  "REDIS_DB",
+  "REDIS_CLUSTER",
+  "REDIS_CLUSTER_NODES",
+  "REDIS_SENTINEL",
+  "REDIS_SENTINEL_MASTER_NAME",
+  "REDIS_SENTINEL_NODES",
+  "REDIS_TLS_CA",
+  "REDIS_TLS_CERT",
+  "REDIS_TLS_KEY",
+]
 enabled = false
+startup_timeout_sec = 20
 tool_timeout_sec = 120
+
+[mcp_servers.redis.tools.keys]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.hgetall]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.ping]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.info]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.get]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.lrange]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.smembers]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.ttl]
+approval_mode = "approve"
+
+[mcp_servers.redis.tools.zrange]
+approval_mode = "approve"

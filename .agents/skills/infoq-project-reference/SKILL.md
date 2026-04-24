@@ -1,32 +1,32 @@
 ---
 name: infoq-project-reference
-description: Load this repository's static project reference, including workspace layout, key entry/config paths, architecture and naming rules, UTF-8 and package-manager conventions, build/run/test/deploy commands, branch/PR expectations, and engineering/security/validation standards. Use when users ask about project structure, startup/build/test/deploy procedures, config or entry files, coding conventions, code quality rules, security baselines, test policies, or when a task needs repo-specific reference context that does not belong in always-on AGENTS memory.
+description: 加载本仓库的静态项目参考信息，包括工作区布局、关键入口与配置路径、架构与命名规则、UTF-8 与包管理约定、构建/运行/测试/部署命令、分支与 PR 预期、以及工程/安全/验证标准。当用户询问项目结构、启动/构建/测试/部署流程、配置或入口文件、编码规范、质量规则、安全基线、测试策略，或任务需要仓库专属参考上下文且不应放入常驻 AGENTS 内存时使用。
 ---
 
-# InfoQ Project Reference
+# InfoQ 项目参考
 
-Use this skill when the task needs stable repository reference material that is useful, but not important enough to keep in AGENTS for every turn.
+当任务需要稳定且有用的仓库参考资料，但又不需要每轮都常驻在 AGENTS 中时，使用此技能。
 
-## Workflow
+## 工作流程
 
-1. Read `references/project-reference.md` for repository layout, commands, and delivery conventions.
-2. Read `references/engineering-standards.md` when the task needs coding standards, security rules, test policy, code metrics, or implementation quality guidance.
-3. Check whether a closer workspace `AGENTS.md` already answers the question; prefer the closer backend, Vue, or React instruction file before broad repository guidance.
-4. Load only the sections relevant to the task instead of pasting the entire reference into context.
-5. Treat the referenced files and commands as hints, then verify the current repository state before making changes.
-6. Keep high-priority global rules in `AGENTS.md`; do not move universal rules such as retrieval-first reasoning, AI coding guardrails, UTF-8 encoding, or explicit-failure policy out of AGENTS.
+1. 阅读 `references/project-reference.md`，获取仓库结构、命令与交付约定。
+2. 当任务涉及编码规范、安全规则、测试策略、代码度量或实现质量时，阅读 `references/engineering-standards.md`。
+3. 先检查更近的工作区 `AGENTS.md` 是否已回答问题；在使用全仓指导前，优先 backend/Vue/React 就近指令文件。
+4. 仅加载与当前任务相关的章节，不要把整份参考文档全部塞入上下文。
+5. 将参考文件与命令视为线索，在改动前先核验仓库当前状态。
+6. 高优先级全局规则应留在 `AGENTS.md`；不要把 retrieval-first、AI 编码护栏、UTF-8、显式失败策略等通用规则移出 AGENTS。
 
-## Typical Triggers
+## 典型触发场景
 
-- The user asks where project modules, entry files, config files, infrastructure files, or SQL files live.
-- The user asks how to build, run, test, deploy, or validate this repository.
-- The task depends on package naming, layering, indentation, encoding, commit rules, branch naming, or PR expectations.
-- The task needs engineering baselines such as code metrics, dependency injection, immutability, security boundaries, explicit-failure rules, or backend unit-test timeout policy.
-- The task needs repo reference context but does not justify inflating top-level AGENTS lines, and a closer workspace AGENTS file does not already provide the answer.
+- 用户询问项目模块、入口文件、配置文件、基础设施文件或 SQL 文件所在位置。
+- 用户询问如何构建、运行、测试、部署或验证本仓库。
+- 任务依赖包命名、分层、缩进、编码、提交规则、分支命名或 PR 预期。
+- 任务需要工程基线（如代码度量、依赖注入、不可变性、安全边界、显式失败规则、后端单测超时策略）。
+- 任务需要仓库参考上下文，但不值得扩张顶层 AGENTS，且更近的工作区 AGENTS 未提供答案。
 
-## Reference
+## 参考
 
-Read:
+请阅读：
 
 - `references/project-reference.md`
 - `references/engineering-standards.md`

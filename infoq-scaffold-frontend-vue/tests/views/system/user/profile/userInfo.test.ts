@@ -74,7 +74,7 @@ describe('views/system/user/profile/userInfo', () => {
             $tab: {
               closePage: userInfoMocks.closePage
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-form': ElFormStub,

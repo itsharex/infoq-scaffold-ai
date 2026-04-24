@@ -26,7 +26,7 @@ const roleMocks = vi.hoisted(() => ({
       status: '0',
       createTime: '2026-03-07 10:00:00'
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('vue-router', async () => {
@@ -176,7 +176,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, emit }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-stub' }, [
@@ -184,7 +184,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'selection-first',
-            onClick: () => emit('selection-change', [(props.data as any[])[0]])
+            onClick: () => emit('selection-change', [(props.data as unknown[])[0]])
           },
           'selection-first'
         ),
@@ -198,7 +198,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () => h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || {}, $index: 0 })) || []);
   }
@@ -275,13 +275,13 @@ describe('views/system/role/index', () => {
               }
             },
             parseTime: (value: string) => value,
-            addDateRange: (query: Record<string, any>, range: string[]) => ({ ...query, range }),
+            addDateRange: (query: Record<string, unknown>, range: string[]) => ({ ...query, range }),
             $modal: {
               confirm: roleMocks.modalConfirm,
               msgSuccess: roleMocks.msgSuccess
             },
             download: roleMocks.download
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},
@@ -443,7 +443,16 @@ describe('views/system/role/index', () => {
     await flushPromises();
     expect(roleMocks.updateRole).toHaveBeenCalledTimes(1);
 
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      handleAdd: () => void;
+      handleCheckedTreeExpand: (checked: boolean, type: 'menu' | 'dept') => void;
+      handleCheckedTreeNodeAll: (checked: boolean, type: 'menu' | 'dept') => void;
+      handleCheckedTreeConnect: (checked: boolean, type: 'menu' | 'dept') => void;
+      cancel: () => void;
+      dataScopeSelectChange: (value: string) => void;
+      submitDataScope: () => Promise<void>;
+      cancelDataScope: () => void;
+    };
     vm.handleAdd();
     await flushPromises();
     vm.handleCheckedTreeExpand(true, 'menu');

@@ -574,7 +574,7 @@ const handleFileUploadProgress = () => {
   upload.isUploading = true;
 };
 /** 文件上传成功处理 */
-const handleFileSuccess = (response: any, file: UploadFile) => {
+const handleFileSuccess = (response: { msg: string }, file: UploadFile) => {
   upload.open = false;
   upload.isUploading = false;
   uploadRef.value?.handleRemove(file);

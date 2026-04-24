@@ -1,9 +1,16 @@
 describe('utils/scroll-to', () => {
+  type AnimationFrameFn = (cb: FrameRequestCallback) => number;
+  type WindowAnimationPatch = {
+    requestAnimationFrame?: AnimationFrameFn;
+    webkitRequestAnimationFrame?: AnimationFrameFn;
+    mozRequestAnimationFrame?: AnimationFrameFn;
+  };
+
   const originalRequestAnimationFrame = Object.getOwnPropertyDescriptor(window, 'requestAnimationFrame');
   const originalWebkitRequestAnimationFrame = Object.getOwnPropertyDescriptor(window, 'webkitRequestAnimationFrame');
   const originalMozRequestAnimationFrame = Object.getOwnPropertyDescriptor(window, 'mozRequestAnimationFrame');
 
-  const setAnimationApis = (raf?: any, webkit?: any, moz?: any) => {
+  const setAnimationApis = (raf?: AnimationFrameFn, webkit?: AnimationFrameFn, moz?: AnimationFrameFn) => {
     Object.defineProperty(window, 'requestAnimationFrame', {
       value: raf,
       configurable: true,
@@ -25,17 +32,17 @@ describe('utils/scroll-to', () => {
     if (originalRequestAnimationFrame) {
       Object.defineProperty(window, 'requestAnimationFrame', originalRequestAnimationFrame);
     } else {
-      delete (window as any).requestAnimationFrame;
+      delete (window as WindowAnimationPatch).requestAnimationFrame;
     }
     if (originalWebkitRequestAnimationFrame) {
       Object.defineProperty(window, 'webkitRequestAnimationFrame', originalWebkitRequestAnimationFrame);
     } else {
-      delete (window as any).webkitRequestAnimationFrame;
+      delete (window as WindowAnimationPatch).webkitRequestAnimationFrame;
     }
     if (originalMozRequestAnimationFrame) {
       Object.defineProperty(window, 'mozRequestAnimationFrame', originalMozRequestAnimationFrame);
     } else {
-      delete (window as any).mozRequestAnimationFrame;
+      delete (window as WindowAnimationPatch).mozRequestAnimationFrame;
     }
   };
 
@@ -51,8 +58,8 @@ describe('utils/scroll-to', () => {
 
   it('animates scroll position and invokes callback', async () => {
     vi.useFakeTimers();
-    const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: any) => {
-      return window.setTimeout(() => cb(), 0);
+    const requestAnimationFrameSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
+      return window.setTimeout(() => cb(performance.now()), 0);
     });
 
     document.documentElement.scrollTop = 0;
@@ -74,7 +81,7 @@ describe('utils/scroll-to', () => {
 
   it('uses default duration when duration is undefined', async () => {
     vi.useFakeTimers();
-    setAnimationApis((cb: any) => window.setTimeout(() => cb(), 0), undefined, undefined);
+    setAnimationApis((cb: FrameRequestCallback) => window.setTimeout(() => cb(performance.now()), 0), undefined, undefined);
 
     document.documentElement.scrollTop = 0;
     (document.body.parentNode as HTMLElement).scrollTop = 0;

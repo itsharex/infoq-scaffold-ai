@@ -1,5 +1,11 @@
-# infoq-scaffold-frontend-react index
-Read this file only when the task targets React file, component, or route lookup.
+# infoq-scaffold-frontend-react 索引
+仅在任务需要定位 React 文件、组件或路由时阅读此文件。
+
+## 目录
+
+- 文件路径列表
+
+## 文件路径列表
 
 infoq-scaffold-frontend-react/.editorconfig
 infoq-scaffold-frontend-react/.env.development

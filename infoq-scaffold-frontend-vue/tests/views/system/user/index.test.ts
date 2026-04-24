@@ -33,7 +33,7 @@ const userMocks = vi.hoisted(() => ({
       status: '0',
       createTime: '2026-03-07 10:00:00'
     }
-  ] as Array<Record<string, any>>,
+  ] as Array<Record<string, unknown>>,
   deptTree: [
     {
       id: 99,
@@ -41,7 +41,7 @@ const userMocks = vi.hoisted(() => ({
       disabled: false,
       children: []
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('vue-router', () => ({
@@ -167,7 +167,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, emit }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-stub' }, [
@@ -175,7 +175,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'selection-first',
-            onClick: () => emit('selection-change', [(props.data as any[])[0]])
+            onClick: () => emit('selection-change', [(props.data as unknown[])[0]])
           },
           'selection-first'
         ),
@@ -189,7 +189,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || { createTime: '' }, $index: 0 })) || []);
@@ -266,6 +266,9 @@ const passthroughStub = (name: string) =>
   });
 
 describe('views/system/user/index', () => {
+  const messageBoxPromptMock = ElMessageBox.prompt as unknown as ReturnType<typeof vi.fn>;
+  const messageBoxAlertMock = ElMessageBox.alert as unknown as ReturnType<typeof vi.fn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     userMocks.rows = [
@@ -360,14 +363,14 @@ describe('views/system/user/index', () => {
                 leave: ''
               }
             },
-            addDateRange: (query: Record<string, any>, range: unknown[]) => ({ ...query, range }),
+            addDateRange: (query: Record<string, unknown>, range: unknown[]) => ({ ...query, range }),
             $modal: {
               confirm: userMocks.modalConfirm,
               msgSuccess: userMocks.msgSuccess
             },
             download: userMocks.download,
             getConfigKey: userMocks.getConfigKey
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},
@@ -521,7 +524,44 @@ describe('views/system/user/index', () => {
   it('covers filter/reset/cancel-delete and status rollback branches', async () => {
     const wrapper = mountView();
     await flushPromises();
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      ids: number[];
+      single: boolean;
+      multiple: boolean;
+      form: {
+        status: string;
+        userId?: number;
+        roleIds?: number[] | null;
+        deptId?: number | null;
+        postIds?: number[] | null;
+      };
+      dialog: {
+        visible: boolean;
+      };
+      upload: {
+        open: boolean;
+        title: string;
+        isUploading: boolean;
+      };
+      filterNode: (value: string, data: { label: string }) => boolean;
+      filterDisabledDept: (data: Array<Record<string, unknown>>) => Array<Record<string, unknown>>;
+      handleDelete: (row: { userId: number }) => Promise<void>;
+      handleStatusChange: (row: { userId: number; userName: string; status: string }) => Promise<void>;
+      resetQuery: () => void;
+      handleResetPwd: (row: { userId: number; userName: string }) => Promise<void>;
+      handleImport: () => void;
+      submitFileForm: () => void;
+      handleExport: () => void;
+      importTemplate: () => void;
+      handleFileUploadProgress: () => void;
+      handleFileSuccess: (response: { msg: string }, file: { name: string }) => void;
+      cancel: () => void;
+      closeDialog: () => void;
+      handleSelectionChange: (selection: Array<{ userId: number }>) => void;
+      handleUpdate: (row: { userId: number }) => Promise<void>;
+      submitForm: () => void;
+      handleDeptChange: (deptId: number) => Promise<void>;
+    };
 
     expect(vm.filterNode('', { label: '研发部' })).toBe(true);
     expect(vm.filterNode('研发', { label: '研发部' })).toBe(true);
@@ -565,17 +605,44 @@ describe('views/system/user/index', () => {
   it('covers reset password/import-export/upload and dialog close flows', async () => {
     const wrapper = mountView();
     await flushPromises();
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      ids: number[];
+      single: boolean;
+      multiple: boolean;
+      form: {
+        status: string;
+      };
+      dialog: {
+        visible: boolean;
+      };
+      upload: {
+        open: boolean;
+        title: string;
+        isUploading: boolean;
+      };
+      handleResetPwd: (row: { userId: number; userName: string }) => Promise<void>;
+      handleImport: () => void;
+      submitFileForm: () => void;
+      handleExport: () => void;
+      importTemplate: () => void;
+      handleFileUploadProgress: () => void;
+      handleFileSuccess: (response: { msg: string }, file: { name: string }) => void;
+      cancel: () => void;
+      closeDialog: () => void;
+      handleSelectionChange: (selection: Array<{ userId: number }>) => void;
+    };
 
-    vi.mocked(ElMessageBox.prompt as any).mockResolvedValueOnce({ value: 'NewPwd123' });
+    messageBoxPromptMock.mockResolvedValueOnce({ value: 'NewPwd123' });
     await vm.handleResetPwd({ userId: 2, userName: 'tester' });
-    const promptOptions = vi.mocked(ElMessageBox.prompt as any).mock.calls[0]?.[2];
+    const promptOptions = messageBoxPromptMock.mock.calls[0]?.[2] as {
+      inputValidator: (value: string) => string | undefined;
+    };
     expect(promptOptions?.inputValidator('<bad\\|pwd')).toBe('不能包含非法字符：< > " \' \\ |');
     expect(promptOptions?.inputValidator('NewPwd123')).toBeUndefined();
     expect(userMocks.resetUserPwd).toHaveBeenCalledWith(2, 'NewPwd123');
     expect(userMocks.msgSuccess).toHaveBeenCalledWith('修改成功，新密码是：NewPwd123');
 
-    vi.mocked(ElMessageBox.prompt as any).mockRejectedValueOnce(new Error('cancel-reset-pwd'));
+    messageBoxPromptMock.mockRejectedValueOnce(new Error('cancel-reset-pwd'));
     await vm.handleResetPwd({ userId: 2, userName: 'tester' });
 
     vm.handleImport();
@@ -598,8 +665,8 @@ describe('views/system/user/index', () => {
     vm.handleFileUploadProgress();
     expect(vm.upload.isUploading).toBe(true);
 
-    vi.mocked(ElMessageBox.alert as any).mockResolvedValueOnce(undefined);
-    vm.handleFileSuccess({ msg: '导入完成' }, { name: 'users.xlsx' } as any);
+    messageBoxAlertMock.mockResolvedValueOnce(undefined);
+    vm.handleFileSuccess({ msg: '导入完成' }, { name: 'users.xlsx' });
     await flushPromises();
     expect(userMocks.uploadRemove).toHaveBeenCalled();
 
@@ -625,7 +692,17 @@ describe('views/system/user/index', () => {
   it('covers self-update submit branch and department change', async () => {
     const wrapper = mountView();
     await flushPromises();
-    const vm = wrapper.vm as any;
+    const vm = wrapper.vm as unknown as {
+      form: {
+        userId?: number;
+        roleIds?: number[] | null;
+        deptId?: number | null;
+        postIds?: number[] | null;
+      };
+      handleUpdate: (row: { userId: number }) => Promise<void>;
+      submitForm: () => void;
+      handleDeptChange: (deptId: number) => Promise<void>;
+    };
 
     await vm.handleUpdate({ userId: 2 });
     await flushPromises();

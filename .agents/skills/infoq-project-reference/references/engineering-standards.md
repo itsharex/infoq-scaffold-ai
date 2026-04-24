@@ -1,78 +1,78 @@
-# InfoQ Engineering Standards
+# InfoQ 工程标准
 
-## Failure Policy
+## 失败策略
 
-- In product code, prefer explicit failures over silent fallbacks, swallowed errors, fake success paths, or mock-only shortcuts that hide the root problem.
-- If a fallback is truly necessary for safety, privacy, security, or a user-requested compatibility requirement, make it explicit, documented, easy to disable, and user-approved before introducing it.
-- Surface operational failures with clear errors, exceptions, logs, or failing tests so root causes stay visible.
+- 在产品代码中，优先显式失败，禁止静默 fallback、吞错、伪成功路径，或仅靠 mock 掩盖根因的捷径。
+- 若因安全、隐私、合规或用户明确要求兼容而必须 fallback，必须做到显式、可文档化、可关闭，并在引入前获得用户确认。
+- 通过清晰错误、异常、日志或失败测试暴露运行失败，确保根因可见。
 
-## Engineering Baseline
+## 工程基线
 
-- Follow DRY, YAGNI, and separation of concerns.
-- Prefer clear naming and pragmatic abstractions over clever indirection.
-- Add concise comments only for critical intent or non-obvious logic.
-- Prefer minimal, targeted edits over large rewrites unless broader restructuring is explicitly required by the user or the task.
-- Avoid cleanup-driven refactors that mainly make code look "cleaner" while changing behavior or increasing risk without clear product value.
-- Keep implementation scoped to the requested outcome; do not add opportunistic features, broad side quests, or speculative improvements.
-- Remove dead code and obsolete compatibility branches when changing behavior, unless compatibility is explicitly required by the user.
-- If a change is later found to be wrong, revert the incorrect code immediately before continuing and do not leave unused, unreachable, or commented-out code behind.
-- Consider time and space complexity when dealing with heavy IO, loops, large payloads, or memory-sensitive flows.
-- Handle edge cases explicitly instead of assuming ideal input.
+- 遵循 DRY、YAGNI 与关注点分离。
+- 优先清晰命名和务实抽象，避免炫技式间接层。
+- 仅在关键意图或非显然逻辑处添加简洁注释。
+- 除非用户或任务明确要求大重构，否则优先最小且定向的改动。
+- 避免仅为“代码更整洁”而引入行为变化或风险上升、且无明确产品价值的清理型重构。
+- 实现范围严格对齐用户目标，不追加机会主义功能、旁支任务或推测性优化。
+- 在行为变更时删除死代码与过时兼容分支，除非用户明确要求兼容保留。
+- 若后续确认改动错误，先立即回退错误代码再继续，不得留下未使用、不可达或注释残留代码。
+- 处理重 IO、循环、大载荷、内存敏感路径时，显式考虑时间与空间复杂度。
+- 显式处理边界条件，不要假设输入永远理想。
 
-## Acceptance And Scope
+## 验收与范围
 
-- Before implementation, define an acceptance contract in the same task context covering functional scope, explicit non-goals, exception handling expectations, required logs or observability, and rollback trigger or rollback conditions.
-- If the acceptance contract is missing, ambiguous, or internally conflicting, resolve the gap or surface it explicitly before coding.
-- Keep the acceptance contract close to the implementation request so later validation can be checked against the same source of truth.
+- 实现前在同一任务上下文定义 acceptance contract，覆盖功能范围、非目标、异常处理预期、所需日志/可观测性、回滚触发条件。
+- 若 acceptance contract 缺失、含糊或内在冲突，先补齐或显式暴露问题，再编码。
+- 将 acceptance contract 保持在实现请求附近，便于后续验证使用同一真值源。
 
-## Code Metrics
+## 代码度量
 
-- Function length: keep within 50 non-blank lines; split helpers when exceeded.
-- File size: target 300 lines or less; split by responsibility when exceeded.
-- Nesting depth: keep within 3 levels; use guard clauses or early returns to flatten control flow.
-- Positional parameters: keep within 3; use an options object when more context is needed.
-- Cyclomatic complexity: target 10 or less per function; decompose branching logic when higher.
-- No magic numbers: extract named constants for non-obvious values.
+- 函数长度：非空行建议不超过 50，超出时拆分辅助函数。
+- 文件规模：建议不超过 300 行，超出时按职责拆分。
+- 嵌套深度：建议不超过 3 层，优先 guard clause / early return 拉平控制流。
+- 位置参数：建议不超过 3 个，超过时使用 options 对象。
+- 圈复杂度：单函数建议不超过 10，超出时拆分分支逻辑。
+- 禁止魔法数字：对非显然常量提取具名常量。
 
-## Decoupling And State
+## 解耦与状态
 
-- Prefer dependency injection in business logic; avoid hard-wiring concrete implementations when a parameter, interface, or adapter keeps the code easier to test and evolve.
-- Prefer immutable-first code where practical: use `const`, `readonly`, immutable structures, and returned copies instead of mutating inputs or shared global state.
-- Do not mutate function parameters unless the mutation is the explicit API contract.
+- 业务逻辑优先依赖注入；若参数、接口、适配器能提升可测性与可演进性，避免硬绑定具体实现。
+- 在可行场景优先不可变：使用 `const`、`readonly`、不可变结构与拷贝返回，避免修改入参或共享全局状态。
+- 除非修改入参是显式 API 契约，否则禁止修改函数参数。
 
-## Security Baseline
+## 安全基线
 
-- Never hardcode secrets, API keys, or credentials in source files.
-- Use environment variables, config files outside source control, or secret managers for secrets.
-- Use parameterized queries for database access; never concatenate raw user input into SQL.
-- Validate and sanitize external input at system boundaries, including user input, API payloads, and file content.
+- 严禁在源码中硬编码密钥、API Key 或凭证。
+- 敏感信息使用环境变量、源码库外配置文件或密钥管理器。
+- 数据库访问必须使用参数化查询；严禁拼接原始用户输入到 SQL。
+- 在系统边界校验并清洗外部输入（用户输入、API 载荷、文件内容）。
 
-## Testing And Validation
+## 测试与验证
 
-- Keep code testable and prefer automated verification whenever feasible.
-- Prefer deterministic checks, formatting, and reproducible validation over ad-hoc manual confidence.
-- Do not change tests, mocks, warning thresholds, or validation settings merely to force green results while leaving the real defect unresolved.
-- Do not delete assertions, weaken expectations, or suppress build/test warnings unless the user explicitly approves the tradeoff and the reason is documented in the change.
-- Backend unit tests should use a hard timeout of 60 seconds to avoid stuck runs.
-- When changing behavior, verify the relevant path instead of relying on static reasoning alone.
+- 保持代码可测试，且在可行时优先自动化验证。
+- 相比临时人工信心，优先可重复、可确定、可格式化的验证。
+- 禁止仅为“变绿”而修改测试、mock、告警阈值或验证设置，却不修复真实缺陷。
+- 未经用户明确批准且未记录理由，禁止删除断言、弱化预期或压制构建/测试告警。
+- 后端单测应设置 60 秒硬超时，避免卡死。
+- 行为变更后应验证相关路径，不可仅依赖静态推理。
 
-## Execution Workflow
+## 执行流程
 
-- Work in minimal closed loops and change one category at a time, for example behavior, tests, config, or deployment scripts.
-- Default validation order is: main-flow verification, targeted automated tests, lint/build or equivalent static checks, then diff review.
-- Do not mix unrelated refactors with behavior changes in the same batch unless the user explicitly requests a bundled change.
-- Review the resulting diff before handoff to confirm the final patch still matches the acceptance contract.
+- 采用最小闭环，一次只改一类问题（如行为、测试、配置、部署脚本）。
+- 默认验证顺序：主流程验证 -> 定向自动化测试 -> lint/build 或等价静态检查 -> diff 审核。
+- 除非用户明确要求打包交付，不要在同一批次混入无关重构与行为改动。
+- 交付前复审 diff，确认最终补丁仍与 acceptance contract 一致。
 
-## Release Guardrails
+## 发布护栏
 
-- For releasable changes, keep dependency versions and lockfiles consistent; do not update one without the other when the ecosystem uses lockfiles.
-- Verify required environment variables, config files, migration prerequisites, and external dependencies before execution or deployment.
-- Require explicit confirmation before destructive or high-risk operations affecting shared environments, persistent data, or deployment state.
-- When release risk exists, define rollback trigger and rollback path before rollout instead of treating rollback as an afterthought.
+- 可发布变更必须保持依赖版本与 lockfile 一致；存在 lockfile 时禁止单改其一。
+- 执行或部署前核验必要环境变量、配置文件、迁移前置条件与外部依赖。
+- 影响共享环境、持久化数据或部署状态的破坏性/高风险操作，必须先获明确确认。
+- 存在发布风险时，必须在上线前定义回滚触发条件与回滚路径，禁止事后补救思维。
 
-## Pre-Release Checklist
+## 发布前清单
 
-- Check performance impact for hot paths, large payloads, startup time, and critical database or cache access.
-- Ensure alerting or observability covers new critical paths, operational failures, and silent-failure risks.
-- Confirm rollback commands or rollback scripts exist when config, SQL, dependency, or infrastructure changes are included.
-- Call out every unchecked validation item as residual risk in the final handoff.
+- 评估热点路径、大载荷、启动时延、关键 DB/缓存访问的性能影响。
+- 确保告警或可观测性覆盖新增关键路径、运行失败和静默失败风险。
+- 涉及配置、SQL、依赖或基础设施变更时，确认回滚命令或回滚脚本存在。
+- 最终交付中需把所有未检查项显式列为 residual risk（残余风险）。

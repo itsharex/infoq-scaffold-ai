@@ -1,6 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia';
 import { useUserStore } from '@/store/modules/user';
 import { hasPermi, hasRoles } from '@/directive/permission';
+import type { DirectiveBinding } from 'vue';
 
 const mountTarget = () => {
   const parent = document.createElement('div');
@@ -10,7 +11,8 @@ const mountTarget = () => {
 };
 
 const invokeMounted = (directive: typeof hasPermi | typeof hasRoles, el: HTMLElement, value: string[] | undefined) => {
-  directive.mounted?.(el, { value } as any, null as any, null as any);
+  const binding = { value } as DirectiveBinding<string[] | undefined>;
+  directive.mounted?.(el, binding, null as never, null as never);
 };
 
 describe('directive/permission', () => {

@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Root AGENTS Passive Index"
+  short_description: "Maintain Vercel-style root AGENTS index"
+  default_prompt: "Use $infoq-agents-md-compress to maintain this repository's compressed root AGENTS.md as a passive-context retrieval index."

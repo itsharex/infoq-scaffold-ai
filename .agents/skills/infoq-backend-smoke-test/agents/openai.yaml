@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Backend Smoke Test"
+  short_description: "Help with InfoQ Backend Smoke Test tasks"
+  default_prompt: "Use $infoq-backend-smoke-test to run backend smoke verification after my backend changes."

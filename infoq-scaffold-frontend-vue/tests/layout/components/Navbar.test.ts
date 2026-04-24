@@ -163,7 +163,7 @@ describe('layout/components/Navbar', () => {
             $tab: {
               closeAllPage: navbarMocks.closeAllPage
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           hamburger: HamburgerStub,

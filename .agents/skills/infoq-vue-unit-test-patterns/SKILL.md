@@ -1,91 +1,69 @@
 ---
 name: infoq-vue-unit-test-patterns
-description: Build and scale Vue frontend unit tests for infoq-scaffold-frontend-vue (Vue3 + Vite6 + TypeScript) using Vitest, Vue Test Utils, jsdom, deterministic mocks for Element Plus/router/storage/env, priority-first coverage expansion (utils/store/request/permission first), and strict validation with test+coverage+lint+build. Use when users request Vue frontend unit tests, 前端单元测试全覆盖, coverage backfill, regression tests, or bug-fix-through-tests in infoq-scaffold-frontend-vue. Do not use this skill for React test work.
+description: 为本仓库 Vue 家族构建并扩展单元测试，覆盖 `infoq-scaffold-frontend-vue` 管理端与 `infoq-scaffold-frontend-weapp-vue` 小程序端。适用于 Vue 单测、覆盖率回补、回归验证、确定性缺陷复现与 test-first 修复；按 `admin`/`weapp` 参考分流，并将运行态后续交给 `infoq-vue-runtime-verification`。
 ---
 
-# Infoq Vue Frontend Unit Test Patterns
+# InfoQ Vue 单测模式
 
-## Scope
+本技能只负责一件事：Vue 家族单元测试工作。
+覆盖两个客户端：
 
-Use this skill only for `infoq-scaffold-frontend-vue` test coverage expansion and regression-proof refactors.
-React-side test work belongs to `infoq-react-unit-test-patterns`.
-Primary targets in order: `src/utils` -> `src/store` -> `src/plugins` -> `src/directive` -> `src/router`/`src/permission` -> `src/components` -> `src/views`.
+- `admin`: `infoq-scaffold-frontend-vue`
+- `weapp`: `infoq-scaffold-frontend-weapp-vue`
 
-Current baseline (2026-03-07):
-- `pnpm run test:unit` => `77 files / 218 tests` all passed
-- `pnpm run test:unit:coverage` => overall lines `82.98%`
-- Full gate (`test + coverage + lint + build`) passed
+## 客户端选择
 
-Package manager rule:
-- Prefer `pnpm` for all frontend validation commands.
-- If `pnpm` is unavailable in the current environment, use the equivalent `npm` commands.
+1. `admin` 端参考适用于 Vue 3 + Element Plus + Pinia + Vue Router 页面与工具。
+2. `weapp` 端参考适用于 uni-app Vue 小程序页面、请求封装、store 与 API 契约。
+3. 若任务是运行态验证而非单测，请切换到 `infoq-vue-runtime-verification`。
 
-## Workflow
+## 工作流程
 
-1. Bootstrap test infra if missing: `vitest.config.ts`, `tests/setup.ts`, `.env.test`, and pnpm scripts.
-2. Keep test env deterministic: mock `element-plus/es`, memory `localStorage/sessionStorage`, browser polyfills (`matchMedia`, `ResizeObserver`, `execCommand`).
-3. Add tests by priority:
-   - P0: `validate/scaffold/request/user-store/permission-store/tagsView/dict/cache/auth/directive`
-   - P1: `sse/websocket/download/tab/modal/router-guard`
-   - P2: reusable components (`Pagination/RightToolbar/DictTag/IconSelect/Breadcrumb`) and lightweight views (`error pages/redirect/home`) before heavy business pages.
-   - P3: medium business pages (`system/user/authRole`, `system/role/authUser`, `system/role/selectUser`, `system/user/profile/*`) before super-heavy CRUD pages (`system/user/index`, `system/role/index`, `system/menu/index`, etc.).
-4. Run targeted tests first, then full unit suite.
-5. If tests expose business bugs, patch source immediately and add regression assertions.
-6. Run full validation gate: unit tests + coverage + lint + build.
-7. Run Vue smoke verification on `/login` with `infoq-vue-browser-automation` and console error check.
+1. 识别客户端，只加载匹配的 `references/admin/*` 或 `references/weapp/*` 材料。
+2. 新增 helper 或 mock 前，优先复用现有测试基线。
+3. 先测用户可观察行为与边界场景，而非实现细节。
+4. 先跑定向测试；若暴露源码缺陷，先修产品代码，再扩大测试集。
+5. 若运行时行为发生变化，收尾时执行 `infoq-vue-runtime-verification`。
+6. 最终通过客户端对应质量门禁。
 
-## Guardrails
+## 完成标准
 
-- Prefer behavior assertions over implementation details.
-- For interceptor/store tests, assert branch outcomes (headers, redirects, errors, state mutations), not private internals.
-- Keep network deterministic via `vi.mock` or adapter stubs.
-- Do not weaken assertions, broaden mocks, mute warnings, raise thresholds, or add fake-success paths merely to make tests/build pass; fix the real issue or stop and document a user-approved exception.
-- If a source or test change is identified as wrong, revert the incorrect code immediately before continuing and do not leave dead, unreachable, or uncalled code behind.
-- Use low-friction route objects for store tests (`as RouteLocationNormalized`) to focus on business behavior.
-- For unstable browser APIs in jsdom, use setup polyfills, not per-test hacks.
-- For auto-imported UI APIs, mock both `element-plus/es` and `element-plus` to avoid mixed import path drift in source files.
-- For module-level singleton state (`sse.ts`), always call teardown API (`closeSSE`) in `beforeEach/afterEach` to prevent cross-test pollution.
-- For template directives not available in test runtime (`v-loading`, `v-hasPermi`), register no-op `global.directives` stubs to keep focus on business behavior.
-- For pages using `proxy?.animate.searchAnimate.*`, inject `animate` into `global.config.globalProperties` to avoid render-time `undefined`.
-- For container components that depend on named slots (`el-card` header/footer), use custom stubs that render `slots.header`/`slots.footer`, not generic passthrough-only stubs.
-- For table-heavy pages, pair `ElTable` + `ElTableColumn` custom stubs via `provide/inject` so scoped slot payloads (`scope.row`, `scope.$index`) are always defined.
-- For table column slots touching optional fields (example: `scope.row.fileSuffix.toLowerCase()`), ensure fallback row in `ElTableColumn` stub includes those fields to avoid false negatives from empty-first-render crashes.
-- For third-party local imports like `VueCropper`, prefer `vi.mock('vue-cropper', ...)` module-level replacement; global stubs may not override locally imported bindings.
-- For chart pages (`echarts.init`), mock `echarts` module directly and assert `setOption`/`resize` calls instead of snapshotting canvas output.
-- For parent-child ref calls (`operInfoDialogRef.value.openDialog(...)`), stub child component with `defineComponent + expose(...)` and assert exposed method calls.
-
-## Known Project Pitfalls
-
-- `useStorage` access during module import can fail unless storage is initialized in `tests/setup.ts` top-level.
-- Element Plus resolver may import css during tests; prefer explicit auto-import mapping in `vitest.config.ts` and `test.css=false`.
-- `utils/scaffold.ts` `sprintf` historically had placeholder substitution bug; keep regression test.
-- `store/modules/user.ts` must expose state fields used by tests/business (e.g. `name`).
-- `utils/websocket.ts` should ignore heartbeat frames (`ping`) with `indexOf('ping') >= 0`; keep regression test for literal `ping`.
-- `utils/sse.ts` calls `getToken()` in both pre-check and URL builder; in tests, prefer token variable + `mockImplementation` over fragile call-order `mockReturnValueOnce`.
-- `hooks/useDialog.ts` must guard optional params (`ops?.title`) to avoid runtime error when called without args.
-- `utils/dynamicTitle.ts` should avoid producing literal `'undefined'` in document title when env/default title is absent.
-- `components/Pagination` size-change should emit corrected `page=1` when total overflow triggers reset.
-- `views/login.vue` rememberMe parser should use explicit string compare (`rememberMe === 'true'`), not `Boolean(string)`.
-- For `@click.prevent` handlers in SFC tests, button stubs must emit the native event object (`emit('click', e)`), otherwise event modifier guard throws.
-- `authUser/selectUser/authRole` pages require stronger table stubs: if scoped slot payload is missing, Vue will crash on `scope.row.xxx` access during mount.
-- `views/system/menu/index.vue`: cascade delete empty-selection guard must use `menuIds.length <= 0` (not `< 0`), otherwise warning branch never executes.
-- `views/monitor/operLog/index.vue`: call the imported APIs with exact names `delOperLog` / `cleanOperLog`; misspelled `delOperlog` / `cleanOperlog` causes runtime `ReferenceError`.
-
-## Finish Criteria
-
-All must pass:
+### Admin
 
 ```bash
 cd infoq-scaffold-frontend-vue
 pnpm run test:unit
 pnpm run test:unit:coverage
-pnpm run lint:eslint:fix
+pnpm run lint:eslint
 pnpm run build:prod
 ```
 
-## References
+### Weapp
 
-- Commands: `references/commands.md`
-- Setup baseline: `references/setup-baseline.md`
-- Priority matrix: `references/priority-matrix.md`
-- Mock patterns: `references/mock-patterns.md`
+```bash
+cd infoq-scaffold-frontend-weapp-vue
+pnpm run typecheck
+pnpm run test
+pnpm run test:coverage
+pnpm run build:weapp:dev
+pnpm run build:weapp
+```
+
+当改动同时影响小程序运行路径时，执行 `pnpm run verify:local`。
+
+## 护栏
+
+- 除非流程确实分叉，否则不要再把 Vue admin 与 Vue weapp 单测拆成两个技能。
+- 禁止通过弱化断言、放宽 mock、伪造成功路径来硬凑覆盖率。
+- 禁止用运行态 smoke 替代缺失的单测覆盖。
+
+## 参考
+
+- `references/admin/commands.md`
+- `references/admin/setup-baseline.md`
+- `references/admin/priority-matrix.md`
+- `references/admin/mock-patterns.md`
+- `references/weapp/commands.md`
+- `references/weapp/priority-matrix.md`
+- `references/weapp/mock-patterns.md`
+- `references/weapp/coverage-fastpath.md`

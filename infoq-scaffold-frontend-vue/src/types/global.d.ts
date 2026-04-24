@@ -31,7 +31,7 @@ declare global {
 
   declare interface UploadOption {
     /** 设置上传的请求头部 */
-    headers: { [key: string]: any };
+    headers: Record<string, string>;
 
     /** 上传的地址 */
     url: string;
@@ -51,7 +51,7 @@ declare global {
     updateSupport: number;
 
     /** 其他参数 */
-    [key: string]: any;
+    [key: string]: unknown;
   }
   /**
    * 字典数据  数据配置
@@ -64,11 +64,11 @@ declare global {
   }
 
   declare interface BaseEntity {
-    createBy?: any;
-    createDept?: any;
+    createBy?: unknown;
+    createDept?: unknown;
     createTime?: string;
-    updateBy?: any;
-    updateTime?: any;
+    updateBy?: unknown;
+    updateTime?: unknown;
   }
 
   /**

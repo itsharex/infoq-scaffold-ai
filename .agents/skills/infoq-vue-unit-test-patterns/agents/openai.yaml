@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Vue Unit Test Patterns"
+  short_description: "Help with InfoQ Vue Unit Test Patterns tasks"
+  default_prompt: "Use $infoq-vue-unit-test-patterns to add or expand Vue-family tests for admin or weapp code in this repository."

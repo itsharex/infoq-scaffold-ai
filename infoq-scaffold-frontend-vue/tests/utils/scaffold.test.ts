@@ -13,6 +13,13 @@ import {
 } from '@/utils/scaffold';
 
 describe('utils/scaffold', () => {
+  type TreeNode = {
+    id: number;
+    parentId: number;
+    name: string;
+    children?: TreeNode[];
+  };
+
   it('formats time from different inputs', () => {
     expect(parseTime(undefined)).toBeNull();
     expect(parseTime(1700000000, '{y}-{m}-{d}')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
@@ -38,7 +45,7 @@ describe('utils/scaffold', () => {
     ];
     expect(selectDictLabel(datas, '1')).toBe('启用');
     expect(selectDictLabel(datas, '9')).toBe('9');
-    expect(selectDictLabel(datas, undefined as any)).toBe('');
+    expect(selectDictLabel(datas, undefined)).toBe('');
 
     expect(selectDictLabels(datas, '1,0', ',')).toBe('启用,禁用');
     expect(selectDictLabels(datas, ['1', '9'], ',')).toBe('启用,9');
@@ -48,7 +55,7 @@ describe('utils/scaffold', () => {
   it('formats strings and empty values', () => {
     expect(sprintf('hello %s', 'world')).toBe('hello world');
     expect(sprintf('hello %s %s', 'world')).toBe('');
-    expect(sprintf(123 as any, 'world')).toBe('');
+    expect(sprintf(123 as unknown as string, 'world')).toBe('');
     expect(parseStrEmpty(undefined)).toBe('');
     expect(parseStrEmpty('null')).toBe('');
     expect(parseStrEmpty('value')).toBe('value');
@@ -74,7 +81,7 @@ describe('utils/scaffold', () => {
       { id: 1, parentId: 0, name: 'root' },
       { id: 2, parentId: 1, name: 'child' }
     ];
-    const tree = handleTree<any>(list);
+    const tree = handleTree<TreeNode>(list);
     expect(tree).toHaveLength(1);
     expect(tree[0].children[0].id).toBe(2);
   });

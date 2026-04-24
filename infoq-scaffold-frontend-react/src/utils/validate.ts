@@ -92,7 +92,7 @@ export const validEmail = (email: string) => {
  * @param {string} str
  * @returns {Boolean}
  */
-export const isString = (str: any) => {
+export const isString = (str: unknown) => {
   return typeof str === 'string' || str instanceof String;
 };
 

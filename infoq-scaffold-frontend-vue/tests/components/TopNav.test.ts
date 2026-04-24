@@ -11,7 +11,7 @@ const topNavMocks = vi.hoisted(() => ({
   routerPush: vi.fn(),
   toggleSideBarHide: vi.fn(),
   setSidebarRouters: vi.fn(),
-  topbarRoutes: [] as Array<Record<string, any>>
+  topbarRoutes: [] as Array<Record<string, unknown>>
 }));
 
 vi.mock('vue-router', () => ({

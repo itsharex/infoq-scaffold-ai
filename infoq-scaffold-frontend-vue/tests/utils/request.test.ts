@@ -55,10 +55,54 @@ import { HttpStatus } from '@/enums/RespEnum';
 import FileSaver from 'file-saver';
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus/es';
 
-const requestHandler = (service as any).interceptors.request.handlers[0].fulfilled;
-const requestErrorHandler = (service as any).interceptors.request.handlers[0].rejected;
-const responseHandler = (service as any).interceptors.response.handlers[0].fulfilled;
-const responseErrorHandler = (service as any).interceptors.response.handlers[0].rejected;
+type RequestConfig = {
+  method: string;
+  url: string;
+  params?: Record<string, string>;
+  headers: Record<string, unknown>;
+  data?: unknown;
+};
+
+type ResponsePayload = {
+  data: unknown;
+  request: {
+    responseType: string;
+  };
+  headers: Record<string, string>;
+};
+
+type InterceptorEntry<TInput, TOutput> = {
+  fulfilled: (payload: TInput) => TOutput;
+  rejected: (error: Error) => Promise<never>;
+};
+
+type InterceptorService = {
+  interceptors: {
+    request: {
+      handlers: Array<InterceptorEntry<RequestConfig, Promise<RequestConfig> | RequestConfig>>;
+    };
+    response: {
+      handlers: Array<InterceptorEntry<ResponsePayload, Promise<unknown> | unknown>>;
+    };
+  };
+};
+
+const interceptorService = service as unknown as InterceptorService;
+const requestHandler = interceptorService.interceptors.request.handlers[0]!.fulfilled;
+const requestErrorHandler = interceptorService.interceptors.request.handlers[0]!.rejected;
+const responseHandler = interceptorService.interceptors.response.handlers[0]!.fulfilled;
+const responseErrorHandler = interceptorService.interceptors.response.handlers[0]!.rejected;
+
+const messageMock = ElMessage as unknown as ReturnType<typeof vi.fn> & {
+  error: ReturnType<typeof vi.fn>;
+};
+const messageConfirmMock = ElMessageBox.confirm as unknown as ReturnType<typeof vi.fn>;
+const notificationMock = ElNotification as unknown as {
+  error: ReturnType<typeof vi.fn>;
+};
+const fileSaverMock = FileSaver as unknown as {
+  saveAs: ReturnType<typeof vi.fn>;
+};
 
 describe('utils/request', () => {
   beforeEach(() => {
@@ -100,7 +144,7 @@ describe('utils/request', () => {
       url: '/system/user',
       headers: {},
       data: { userName: 'alice' }
-    } as any;
+    } as RequestConfig;
 
     await requestHandler(config);
     await expect(requestHandler(config)).rejects.toThrow('数据正在处理，请勿重复提交');
@@ -115,7 +159,7 @@ describe('utils/request', () => {
       url: '/system/user',
       headers: {},
       data: { userName: 'alice' }
-    } as any;
+    } as RequestConfig;
 
     await requestHandler(config);
     const firstSessionObj = JSON.parse(window.sessionStorage.getItem('sessionObj') as string);
@@ -156,7 +200,7 @@ describe('utils/request', () => {
         repeatSubmit: false
       },
       data: { userName: 'alice' }
-    } as any;
+    } as RequestConfig;
 
     const first = requestHandler(config);
     const second = requestHandler(config);
@@ -191,7 +235,7 @@ describe('utils/request', () => {
       data: { code: HttpStatus.SUCCESS, data: { id: 1 } },
       request: { responseType: '' },
       headers: {}
-    } as any;
+    } as ResponsePayload;
 
     expect(responseHandler(response)).toEqual(response.data);
   });
@@ -201,7 +245,7 @@ describe('utils/request', () => {
       data: { data: { id: 2 } },
       request: { responseType: '' },
       headers: {}
-    } as any;
+    } as ResponsePayload;
     expect(responseHandler(noCodeResp)).toEqual(noCodeResp.data);
 
     const blobData = { blob: true };
@@ -209,7 +253,7 @@ describe('utils/request', () => {
       data: blobData,
       request: { responseType: 'blob' },
       headers: {}
-    } as any;
+    } as ResponsePayload;
     expect(await responseHandler(blobResp)).toBe(blobData);
   });
 
@@ -218,9 +262,9 @@ describe('utils/request', () => {
       data: { code: 401, msg: 'expired' },
       request: { responseType: '' },
       headers: {}
-    } as any;
+    } as ResponsePayload;
 
-    (ElMessageBox.confirm as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce(true);
+    messageConfirmMock.mockResolvedValueOnce(true);
     await expect(responseHandler(unauthorizedResp)).rejects.toBe('无效的会话，或者会话已过期，请重新登录。');
     await Promise.resolve();
     await Promise.resolve();
@@ -233,7 +277,7 @@ describe('utils/request', () => {
     });
     expect(isRelogin.show).toBe(false);
 
-    (ElMessageBox.confirm as unknown as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('cancel'));
+    messageConfirmMock.mockRejectedValueOnce(new Error('cancel'));
     await expect(responseHandler(unauthorizedResp)).rejects.toBe('无效的会话，或者会话已过期，请重新登录。');
     await Promise.resolve();
     expect(requestMocks.logout).toHaveBeenCalledTimes(1);
@@ -252,7 +296,7 @@ describe('utils/request', () => {
       headers: {
         'encrypt-key': 'encrypted-header'
       }
-    } as any;
+    } as ResponsePayload;
 
     expect(responseHandler(encryptedResp)).toEqual({
       code: 200,
@@ -268,19 +312,19 @@ describe('utils/request', () => {
       data: { code: HttpStatus.WARN, msg: 'warn-msg' },
       request: { responseType: '' },
       headers: {}
-    } as any;
+    } as ResponsePayload;
 
     await expect(responseHandler(warnResp)).rejects.toThrow('warn-msg');
-    expect(ElMessage as any).toHaveBeenCalled();
+    expect(messageMock).toHaveBeenCalled();
 
     const unknownResp = {
       data: { code: 999, msg: 'unknown' },
       request: { responseType: '' },
       headers: {}
-    } as any;
+    } as ResponsePayload;
 
     await expect(responseHandler(unknownResp)).rejects.toBe('error');
-    expect((ElNotification as any).error).toHaveBeenCalled();
+    expect(notificationMock.error).toHaveBeenCalled();
   });
 
   it('rejects and displays error message for server error code', async () => {
@@ -288,10 +332,10 @@ describe('utils/request', () => {
       data: { code: HttpStatus.SERVER_ERROR, msg: 'server-error' },
       request: { responseType: '' },
       headers: {}
-    } as any;
+    } as ResponsePayload;
 
     await expect(responseHandler(serverResp)).rejects.toThrow('server-error');
-    expect(ElMessage as any).toHaveBeenCalledWith(
+    expect(messageMock).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'server-error',
         type: 'error'
@@ -302,38 +346,38 @@ describe('utils/request', () => {
   it('translates network error message in response reject handler', async () => {
     const error = new Error('Network Error');
     await expect(responseErrorHandler(error)).rejects.toBe(error);
-    expect(ElMessage as any).toHaveBeenCalledWith(expect.objectContaining({ message: '后端接口连接异常', type: 'error' }));
+    expect(messageMock).toHaveBeenCalledWith(expect.objectContaining({ message: '后端接口连接异常', type: 'error' }));
   });
 
   it('translates timeout and status code errors in response reject handler', async () => {
     const timeoutError = new Error('timeout of 5000ms exceeded');
     await expect(responseErrorHandler(timeoutError)).rejects.toBe(timeoutError);
-    expect(ElMessage as any).toHaveBeenCalledWith(expect.objectContaining({ message: '系统接口请求超时', type: 'error' }));
+    expect(messageMock).toHaveBeenCalledWith(expect.objectContaining({ message: '系统接口请求超时', type: 'error' }));
 
     const statusError = new Error('Request failed with status code 503');
     await expect(responseErrorHandler(statusError)).rejects.toBe(statusError);
-    expect(ElMessage as any).toHaveBeenCalledWith(expect.objectContaining({ message: '系统接口503异常', type: 'error' }));
+    expect(messageMock).toHaveBeenCalledWith(expect.objectContaining({ message: '系统接口503异常', type: 'error' }));
   });
 
   it('downloads blob and handles json error payload', async () => {
     const postSpy = vi.spyOn(service, 'post');
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    postSpy.mockResolvedValueOnce(new Blob(['file-content'], { type: 'application/octet-stream' }) as any);
+    postSpy.mockResolvedValueOnce(new Blob(['file-content'], { type: 'application/octet-stream' }));
     await download('/export', { id: 1 }, 'users.xlsx');
-    expect((FileSaver as any).saveAs).toHaveBeenCalled();
+    expect(fileSaverMock.saveAs).toHaveBeenCalled();
     const firstCallOptions = postSpy.mock.calls[0][2] as {
-      transformRequest: Array<(params: any) => string>;
+      transformRequest: Array<(params: unknown) => string>;
     };
     expect(firstCallOptions.transformRequest[0]({ id: 1, status: '0' })).toContain('id=1');
 
-    postSpy.mockResolvedValueOnce(new Blob(['{"code":500,"msg":"fail"}'], { type: 'application/json' }) as any);
+    postSpy.mockResolvedValueOnce(new Blob(['{"code":500,"msg":"fail"}'], { type: 'application/json' }));
     await download('/export', { id: 2 }, 'users.xlsx');
-    expect((ElMessage as any).error).toHaveBeenCalled();
+    expect(messageMock.error).toHaveBeenCalled();
 
     postSpy.mockRejectedValueOnce(new Error('boom'));
     await download('/export', { id: 3 }, 'users.xlsx');
-    expect((ElMessage as any).error).toHaveBeenCalledWith('下载文件出现错误，请联系管理员！');
+    expect(messageMock.error).toHaveBeenCalledWith('下载文件出现错误，请联系管理员！');
     consoleErrorSpy.mockRestore();
   });
 
@@ -354,9 +398,9 @@ describe('utils/request', () => {
 
     postSpy.mockResolvedValueOnce({
       type: 'application/json'
-    } as any);
+    } as unknown as Blob);
     await download('/export', { id: 4 }, 'users.xlsx');
-    expect((ElMessage as any).error).toHaveBeenCalled();
+    expect(messageMock.error).toHaveBeenCalled();
 
     Object.defineProperty(globalThis, 'Blob', {
       value: OriginalBlob,

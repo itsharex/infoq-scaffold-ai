@@ -24,12 +24,12 @@
 
 <script setup lang="ts">
 import { updateUserProfile } from '@/api/system/user';
-import { propTypes } from '@/utils/propTypes';
+import type { UserForm } from '@/api/system/user/types';
 
-const props = defineProps({
-  user: propTypes.any.isRequired
-});
-const userForm = computed(() => props.user);
+const props = defineProps<{
+  user: Record<string, unknown>;
+}>();
+const userForm = computed<Record<string, unknown>>(() => props.user);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const userRef = ref<ElFormInstance>();
 const rule: ElFormRules = {
@@ -57,7 +57,7 @@ const rules = ref<ElFormRules>(rule);
 const submit = () => {
   userRef.value?.validate(async (valid: boolean) => {
     if (valid) {
-      await updateUserProfile(props.user);
+      await updateUserProfile(props.user as UserForm);
       proxy?.$modal.msgSuccess('修改成功');
     }
   });

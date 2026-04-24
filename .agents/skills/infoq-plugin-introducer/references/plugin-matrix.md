@@ -1,6 +1,6 @@
-# Plugin Matrix (Quick Reference)
+# 插件矩阵（速查）
 
-## Fixed Base Plugins
+## 固定基座插件
 
 - `infoq-plugin-web`
 - `infoq-plugin-security`
@@ -8,20 +8,20 @@
 - `infoq-plugin-mybatis`
 - `infoq-plugin-redis`
 - `infoq-plugin-jackson`
-- `infoq-plugin-oss` (fixed by project decision)
+- `infoq-plugin-oss`（由项目决策固定）
 
-## Reusable Common Plugins
+## 可复用通用插件
 
 - `infoq-plugin-translation`
 - `infoq-plugin-sensitive`
 - `infoq-plugin-excel`
 - `infoq-plugin-log`
 
-Usage model:
-- Keep plugin implementation reusable.
-- Business modules opt in by adding dependency in their own `pom.xml`.
+使用模式：
+- 保持插件实现可复用。
+- 业务模块通过在自身 `pom.xml` 中加依赖按需接入。
 
-## Configurable (Soft Toggle) Plugins
+## 可配置（软开关）插件
 
 - `infoq-plugin-encrypt`
 - `infoq-plugin-mail`
@@ -29,13 +29,13 @@ Usage model:
 - `infoq-plugin-websocket`
 - `infoq-plugin-doc`
 
-Default policy:
-- Keep dependency, default disabled via backend config.
-- Pair frontend env toggle when client behavior is involved.
+默认策略：
+- 依赖可保留，默认通过后端配置关闭。
+- 涉及客户端行为时同步提供前端 env 开关。
 
-## Toggle Keys
+## 开关键
 
-Backend:
+后端：
 - `api-decrypt.enabled`
 - `mybatis-encryptor.enable`
 - `mail.enabled`
@@ -43,7 +43,7 @@ Backend:
 - `websocket.enabled`
 - `springdoc.api-docs.enabled`
 
-Frontend:
+前端：
 - `VITE_APP_ENCRYPT`
 - `VITE_APP_SSE`
 - `VITE_APP_WEBSOCKET`

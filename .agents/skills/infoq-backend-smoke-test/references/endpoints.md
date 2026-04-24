@@ -1,28 +1,28 @@
-# Endpoint Checklist
+# 接口检查清单
 
-## Public
+## 公开接口
 
 - `GET /`
-  - Expect: HTTP 200, response contains `infoq-scaffold-backend`.
+  - 期望：HTTP 200，响应包含 `infoq-scaffold-backend`。
 - `GET /auth/code`
-  - Expect: JSON `code=200` (`captchaEnabled` can be true or false).
+  - 期望：JSON `code=200`（`captchaEnabled` 可为 true 或 false）。
 
-## Login
+## 登录接口
 
 - `POST /auth/login`
-  - Prefer encrypted login payload (`encrypt-key` + AES body).
-  - Fallback to plain JSON payload if encrypted path is unavailable.
-  - Expect: JSON `code=200` and non-empty token (`access_token` or `accessToken`).
+  - 优先使用加密登录载荷（`encrypt-key` + AES body）。
+  - 若加密链路不可用，回退为明文 JSON 载荷。
+  - 期望：JSON `code=200` 且 token 非空（`access_token` 或 `accessToken`）。
 
-## Protected
+## 受保护接口
 
 - `GET /system/menu/getRouters`
-  - Expect: JSON `code=200`.
+  - 期望：JSON `code=200`。
 - `GET /system/menu/roleMenuTreeselect/{roleId}`
-  - Expect: JSON `code=200`.
+  - 期望：JSON `code=200`。
 - `GET /system/role/deptTree/{roleId}`
-  - Expect: JSON `code=200`.
+  - 期望：JSON `code=200`。
 - `GET /system/dict/data/type/{dictType}`
-  - Expect: JSON `code=200`.
+  - 期望：JSON `code=200`。
 - `POST /system/user/export`
-  - Expect: HTTP 200 + Excel response (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`) + non-empty bytes.
+  - 期望：HTTP 200 + Excel 响应（`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`）+ 非空字节流。

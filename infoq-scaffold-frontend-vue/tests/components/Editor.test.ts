@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils';
-import { defineComponent, h, reactive } from 'vue';
+import { defineComponent, h, reactive, type ComponentCustomProperties } from 'vue';
 import Editor from '@/components/Editor/index.vue';
 
 const editorMocks = vi.hoisted(() => ({
@@ -105,19 +105,31 @@ describe('components/Editor', () => {
     vi.clearAllMocks();
   });
 
+  type QuillEditorOptions = {
+    modules: {
+      toolbar: {
+        handlers: {
+          image: (value: boolean) => void;
+        };
+      };
+    };
+  };
+
+  const globalProperties = {
+    useDict: () => reactive({}),
+    $modal: {
+      loading: editorMocks.modalLoading,
+      closeLoading: editorMocks.modalCloseLoading,
+      msgError: editorMocks.modalMsgError
+    }
+  };
+
   const mountEditor = (props: Record<string, unknown> = {}) =>
     mount(Editor, {
       props,
       global: {
         config: {
-          globalProperties: {
-            useDict: () => reactive({}),
-            $modal: {
-              loading: editorMocks.modalLoading,
-              closeLoading: editorMocks.modalCloseLoading,
-              msgError: editorMocks.modalMsgError
-            }
-          } as any
+          globalProperties: globalProperties as unknown as ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-upload': ElUploadStub
@@ -140,7 +152,7 @@ describe('components/Editor', () => {
 
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['<p>changed</p>']);
 
-    const options = quillWrapper.props('options') as Record<string, any>;
+    const options = quillWrapper.props('options') as QuillEditorOptions;
     const clickSpy = vi.spyOn(HTMLElement.prototype, 'click');
     options.modules.toolbar.handlers.image(true);
     expect(clickSpy).toHaveBeenCalled();
@@ -153,7 +165,7 @@ describe('components/Editor', () => {
     const wrapper = mountEditor();
     const uploadProps = wrapper.findComponent(ElUploadStub).props() as {
       beforeUpload: (file: File) => boolean;
-      onSuccess: (res: any) => void;
+      onSuccess: (res: unknown) => void;
       onError: (err: unknown) => void;
     };
 

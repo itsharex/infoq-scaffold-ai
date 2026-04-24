@@ -1,22 +1,22 @@
 ---
 name: infoq-backend-unit-test-patterns
-description: Build deterministic backend tests for the infoq-scaffold-backend project using reusable patterns for service/controller/mapper-default/mapper-xml-integration/plugin/aspect classes, including @Tag(dev) policy, mock boundaries, @MybatisTest+H2 setup, mapper default-method strategy, and maven execution commands. Use when users request backend unit tests, test coverage expansion, branch regression tests, mapper XML validation, bug reproduction by tests, or refactoring with test-first validation in infoq-scaffold-backend.
+description: 为 infoq-scaffold-backend 项目构建可重复、可确定的后端测试，复用 service/controller/mapper-default/mapper-xml 集成/plugin/aspect 等模式，包含 @Tag(dev) 策略、mock 边界、@MybatisTest+H2 基线、mapper default 方法策略与 Maven 执行命令。适用于后端单测、覆盖率回补、分支回归、Mapper XML 校验、缺陷复现实验与 test-first 重构。
 ---
 
-# Infoq Backend Unit Test Patterns
+# Infoq 后端单测模式
 
-## Overview
+## 概览
 
-Use this skill to add stable unit tests in `infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java` without pulling in full runtime dependencies unless necessary.
-Always run one minimal verification test first for the selected type, then batch-expand to sibling classes.
+使用此技能在 `infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java` 下补充稳定单测，除非必要不要引入完整运行时依赖。
+对选定类型先跑通一个最小验证用例，再批量扩展到同类。
 
-## Workflow
+## 工作流程
 
-1. Classify the target into one of the supported types: `service`, `controller`, `mapper-default`, `mapper-xml-integration`, `plugin`, `aspect`.
-2. Copy the matching pattern from `references/` and adapt package/class/method names.
-3. Add `@Tag("dev")` on the class, because Maven Surefire filters by `profiles.active`.
-4. For `mapper-xml-integration`, prefer shared composed annotation `cc.infoq.system.mapper.support.MapperXmlIT` and split assertions by mapper class (`Sys*MapperXmlIntegrationTest`) under `mapper/xml`.
-5. For controller/service mass backfill, scan class-level gaps first:
+1. 将目标归类为支持类型之一：`service`、`controller`、`mapper-default`、`mapper-xml-integration`、`plugin`、`aspect`。
+2. 从 `references/` 复制对应模式，并替换包名/类名/方法名。
+3. 类上添加 `@Tag("dev")`，因为 Maven Surefire 会按 `profiles.active` 过滤。
+4. 对 `mapper-xml-integration`，优先使用共享组合注解 `cc.infoq.system.mapper.support.MapperXmlIT`，并按 mapper 类拆分断言（`mapper/xml` 下 `Sys*MapperXmlIntegrationTest`）。
+5. 对 controller/service 大规模回补，先扫描类级缺口：
 
 ```bash
 python3 - <<'PY'
@@ -33,7 +33,7 @@ for rel in ['controller', 'service/impl']:
 PY
 ```
 
-6. Run targeted tests first:
+6. 先执行定向测试：
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am \
@@ -42,56 +42,56 @@ mvn -pl infoq-modules/infoq-system -am \
   -Dtest=<ClassNameTest> test
 ```
 
-7. If tests expose a real bug, patch production code immediately and rerun.
-8. After the type is validated once, add same-type tests in batches and rerun targeted suites.
-9. Run full module verification and smoke test before closing.
+7. 若测试暴露真实缺陷，立即修复产品代码并重跑。
+8. 当前类型验证通过后，再按同类型批量补测并重跑定向套件。
+9. 收尾前运行模块级全量验证与冒烟测试。
 
-## Type Selection Rules
+## 类型选择规则
 
-- `service`: class under `service/impl`, mapper/service collaboration, branch logic.
-- `controller`: class under `controller`, request/result mapping and guard logic.
-- `mapper-default`: only mapper interfaces that contain Java `default` methods.
-  Pure SQL declaration methods in mapper interfaces are not unit-test targets; move them to integration tests with DB + MyBatis XML.
-- `mapper-xml-integration`: pure mapper declaration methods (`abstract`) backed by XML SQL.
-  Use `@MapperXmlIT` (`@MybatisTest` + H2 + SQL fixtures) and one test class per mapper to validate SQL semantics.
-- `plugin`: utility classes under `infoq-plugin-*` (e.g. `PageQuery`, `TableDataInfo`).
-- `aspect`: AOP classes where pure helper methods can be unit tested without full proxy wiring.
+- `service`：`service/impl` 下类，关注 mapper/service 协作与分支逻辑。
+- `controller`：`controller` 下类，关注请求/结果映射与防护逻辑。
+- `mapper-default`：仅针对包含 Java `default` 方法的 mapper 接口。
+  mapper 接口中的纯 SQL 声明方法不属于单测目标；请迁移到 DB + MyBatis XML 的集成测试中验证。
+- `mapper-xml-integration`：由 XML SQL 驱动的纯 mapper 声明方法（`abstract`）。
+  使用 `@MapperXmlIT`（`@MybatisTest` + H2 + SQL fixtures），并按每个 mapper 一类测试来校验 SQL 语义。
+- `plugin`：`infoq-plugin-*` 下工具类（如 `PageQuery`、`TableDataInfo`）。
+- `aspect`：可在不完整代理装配情况下测试纯辅助方法的 AOP 类。
 
-## Guardrails
+## 护栏
 
-- Keep unit tests deterministic; mock mapper/external dependencies.
-- Avoid direct runtime integration in unit tests unless class initialization requires Spring context.
-- Prefer verifying business branches over only happy-path.
-- Keep tests independent from environment credentials and network.
-- Do not weaken assertions, broaden mocks, mute warnings, raise thresholds, or add fake-success paths merely to make tests/build pass; fix the real issue or stop and document a user-approved exception.
-- If a source or test change is identified as wrong, revert the incorrect code immediately before continuing and do not leave dead, unreachable, or uncalled code behind.
-- For `@Tag` strategy: default to `@Tag("dev")` to align with current Surefire groups.
-- Avoid `@SpringBootTest` for pure unit tests in this project unless a `@SpringBootConfiguration` is intentionally provided in test scope.
-- For mapper XML integration tests:
-  - Prefer shared `@MapperXmlIT` and dedicated SQL fixtures under `src/test/resources/sql/...`.
-  - Keep data minimal and deterministic; default to shared `mapper_it` fixtures, isolate suite fixtures only when cross-mapper coupling makes assertions unstable.
-  - Ensure XML bindings load explicitly through test properties (`mybatis.mapper-locations`).
-  - If mapper method signature returns `Page<T>` and runtime pagination plugin is absent in `@MybatisTest` slice, execute statement via `SqlSessionTemplate.selectList(statementId, params)` to verify SQL semantics.
-- Watch static initialization traps:
-  - `JsonUtils`, `RedisUtils`, `MapstructUtils` can pull Spring/bean state indirectly.
-  - For auth strategy tests, prefer branch-level testing (including reflection on private helper methods) over full `login` path if static utilities are coupled to runtime context.
-  - For dictionary/service tests, prefer business methods that avoid mapper-struct static converters unless integration wiring is needed.
+- 单测必须可重复、可确定；对 mapper/外部依赖使用 mock。
+- 除非类初始化必须依赖 Spring 上下文，否则避免在单测中直接做运行时集成。
+- 优先覆盖业务分支，不要只测 happy-path。
+- 测试不得依赖环境凭据和外网。
+- 禁止为“让测试/构建通过”而削弱断言、放宽 mock、压警告、抬阈值或伪造成功路径；应修复真实问题，或停止并记录经用户确认的例外。
+- 若确认某段源码或测试改动错误，必须先立即回退错误代码再继续，不得留下死代码/不可达代码/无调用代码。
+- `@Tag` 策略默认使用 `@Tag("dev")`，与当前 Surefire groups 对齐。
+- 本项目纯单测默认避免 `@SpringBootTest`，除非在测试范围内明确提供了 `@SpringBootConfiguration`。
+- 对 mapper XML 集成测试：
+  - 优先复用共享 `@MapperXmlIT`，并将 SQL fixtures 放在 `src/test/resources/sql/...`。
+  - 数据保持最小且可重复；默认使用共享 `mapper_it` fixtures，仅在跨 mapper 耦合导致断言不稳时再隔离 suite fixtures。
+  - 通过测试属性（`mybatis.mapper-locations`）显式加载 XML 绑定。
+  - 若 mapper 方法签名返回 `Page<T>`，且 `@MybatisTest` 切片中缺少分页插件，可通过 `SqlSessionTemplate.selectList(statementId, params)` 执行语句来验证 SQL 语义。
+- 注意静态初始化陷阱：
+  - `JsonUtils`、`RedisUtils`、`MapstructUtils` 可能间接拉起 Spring/bean 状态。
+  - 若静态工具与运行时上下文耦合，鉴权策略测试优先做分支级验证（可含私有方法反射），不要强行走完整 `login` 路径。
+  - 对字典/service 测试，除非确需集成装配，否则优先选择能绕开 mapper-struct 静态转换器的业务方法。
 
-## Mapper Boundary
+## Mapper 边界
 
-- Unit test required:
-  - Mapper `default` methods that perform Java-side branching/aggregation/delegation and can run with mocks.
-- Unit test optional/skip:
-  - Pure mapper declarations (`abstract` methods mapped by XML/annotation SQL).
-  - These are better covered by integration tests (`@MybatisTest` or module-level integration tests).
-- Known unstable in plain unit context:
-  - Methods that force MyBatis lambda column cache resolution without MyBatis runtime.
-  - Examples from this project: `SysDeptMapper.selectDeptAndChildById` (when exercising internal lambda query path), `SysUserRoleMapper.selectUserIdsByRoleId`.
-  - Strategy: either test only stable delegation defaults, or move unstable methods to integration tests.
+- 必测单测：
+  - 可在 mock 条件下运行、且包含 Java 侧分支/聚合/委派逻辑的 mapper `default` 方法。
+- 可选/可跳过单测：
+  - 纯 mapper 声明方法（XML/注解 SQL 映射的 `abstract` 方法）。
+  - 这类方法更适合通过集成测试覆盖（`@MybatisTest` 或模块级集成测试）。
+- 纯单测上下文中已知不稳定：
+  - 未引入 MyBatis 运行时时，强制触发 lambda 列缓存解析的方法。
+  - 本仓示例：`SysDeptMapper.selectDeptAndChildById`（触发内部 lambda query 路径时）、`SysUserRoleMapper.selectUserIdsByRoleId`。
+  - 处理策略：只测试稳定委派默认方法，或将不稳定方法迁移到集成测试。
 
-## Finish Criteria
+## 完成标准
 
-All must pass:
+以下检查必须全部通过：
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am -DskipTests=false test
@@ -99,13 +99,13 @@ mvn -pl infoq-modules/infoq-system -am clean package -P dev -DskipTests=false
 bash .agents/skills/infoq-backend-smoke-test/scripts/run_smoke.sh
 ```
 
-## References
+## 参考
 
-- Service pattern: `references/service-pattern.md`
-- Controller pattern: `references/controller-pattern.md`
-- Mapper pattern: `references/mapper-pattern.md`
-- Mapper XML integration pattern: `references/mapper-integration-pattern.md`
-- Plugin/aspect patterns: `references/plugin-aspect-pattern.md`
-- Command recipes: `references/commands.md`
+- Service 测试模式：`references/service-pattern.md`
+- Controller 测试模式：`references/controller-pattern.md`
+- Mapper 测试模式：`references/mapper-pattern.md`
+- Mapper XML 集成测试模式：`references/mapper-integration-pattern.md`
+- Plugin/Aspect 测试模式：`references/plugin-aspect-pattern.md`
+- 命令速查：`references/commands.md`
 
-Use only the reference file required for the current type to keep context small.
+仅加载当前类型所需的参考文件，保持上下文精简。

@@ -1,7 +1,6 @@
 import request from '@/utils/request';
-import type { ApiResponse } from '@/api/types';
-import { LoginData, LoginResult, VerifyCodeResult } from './types';
-import { UserInfo } from '@/api/system/user/types';
+import type { ApiResult, ApiResponse, LoginData, LoginResult, RegisterForm, VerifyCodeResult } from './types';
+import type { UserInfo } from '@/api/system/user/types';
 
 // pc端固定客户端授权id
 const clientId = import.meta.env.VITE_APP_CLIENT_ID;
@@ -29,13 +28,13 @@ export function login(data: LoginData) {
 }
 
 // 注册方法
-export function register(data: any) {
+export function register(data: RegisterForm) {
   const params = {
     ...data,
     clientId: clientId,
     grantType: 'password'
   };
-  return request({
+  return request<ApiResult>({
     url: '/auth/register',
     headers: {
       isToken: false,

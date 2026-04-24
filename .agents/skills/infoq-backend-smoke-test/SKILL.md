@@ -1,28 +1,28 @@
 ---
 name: infoq-backend-smoke-test
-description: Run repeatable backend smoke tests for this infoq project after backend changes. Use when users ask for 冒烟测试, smoke test, 接口验证, 运行态验证, or “继续执行验证”, especially after MyBatis Mapper/XML migration, permission/auth refactors, or build success confirmation.
+description: 在后端改动后为本项目执行可重复的后端冒烟测试。适用于冒烟测试、接口验证、运行态验证或“继续执行验证”类请求，尤其在 MyBatis Mapper/XML 迁移、权限鉴权重构或构建成功确认之后。
 ---
 
-# Infoq Backend Smoke Test
+# Infoq 后端冒烟测试
 
-## Overview
+## 概览
 
-Run a deterministic backend smoke test flow for `infoq-scaffold-backend`:
-- Start backend server in an isolated port with captcha disabled.
-- Verify public endpoints.
-- Perform encrypted `/auth/login`.
-- Verify protected endpoints that cover menu/dept/dict/user-export chains.
-- Stop server and print a pass/fail report.
+为 `infoq-scaffold-backend` 执行确定性的后端冒烟流程：
+- 在隔离端口启动后端，并关闭验证码。
+- 校验公开接口。
+- 执行加密 `/auth/login`。
+- 校验受保护接口，覆盖 menu/dept/dict/user-export 链路。
+- 停止服务并输出通过/失败报告。
 
-## Execute
+## 执行
 
-Run:
+执行：
 
 ```bash
 bash .agents/skills/infoq-backend-smoke-test/scripts/run_smoke.sh
 ```
 
-Common options:
+常用参数：
 
 ```bash
 # Build first, then run smoke tests
@@ -38,38 +38,38 @@ bash .agents/skills/infoq-backend-smoke-test/scripts/run_smoke.sh \
 bash .agents/skills/infoq-backend-smoke-test/scripts/run_smoke.sh --keep-server
 ```
 
-## Defaults
+## 默认值
 
-- Project root: auto-detected from script location.
-- Jar path: `infoq-scaffold-backend/infoq-admin/target/infoq-admin.jar`
-- Port: `18080`
-- Captcha: forced off via `--captcha.enable=false`
-- Client ID: `e5cd7e4891bf95d1d19206ce24a7b32e`
-- Preferred login candidates:
+- 项目根目录：由脚本位置自动探测。
+- Jar 路径：`infoq-scaffold-backend/infoq-admin/target/infoq-admin.jar`
+- 端口：`18080`
+- 验证码：通过 `--captcha.enable=false` 强制关闭。
+- Client ID：`e5cd7e4891bf95d1d19206ce24a7b32e`
+- 优先登录候选：
   - `dept / 666666`
   - `owner / 666666`
   - `admin / 123456`
 
-## Success Criteria
+## 通过标准
 
-Treat smoke test as passed only when all checks pass:
-- `GET /` returns HTTP 200.
-- `GET /auth/code` returns `{ code: 200 }`.
-- Login succeeds and returns token.
-- `GET /system/menu/getRouters` returns `{ code: 200 }`.
-- `GET /system/menu/roleMenuTreeselect/{roleId}` returns `{ code: 200 }`.
-- `GET /system/role/deptTree/{roleId}` returns `{ code: 200 }`.
-- `GET /system/dict/data/type/{dictType}` returns `{ code: 200 }`.
-- `POST /system/user/export` returns Excel binary content.
+仅当以下检查全部通过时，才判定冒烟测试通过：
+- `GET /` 返回 HTTP 200。
+- `GET /auth/code` 返回 `{ code: 200 }`。
+- 登录成功并返回 token。
+- `GET /system/menu/getRouters` 返回 `{ code: 200 }`。
+- `GET /system/menu/roleMenuTreeselect/{roleId}` 返回 `{ code: 200 }`。
+- `GET /system/role/deptTree/{roleId}` 返回 `{ code: 200 }`。
+- `GET /system/dict/data/type/{dictType}` 返回 `{ code: 200 }`。
+- `POST /system/user/export` 返回 Excel 二进制内容。
 
-## Failure Handling
+## 失败处理
 
-- If login fails for one account, automatically try fallback accounts.
-- If server startup fails, print log tail from the generated temp log file.
-- If any check fails, exit non-zero and include the failing endpoint and response preview.
+- 若某个账号登录失败，自动尝试后备账号。
+- 若服务启动失败，输出生成的临时日志文件尾部内容。
+- 若任一检查失败，以非零码退出，并包含失败接口与响应预览。
 
-## Resources
+## 参考资源
 
-- Script entry: `scripts/run_smoke.sh`
-- API check logic: `scripts/smoke_checks.mjs`
-- Endpoint checklist: `references/endpoints.md`
+- 脚本入口：`scripts/run_smoke.sh`
+- API 校验逻辑：`scripts/smoke_checks.mjs`
+- 接口检查清单：`references/endpoints.md`

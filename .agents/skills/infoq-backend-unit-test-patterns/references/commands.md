@@ -1,6 +1,6 @@
-# Commands
+# 命令清单
 
-## Targeted Class Test
+## 定向类测试
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am \
@@ -9,7 +9,7 @@ mvn -pl infoq-modules/infoq-system -am \
   -Dtest=<ClassNameTest> test
 ```
 
-## Targeted Mapper XML Integration Test
+## 定向 Mapper XML 集成测试
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am \
@@ -18,7 +18,7 @@ mvn -pl infoq-modules/infoq-system -am \
   -Dtest=Sys*MapperXmlIntegrationTest test
 ```
 
-## Single Mapper XML Integration Class
+## 单个 Mapper XML 集成测试类
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am \
@@ -27,7 +27,7 @@ mvn -pl infoq-modules/infoq-system -am \
   -Dtest=SysUserMapperXmlIntegrationTest test
 ```
 
-## Multi Class Test
+## 多类联合测试
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am \
@@ -36,13 +36,13 @@ mvn -pl infoq-modules/infoq-system -am \
   -Dtest=ClassATest,ClassBTest,ClassCTest test
 ```
 
-## Full Module Test
+## 模块全量测试
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am -DskipTests=false test
 ```
 
-## Coverage Gap Scan (Class-Level)
+## 覆盖缺口扫描（类级）
 
 ```bash
 python3 - <<'PY'
@@ -59,7 +59,7 @@ for rel in ['controller', 'service/impl']:
 PY
 ```
 
-## Packaging And Smoke
+## 打包与冒烟
 
 ```bash
 mvn -pl infoq-modules/infoq-system -am clean package -P dev -DskipTests=false

@@ -1,7 +1,6 @@
-import { UserVO } from '@/api/system/user/types';
-import { UserQuery } from '@/api/system/user/types';
+import type { UserQuery, UserVO } from '@/api/system/user/types';
 import type { ApiResponse, TableResponse } from '@/api/types';
-import { RoleQuery, RoleVO, RoleDeptTree } from './types';
+import type { RoleAuthUserBatchPayload, RoleAuthUserPayload, RoleDataScopePayload, RoleDeptTree, RoleForm, RoleQuery, RoleVO } from './types';
 import request from '@/utils/request';
 
 export const listRole = (query: RoleQuery) => {
@@ -36,11 +35,11 @@ export const getRole = (roleId: string | number) => {
 /**
  * 新增角色
  */
-export const addRole = (data: any) => {
+export const addRole = (data: RoleForm) => {
   return request({
     url: '/system/role',
     method: 'post',
-    data: data
+    data
   });
 };
 
@@ -48,22 +47,22 @@ export const addRole = (data: any) => {
  * 修改角色
  * @param data
  */
-export const updateRole = (data: any) => {
+export const updateRole = (data: RoleForm) => {
   return request({
     url: '/system/role',
     method: 'put',
-    data: data
+    data
   });
 };
 
 /**
  * 角色数据权限
  */
-export const dataScope = (data: any) => {
+export const dataScope = (data: RoleDataScopePayload) => {
   return request({
     url: '/system/role/dataScope',
     method: 'put',
-    data: data
+    data
   });
 };
 
@@ -117,18 +116,18 @@ export const unallocatedUserList = (query: UserQuery) => {
 /**
  * 取消用户授权角色
  */
-export const authUserCancel = (data: any) => {
+export const authUserCancel = (data: RoleAuthUserPayload) => {
   return request({
     url: '/system/role/authUser/cancel',
     method: 'put',
-    data: data
+    data
   });
 };
 
 /**
  * 批量取消用户授权角色
  */
-export const authUserCancelAll = (data: any) => {
+export const authUserCancelAll = (data: RoleAuthUserBatchPayload) => {
   return request({
     url: '/system/role/authUser/cancelAll',
     method: 'put',
@@ -139,7 +138,7 @@ export const authUserCancelAll = (data: any) => {
 /**
  * 授权用户选择
  */
-export const authUserSelectAll = (data: any) => {
+export const authUserSelectAll = (data: RoleAuthUserBatchPayload) => {
   return request({
     url: '/system/role/authUser/selectAll',
     method: 'put',

@@ -4,8 +4,21 @@ type GuardSetupOptions = {
   token?: string;
   roles?: string[];
   getInfoReject?: boolean;
-  accessRoutes?: any[];
+  accessRoutes?: unknown[];
 };
+
+type GuardRoute = {
+  path: string;
+  fullPath: string;
+  meta: Record<string, unknown>;
+  params: Record<string, unknown>;
+  query: Record<string, unknown>;
+  hash: string;
+  name: string;
+};
+
+type GuardNext = (location?: string | Record<string, unknown>) => void;
+type BeforeHook = (to: GuardRoute, from: GuardRoute, next: GuardNext) => Promise<void> | void;
 
 const createToRoute = (path: string, fullPath?: string, title?: string) => {
   return {
@@ -16,7 +29,7 @@ const createToRoute = (path: string, fullPath?: string, title?: string) => {
     query: { q: '1' },
     hash: '#h',
     name: 'TargetRoute'
-  } as any;
+  } as GuardRoute;
 };
 
 const loadPermissionGuard = async (options: GuardSetupOptions = {}) => {
@@ -89,8 +102,8 @@ const loadPermissionGuard = async (options: GuardSetupOptions = {}) => {
 
   await import('@/permission');
 
-  const beforeHook = routerMock.beforeEach.mock.calls[0]?.[0];
-  const afterHook = routerMock.afterEach.mock.calls[0]?.[0];
+  const beforeHook = routerMock.beforeEach.mock.calls[0]?.[0] as BeforeHook;
+  const afterHook = routerMock.afterEach.mock.calls[0]?.[0] as () => void;
 
   return {
     beforeHook,
@@ -105,6 +118,10 @@ const loadPermissionGuard = async (options: GuardSetupOptions = {}) => {
 };
 
 describe('permission route guard', () => {
+  const messageMock = ElMessage as unknown as {
+    error: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -112,7 +129,7 @@ describe('permission route guard', () => {
   it('redirects to login with encoded redirect when token is missing', async () => {
     const ctx = await loadPermissionGuard();
     const next = vi.fn();
-    await ctx.beforeHook(createToRoute('/system/user', '/system/user?page=1'), {} as any, next);
+    await ctx.beforeHook(createToRoute('/system/user', '/system/user?page=1'), createToRoute('/'), next);
 
     expect(next).toHaveBeenCalledWith('/login?redirect=%2Fsystem%2Fuser%3Fpage%3D1');
     expect(ctx.nprogress.start).toHaveBeenCalled();
@@ -122,7 +139,7 @@ describe('permission route guard', () => {
   it('allows whitelist route when token is missing', async () => {
     const ctx = await loadPermissionGuard();
     const next = vi.fn();
-    await ctx.beforeHook(createToRoute('/register/sub-page'), {} as any, next);
+    await ctx.beforeHook(createToRoute('/register/sub-page'), createToRoute('/'), next);
 
     expect(next).toHaveBeenCalledWith();
   });
@@ -130,7 +147,7 @@ describe('permission route guard', () => {
   it('redirects authenticated user away from login page', async () => {
     const ctx = await loadPermissionGuard({ token: 'token-a', roles: ['admin'] });
     const next = vi.fn();
-    await ctx.beforeHook(createToRoute('/login'), {} as any, next);
+    await ctx.beforeHook(createToRoute('/login'), createToRoute('/'), next);
 
     expect(next).toHaveBeenCalledWith({ path: '/' });
     expect(ctx.nprogress.done).toHaveBeenCalled();
@@ -139,7 +156,7 @@ describe('permission route guard', () => {
   it('allows whitelist route directly when token exists', async () => {
     const ctx = await loadPermissionGuard({ token: 'token-a', roles: ['admin'] });
     const next = vi.fn();
-    await ctx.beforeHook(createToRoute('/register'), {} as any, next);
+    await ctx.beforeHook(createToRoute('/register'), createToRoute('/'), next);
 
     expect(next).toHaveBeenCalledWith();
     expect(ctx.userStore.getInfo).not.toHaveBeenCalled();
@@ -148,7 +165,7 @@ describe('permission route guard', () => {
   it('continues navigation directly when roles already exist', async () => {
     const ctx = await loadPermissionGuard({ token: 'token-a', roles: ['admin'] });
     const next = vi.fn();
-    await ctx.beforeHook(createToRoute('/system/user', '/system/user', '用户管理'), {} as any, next);
+    await ctx.beforeHook(createToRoute('/system/user', '/system/user', '用户管理'), createToRoute('/'), next);
 
     expect(ctx.settingsStore.setTitle).toHaveBeenCalledWith('用户管理');
     expect(ctx.userStore.getInfo).not.toHaveBeenCalled();
@@ -160,7 +177,7 @@ describe('permission route guard', () => {
     const next = vi.fn();
     const to = createToRoute('/system/menu', '/system/menu?type=1', '菜单管理');
 
-    await ctx.beforeHook(to, {} as any, next);
+    await ctx.beforeHook(to, createToRoute('/'), next);
 
     expect(ctx.userStore.getInfo).toHaveBeenCalled();
     expect(ctx.permissionStore.generateRoutes).toHaveBeenCalled();
@@ -173,10 +190,10 @@ describe('permission route guard', () => {
   it('handles getInfo failure by logout and fallback navigation', async () => {
     const ctx = await loadPermissionGuard({ token: 'token-a', roles: [], getInfoReject: true });
     const next = vi.fn();
-    await ctx.beforeHook(createToRoute('/system/dept'), {} as any, next);
+    await ctx.beforeHook(createToRoute('/system/dept'), createToRoute('/'), next);
 
     expect(ctx.userStore.logout).toHaveBeenCalled();
-    expect((ElMessage as any).error).toHaveBeenCalled();
+    expect(messageMock.error).toHaveBeenCalled();
     expect(next).toHaveBeenCalledWith({ path: '/' });
     expect(ctx.isRelogin.show).toBe(false);
   });

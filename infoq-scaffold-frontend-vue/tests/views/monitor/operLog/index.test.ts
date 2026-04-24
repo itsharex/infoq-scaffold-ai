@@ -24,7 +24,7 @@ const operLogMocks = vi.hoisted(() => ({
       operTime: '2026-03-07 10:00:00',
       costTime: 12
     }
-  ] as Array<Record<string, any>>
+  ] as Array<Record<string, unknown>>
 }));
 
 vi.mock('@/api/monitor/operLog', () => ({
@@ -76,7 +76,7 @@ const ElTableStub = defineComponent({
   setup(props, { slots, emit, expose }) {
     provide(
       TABLE_DATA_SYMBOL,
-      computed(() => props.data as any[])
+      computed(() => props.data as unknown[])
     );
     expose({
       sort: operLogMocks.tableSort
@@ -87,7 +87,7 @@ const ElTableStub = defineComponent({
           'button',
           {
             class: 'selection-first',
-            onClick: () => emit('selection-change', [(props.data as any[])[0]])
+            onClick: () => emit('selection-change', [(props.data as unknown[])[0]])
           },
           'selection-first'
         ),
@@ -109,7 +109,7 @@ const ElTableColumnStub = defineComponent({
   setup(_, { slots }) {
     const rows = inject(
       TABLE_DATA_SYMBOL,
-      computed(() => [] as any[])
+      computed(() => [] as unknown[])
     );
     return () =>
       h('div', { class: 'el-table-column-stub' }, (slots.default && slots.default({ row: rows.value[0] || { operTime: '' }, $index: 0 })) || []);
@@ -189,7 +189,7 @@ describe('views/monitor/operLog/index', () => {
                 leave: ''
               }
             },
-            addDateRange: (query: Record<string, any>, range: unknown[]) => ({ ...query, range }),
+            addDateRange: (query: Record<string, unknown>, range: unknown[]) => ({ ...query, range }),
             parseTime: (value: string) => value,
             selectDictLabel: (options: Array<{ label: string; value: string }>, value: string) =>
               options.find((item) => item.value === value)?.label ?? '',
@@ -198,7 +198,7 @@ describe('views/monitor/operLog/index', () => {
               msgSuccess: operLogMocks.msgSuccess
             },
             download: operLogMocks.download
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         directives: {
           loading: {},
@@ -328,7 +328,10 @@ describe('views/monitor/operLog/index', () => {
     expect(operLogMocks.formResetFields).toHaveBeenCalledTimes(1);
     expect(operLogMocks.tableSort).toHaveBeenCalledWith('operTime', 'descending');
 
-    const formatted = (wrapper.vm as any).typeFormat({ businessType: '1' });
+    const vm = wrapper.vm as unknown as {
+      typeFormat: (row: { businessType: string }) => string;
+    };
+    const formatted = vm.typeFormat({ businessType: '1' });
     expect(formatted).toBe('新增');
   });
 });

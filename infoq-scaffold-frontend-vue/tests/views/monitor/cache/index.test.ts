@@ -75,7 +75,7 @@ describe('views/monitor/cache/index', () => {
               loading: cacheMocks.modalLoading,
               closeLoading: cacheMocks.closeLoading
             }
-          } as any
+          } as unknown as import('vue').ComponentCustomProperties & Record<string, unknown>
         },
         stubs: {
           'el-row': passthroughStub('ElRow'),

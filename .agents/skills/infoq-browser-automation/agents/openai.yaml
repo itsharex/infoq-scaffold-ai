@@ -1,0 +1,4 @@
+interface:
+  display_name: "InfoQ Browser Automation"
+  short_description: "Help with InfoQ Browser Automation tasks"
+  default_prompt: "Use $infoq-browser-automation to drive a real browser for this repository and verify rendered behavior."

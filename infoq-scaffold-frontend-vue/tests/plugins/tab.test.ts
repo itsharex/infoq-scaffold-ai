@@ -33,6 +33,7 @@ vi.mock('@/store/modules/tagsView', () => ({
 }));
 
 import tab from '@/plugins/tab';
+import type { RouteLocationNormalized } from 'vue-router';
 
 describe('plugins/tab', () => {
   beforeEach(() => {
@@ -81,7 +82,7 @@ describe('plugins/tab', () => {
   });
 
   it('delegates tab operations to tagsView store and router', async () => {
-    const route = { path: '/system/role', fullPath: '/system/role', query: {} } as any;
+    const route = { path: '/system/role', fullPath: '/system/role', query: {} } as unknown as RouteLocationNormalized;
 
     tab.closeOpenPage({ path: '/dashboard' });
     expect(tabMocks.store.delView).toHaveBeenCalledWith(tabMocks.router.currentRoute.value);

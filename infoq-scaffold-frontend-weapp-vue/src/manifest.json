@@ -1,9 +1,9 @@
 {
   "name": "InfoQ Weapp Vue",
-  "appid": "wxc84f7a188c81d624",
+  "appid": "wxxxxxxxxxxxxxxxxx",
   "description": "InfoQ Vue mobile scaffold",
-  "versionName": "1.0.0",
-  "versionCode": "100",
+  "versionName": "2.1.0",
+  "versionCode": "210",
   "transformPx": false,
   "uniStatistics": {
     "enable": false
@@ -13,7 +13,7 @@
     "themeLocation": "theme.json"
   },
   "mp-weixin": {
-    "appid": "wxc84f7a188c81d624",
+    "appid": "wxxxxxxxxxxxxxxxxx",
     "setting": {
       "urlCheck": false
     },

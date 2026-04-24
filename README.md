@@ -6,13 +6,14 @@
 
 > 一个以 AI 为主力研发者的全栈工程脚手架。仓库通过 `AGENTS.md` 约束协作规则，通过 `.agents/skills` 固化自动化 SOP，并以 `OpenSpec` 管理长期规格与变更，将能力落到 Spring Boot 3 后端、Vue/React 管理端、Vue/React 小程序端、脚本、SQL、MCP 与文档工作区中。
 
-![Version](https://img.shields.io/badge/Version-2.0.3-f66a39)
+![Version](https://img.shields.io/badge/Version-2.1.0-f66a39)
 ![JDK](https://img.shields.io/badge/JDK-17-1677FF)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.10-6DB33F)
 ![Vue](https://img.shields.io/badge/Vue-3.5.30-42B883)
 ![Element Plus](https://img.shields.io/badge/Element%20Plus-2.11.9-409EFF)
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB)
 ![Ant Design](https://img.shields.io/badge/Ant%20Design-6.3.3-1677FF)
+![Linux](https://img.shields.io/badge/Linux-do-F4B33F)
 ![License](https://img.shields.io/badge/License-MIT-F7C948)
 
 </div>
@@ -300,6 +301,7 @@ bash script/bin/deploy-frontend.sh deploy
 
 详见：
 
+- [`sql/infoq_scaffold_2.0.0.sql`](./sql/infoq_scaffold_2.0.0.sql)
 - [`doc/deploy-prerequisites.md`](./doc/deploy-prerequisites.md)
 - [`doc/manual-deploy.md`](./doc/manual-deploy.md)
 - [`doc/docker-compose-deploy.md`](./doc/docker-compose-deploy.md)
@@ -339,11 +341,7 @@ bash script/bin/deploy-frontend.sh deploy
 - 扩展治理：
   - [`doc/plugin-catalog.md`](./doc/plugin-catalog.md)
 
-## 架构图
-
-![架构图](doc/images/架构图.png)
-
-## 演示图例
+## Admin后台演示图例
 
 |  |  |
 | --- | --- |
@@ -355,6 +353,13 @@ bash script/bin/deploy-frontend.sh deploy
 | ![操作日志页面](doc/images/操作日志页面.png) | ![登陆日志页面](doc/images/登陆日志页面.png) |
 | ![文件管理页面](doc/images/文件管理页面.png) | ![客户端管理页面](doc/images/客户端管理页面.png) |
 | ![在线用户页面](doc/images/在线用户页面.png) | ![缓存监控页面](doc/images/缓存监控页面.png) |
+
+## Weapp后台演示图例
+
+|                                    |                                    |
+|------------------------------------|------------------------------------|
+| ![小程序登陆页面](doc/images/小程序登陆页面.png) | ![小程序首页页面](doc/images/小程序首页页面.png) |
+| ![小程序管理台页面](doc/images/小程序管理台页面.png) | ![小程序我的页面](doc/images/小程序我的页面.png)  |
 
 ## License
 

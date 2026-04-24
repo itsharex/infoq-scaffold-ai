@@ -10,6 +10,7 @@
       "@/*": ["./src/*"]
     },
     "types": [
+      "node",
       "vite/client",
       "@dcloudio/types",
       "@mini-types/alipay",
@@ -28,6 +29,7 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.vue",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "vite.config.ts"
   ]
 }

@@ -103,6 +103,8 @@ const canList = computed(() => sessionStore.permissions.includes('system:notice:
 const canAdd = computed(() => sessionStore.permissions.includes('system:notice:add'));
 const canEdit = computed(() => sessionStore.permissions.includes('system:notice:edit'));
 const canRemove = computed(() => sessionStore.permissions.includes('system:notice:remove'));
+const canQuery = computed(() => sessionStore.hasPermission('system:notice:query'));
+const canEditExisting = computed(() => canEdit.value && canQuery.value);
 
 const loadData = async () => {
   if (!ensureAuthenticated()) {
@@ -168,8 +170,10 @@ const handleDelete = async (noticeId: number) => {
 
 const getNoticeActions = (item: NoticeVO) => {
   const actions = [];
-  actions.push({ title: '详情', onClick: () => openDetail(item.noticeId!) });
-  if (canEdit.value) {
+  if (canQuery.value) {
+    actions.push({ title: '详情', onClick: () => openDetail(item.noticeId!) });
+  }
+  if (canEditExisting.value) {
     actions.push({ title: '编辑', onClick: () => openEdit(item.noticeId!) });
   }
   if (canRemove.value) {

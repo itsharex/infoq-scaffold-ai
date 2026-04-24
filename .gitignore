@@ -39,6 +39,7 @@ nbdist/
 # Others
 *.log
 *.log.gz
+__pycache__/
 *.xml.versionsBackup
 *.swp
 

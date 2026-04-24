@@ -63,7 +63,7 @@
 import { computed, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { delNotice, formatDateTime, getDictLabel, getDicts, getNotice, toDictOptions, type DictOption, type NoticeVO } from '@/api';
-import { ensureAuthenticated } from '@/composables/use-auth-guard';
+import { ensureAuthenticated, ensurePermission } from '@/composables/use-auth-guard';
 import { backOr, navigate, relaunch, routes } from '@/utils/navigation';
 import { handlePageError, showSuccess } from '@/utils/ui';
 import { useSessionStore } from '@/store/session';
@@ -115,12 +115,30 @@ const handleDelete = async () => {
 };
 
 onLoad((query) => {
-  const noticeId = String(query?.noticeId || '').trim();
-  if (!noticeId) {
-    relaunch(routes.notices);
-    return;
-  }
-  void loadNotice(noticeId);
+  const initPage = async () => {
+    const noticeId = String(query?.noticeId || '').trim();
+    if (!noticeId) {
+      relaunch(routes.notices);
+      return;
+    }
+
+    try {
+      const allowed = await ensurePermission('system:notice:query', {
+        fallbackRoute: routes.notices,
+        failureMessage: '当前账号没有公告查询权限'
+      });
+      if (!allowed) {
+        return;
+      }
+    } catch (error) {
+      await handlePageError(error, '公告详情加载失败');
+      return;
+    }
+
+    await loadNotice(noticeId);
+  };
+
+  void initPage();
 });
 </script>
 

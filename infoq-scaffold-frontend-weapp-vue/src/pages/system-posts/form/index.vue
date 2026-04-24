@@ -63,7 +63,7 @@
 import { computed, reactive, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { addPost, getPost, updatePost, getDicts, toDictOptions, type PostForm, type DictOption } from '@/api';
-import { ensureAuthenticated } from '@/composables/use-auth-guard';
+import { ensureAuthenticated, ensurePermission } from '@/composables/use-auth-guard';
 import { backOr, routes } from '@/utils/navigation';
 import { handlePageError, showSuccess } from '@/utils/ui';
 import { useSessionStore } from '@/store/session';
@@ -122,9 +122,29 @@ const save = async () => {
 };
 
 onLoad((query) => {
-  if (!ensureAuthenticated()) return;
-  postId.value = String(query?.userId || query?.postId || '').trim();
-  loadData();
+  const initPage = async () => {
+    if (!ensureAuthenticated()) return;
+
+    postId.value = String(query?.userId || query?.postId || '').trim();
+    if (postId.value) {
+      try {
+        const allowed = await ensurePermission('system:post:query', {
+          fallbackRoute: routes.posts,
+          failureMessage: '当前账号没有岗位查询权限'
+        });
+        if (!allowed) {
+          return;
+        }
+      } catch (error) {
+        await handlePageError(error, '岗位信息加载失败');
+        return;
+      }
+    }
+
+    await loadData();
+  };
+
+  void initPage();
 });
 </script>
 

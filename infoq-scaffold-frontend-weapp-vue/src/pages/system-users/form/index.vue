@@ -137,7 +137,7 @@ import {
   type DeptTreeVO, 
   type RoleVO 
 } from '@/api';
-import { ensureAuthenticated } from '@/composables/use-auth-guard';
+import { ensureAuthenticated, ensurePermission } from '@/composables/use-auth-guard';
 import { backOr, routes } from '@/utils/navigation';
 import { handlePageError, showSuccess } from '@/utils/ui';
 import { useSessionStore } from '@/store/session';
@@ -256,9 +256,29 @@ const save = async () => {
 };
 
 onLoad((query) => {
-  if (!ensureAuthenticated()) return;
-  userId.value = String(query?.userId || '').trim();
-  loadData();
+  const initPage = async () => {
+    if (!ensureAuthenticated()) return;
+
+    userId.value = String(query?.userId || '').trim();
+    if (userId.value) {
+      try {
+        const allowed = await ensurePermission('system:user:query', {
+          fallbackRoute: routes.users,
+          failureMessage: '当前账号没有用户查询权限'
+        });
+        if (!allowed) {
+          return;
+        }
+      } catch (error) {
+        await handlePageError(error, '数据加载失败');
+        return;
+      }
+    }
+
+    await loadData();
+  };
+
+  void initPage();
 });
 </script>
 

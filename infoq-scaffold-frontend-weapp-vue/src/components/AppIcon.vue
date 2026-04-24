@@ -2,15 +2,13 @@
   <image 
     class="app-icon" 
     :src="iconData"
-    :style="{
-      width: size + 'rpx',
-      height: size + 'rpx'
-    }"
+    :style="iconStyle"
   ></image>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { normalizeIconColor, resolveSvgColor } from '@/utils/icon';
 
 const props = withDefaults(defineProps<{
   name: string;
@@ -70,11 +68,16 @@ const iconData = computed(() => {
   let svgStr = svgs[targetName] || svgs['file-generic'];
   
   // Replace COLOR placeholder with actual color
-  const safeColor = props.color === 'currentColor' ? '#000000' : props.color;
-  svgStr = svgStr.replace(/COLOR/g, safeColor);
+  svgStr = svgStr.replace(/COLOR/g, resolveSvgColor(props.color));
   
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svgStr);
 });
+
+const iconStyle = computed(() => ({
+  width: props.size + 'rpx',
+  height: props.size + 'rpx',
+  color: normalizeIconColor(props.color)
+}));
 </script>
 
 <style scoped lang="scss">

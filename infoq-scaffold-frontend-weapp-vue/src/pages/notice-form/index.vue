@@ -76,7 +76,7 @@
 import { computed, reactive, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { addNotice, getNotice, updateNotice, getDicts, toDictOptions, type NoticeForm, type DictOption } from '@/api';
-import { ensureAuthenticated } from '@/composables/use-auth-guard';
+import { ensureAuthenticated, ensurePermission } from '@/composables/use-auth-guard';
 import { backOr, routes } from '@/utils/navigation';
 import { handlePageError, showSuccess } from '@/utils/ui';
 import { useSessionStore } from '@/store/session';
@@ -156,9 +156,29 @@ const save = async () => {
 };
 
 onLoad((query) => {
-  if (!ensureAuthenticated()) return;
-  noticeId.value = String(query?.noticeId || '').trim();
-  loadData();
+  const initPage = async () => {
+    if (!ensureAuthenticated()) return;
+
+    noticeId.value = String(query?.noticeId || '').trim();
+    if (noticeId.value) {
+      try {
+        const allowed = await ensurePermission('system:notice:query', {
+          fallbackRoute: routes.notices,
+          failureMessage: '当前账号没有公告查询权限'
+        });
+        if (!allowed) {
+          return;
+        }
+      } catch (error) {
+        await handlePageError(error, '公告加载失败');
+        return;
+      }
+    }
+
+    await loadData();
+  };
+
+  void initPage();
 });
 </script>
 

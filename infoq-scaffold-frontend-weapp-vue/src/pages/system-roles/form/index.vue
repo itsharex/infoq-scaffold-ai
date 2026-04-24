@@ -63,7 +63,7 @@
 import { computed, reactive, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { addRole, getRole, updateRole, getDicts, toDictOptions, type RoleForm, type DictOption } from '@/api';
-import { ensureAuthenticated } from '@/composables/use-auth-guard';
+import { ensureAuthenticated, ensurePermission } from '@/composables/use-auth-guard';
 import { backOr, routes } from '@/utils/navigation';
 import { handlePageError, showSuccess } from '@/utils/ui';
 import { useSessionStore } from '@/store/session';
@@ -124,9 +124,29 @@ const save = async () => {
 };
 
 onLoad((query) => {
-  if (!ensureAuthenticated()) return;
-  roleId.value = String(query?.roleId || '').trim();
-  loadData();
+  const initPage = async () => {
+    if (!ensureAuthenticated()) return;
+
+    roleId.value = String(query?.roleId || '').trim();
+    if (roleId.value) {
+      try {
+        const allowed = await ensurePermission('system:role:query', {
+          fallbackRoute: routes.roles,
+          failureMessage: '当前账号没有角色查询权限'
+        });
+        if (!allowed) {
+          return;
+        }
+      } catch (error) {
+        await handlePageError(error, '角色信息加载失败');
+        return;
+      }
+    }
+
+    await loadData();
+  };
+
+  void initPage();
 });
 </script>
 

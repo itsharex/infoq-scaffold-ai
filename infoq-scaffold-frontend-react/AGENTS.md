@@ -4,6 +4,7 @@
 |Stack:React 19|TypeScript|Vite 7|Ant Design 6|React Router 7|Zustand|Vitest|Testing Library
 |Workspace Layout:src/pages|src/components|src/api|src/store|src/router|src/utils|src/hooks|tests
 |Environment Baseline:Node >= 20.19.0|pnpm >= 10.0.0
+|Build Secrets:当 `VITE_APP_ENCRYPT=true` 时，React admin dev/build 环境必须提供 `VITE_APP_RSA_PUBLIC_KEY` 与 `VITE_APP_RSA_PRIVATE_KEY`。
 |Package And Formatting:默认使用 pnpm。|遵循本地 eslint 与 prettier 配置，前端使用 2-space formatting。|source、env、test files 保持 UTF-8。
 |Commands:install=cd infoq-scaffold-frontend-react && pnpm install|dev=cd infoq-scaffold-frontend-react && pnpm run dev|test=cd infoq-scaffold-frontend-react && pnpm run test|coverage=cd infoq-scaffold-frontend-react && pnpm run test:coverage|lint=cd infoq-scaffold-frontend-react && pnpm run lint|lint:fix=cd infoq-scaffold-frontend-react && pnpm run lint:fix|build=cd infoq-scaffold-frontend-react && pnpm run build:prod
 |OpenSpec Routing:分级执行。|L3(强制):React admin 新功能、API 契约变更、跨工作区交付，编码前先创建或定位 `openspec/changes/<change-id>/`。|L2(Lite):单 React admin 行为变更且不改 API 契约，至少维护 `proposal.md`+`tasks.md`。|L1(可豁免):单 React admin 小修复且不改契约、改动范围小可不建 OpenSpec，但必须先写 acceptance contract。|不确定分级时默认 L3。|OpenSpec 文档正文默认中文，路径名称/命令/文件名保持英文原样。|实现与验证以 full artifacts 或 Lite artifacts 为准。

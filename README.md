@@ -4,7 +4,7 @@
 
 # InfoQ-Scaffold-AI
 
-> 一个以 AI 为主力研发者的全栈工程脚手架。仓库通过 `AGENTS.md` 约束协作规则，通过 `.agents/skills` 固化自动化 SOP，并以 `OpenSpec` 管理长期规格与变更，将能力落到 Spring Boot 3 后端、Vue/React 管理端、Vue/React 小程序端、脚本、SQL、MCP 与文档工作区中。
+> 一个以 AI 为主力研发者的全栈工程脚手架。仓库通过 `AGENTS.md` 约束协作规则，通过 `.agents/skills` 固化自动化 SOP，并以 `OpenSpec` 管理长期规格与变更，将能力落到 Spring Boot 3 后端、Vue/React 管理端、Vue/React 小程序端、脚本、SQL、MCP 与文档工作区中。社区：[Linux DO](https://linux.do)
 
 ![Version](https://img.shields.io/badge/Version-2.1.0-f66a39)
 ![JDK](https://img.shields.io/badge/JDK-17-1677FF)
@@ -13,7 +13,6 @@
 ![Element Plus](https://img.shields.io/badge/Element%20Plus-2.11.9-409EFF)
 ![React](https://img.shields.io/badge/React-19.2.4-61DAFB)
 ![Ant Design](https://img.shields.io/badge/Ant%20Design-6.3.3-1677FF)
-![Linux](https://img.shields.io/badge/Linux-do-F4B33F)
 ![License](https://img.shields.io/badge/License-MIT-F7C948)
 
 </div>

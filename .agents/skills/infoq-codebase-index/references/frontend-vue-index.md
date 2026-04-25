@@ -1,11 +1,5 @@
-# infoq-scaffold-frontend-vue 索引
-仅在任务需要定位 Vue 文件、组件或路由时阅读此文件。
-
-## 目录
-
-- 文件路径列表
-
-## 文件路径列表
+# infoq-scaffold-frontend-vue index
+Read this file only when the task targets Vue file, component, or route lookup.
 
 infoq-scaffold-frontend-vue/.editorconfig
 infoq-scaffold-frontend-vue/.env.development
@@ -14,6 +8,7 @@ infoq-scaffold-frontend-vue/.env.test
 infoq-scaffold-frontend-vue/.eslintrc-auto-import.json
 infoq-scaffold-frontend-vue/.prettierignore
 infoq-scaffold-frontend-vue/.prettierrc
+infoq-scaffold-frontend-vue/AGENTS.md
 infoq-scaffold-frontend-vue/Dockerfile
 infoq-scaffold-frontend-vue/bin/build.bat
 infoq-scaffold-frontend-vue/bin/package.bat
@@ -29,6 +24,10 @@ infoq-scaffold-frontend-vue/src/api/login.ts
 infoq-scaffold-frontend-vue/src/api/menu.ts
 infoq-scaffold-frontend-vue/src/api/monitor/cache/index.ts
 infoq-scaffold-frontend-vue/src/api/monitor/cache/types.ts
+infoq-scaffold-frontend-vue/src/api/monitor/job/index.ts
+infoq-scaffold-frontend-vue/src/api/monitor/job/types.ts
+infoq-scaffold-frontend-vue/src/api/monitor/jobLog/index.ts
+infoq-scaffold-frontend-vue/src/api/monitor/jobLog/types.ts
 infoq-scaffold-frontend-vue/src/api/monitor/loginInfo/index.ts
 infoq-scaffold-frontend-vue/src/api/monitor/loginInfo/types.ts
 infoq-scaffold-frontend-vue/src/api/monitor/online/index.ts
@@ -263,6 +262,8 @@ infoq-scaffold-frontend-vue/src/views/error/404.vue
 infoq-scaffold-frontend-vue/src/views/index.vue
 infoq-scaffold-frontend-vue/src/views/login.vue
 infoq-scaffold-frontend-vue/src/views/monitor/cache/index.vue
+infoq-scaffold-frontend-vue/src/views/monitor/job/index.vue
+infoq-scaffold-frontend-vue/src/views/monitor/jobLog/index.vue
 infoq-scaffold-frontend-vue/src/views/monitor/loginInfo/index.vue
 infoq-scaffold-frontend-vue/src/views/monitor/online/index.vue
 infoq-scaffold-frontend-vue/src/views/monitor/operLog/index.vue
@@ -353,6 +354,8 @@ infoq-scaffold-frontend-vue/tests/views/error404.test.ts
 infoq-scaffold-frontend-vue/tests/views/index.test.ts
 infoq-scaffold-frontend-vue/tests/views/login.test.ts
 infoq-scaffold-frontend-vue/tests/views/monitor/cache/index.test.ts
+infoq-scaffold-frontend-vue/tests/views/monitor/job/index.test.ts
+infoq-scaffold-frontend-vue/tests/views/monitor/jobLog/index.test.ts
 infoq-scaffold-frontend-vue/tests/views/monitor/loginInfo/index.test.ts
 infoq-scaffold-frontend-vue/tests/views/monitor/online/index.test.ts
 infoq-scaffold-frontend-vue/tests/views/monitor/operLog/index.test.ts

@@ -1,5 +1,14 @@
 --- # 数据源配置
 spring:
+  quartz:
+    # 启动时允许覆盖已有 Quartz 任务定义，便于开发环境反复调试
+    overwrite-existing-jobs: true
+    properties:
+      org:
+        quartz:
+          jobStore:
+            # 开发环境按单节点模式运行 Quartz
+            isClustered: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     # 动态数据源文档 https://www.kancloud.cn/tracy5546/dynamic-datasource/content
@@ -91,6 +100,16 @@ redisson:
     tcpNoDelay: true
     # 发布和订阅连接池大小
     subscriptionConnectionPoolSize: 50
+
+infoq:
+  quartz:
+    bootstrap:
+      # 开发环境启动时允许自动执行任务 reconcile
+      reconcile-enabled: true
+      # 开发环境不启用生产级互斥保护
+      production-guard-enabled: false
+      # 开发环境不记录 reconcile 执行 marker
+      marker-enabled: false
 
 --- # mail 邮件发送
 mail:

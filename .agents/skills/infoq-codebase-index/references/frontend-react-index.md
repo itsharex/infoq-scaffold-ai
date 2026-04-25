@@ -1,16 +1,11 @@
-# infoq-scaffold-frontend-react 索引
-仅在任务需要定位 React 文件、组件或路由时阅读此文件。
-
-## 目录
-
-- 文件路径列表
-
-## 文件路径列表
+# infoq-scaffold-frontend-react index
+Read this file only when the task targets React file, component, or route lookup.
 
 infoq-scaffold-frontend-react/.editorconfig
 infoq-scaffold-frontend-react/.env.development
 infoq-scaffold-frontend-react/.env.production
 infoq-scaffold-frontend-react/.prettierrc
+infoq-scaffold-frontend-react/AGENTS.md
 infoq-scaffold-frontend-react/Dockerfile
 infoq-scaffold-frontend-react/eslint.config.js
 infoq-scaffold-frontend-react/index.html
@@ -22,6 +17,10 @@ infoq-scaffold-frontend-react/src/api/login.ts
 infoq-scaffold-frontend-react/src/api/menu.ts
 infoq-scaffold-frontend-react/src/api/monitor/cache/index.ts
 infoq-scaffold-frontend-react/src/api/monitor/cache/types.ts
+infoq-scaffold-frontend-react/src/api/monitor/job/index.ts
+infoq-scaffold-frontend-react/src/api/monitor/job/types.ts
+infoq-scaffold-frontend-react/src/api/monitor/jobLog/index.ts
+infoq-scaffold-frontend-react/src/api/monitor/jobLog/types.ts
 infoq-scaffold-frontend-react/src/api/monitor/loginInfo/index.ts
 infoq-scaffold-frontend-react/src/api/monitor/loginInfo/types.ts
 infoq-scaffold-frontend-react/src/api/monitor/online/index.ts
@@ -198,6 +197,8 @@ infoq-scaffold-frontend-react/src/pages/error/error-pages.css
 infoq-scaffold-frontend-react/src/pages/index.tsx
 infoq-scaffold-frontend-react/src/pages/login.tsx
 infoq-scaffold-frontend-react/src/pages/monitor/cache/index.tsx
+infoq-scaffold-frontend-react/src/pages/monitor/job/index.tsx
+infoq-scaffold-frontend-react/src/pages/monitor/jobLog/index.tsx
 infoq-scaffold-frontend-react/src/pages/monitor/loginInfo/index.tsx
 infoq-scaffold-frontend-react/src/pages/monitor/online/index.tsx
 infoq-scaffold-frontend-react/src/pages/monitor/operLog/index.tsx
@@ -267,6 +268,7 @@ infoq-scaffold-frontend-react/tests/pages/cache-page.test.tsx
 infoq-scaffold-frontend-react/tests/pages/home.test.tsx
 infoq-scaffold-frontend-react/tests/pages/login.test.tsx
 infoq-scaffold-frontend-react/tests/pages/monitor-auth-profile.test.tsx
+infoq-scaffold-frontend-react/tests/pages/monitor-scheduler.test.tsx
 infoq-scaffold-frontend-react/tests/pages/ops-pages.test.tsx
 infoq-scaffold-frontend-react/tests/pages/system-pages.test.tsx
 infoq-scaffold-frontend-react/tests/router/auth-permission.test.tsx
@@ -278,6 +280,7 @@ infoq-scaffold-frontend-react/tests/store/layout-store.test.ts
 infoq-scaffold-frontend-react/tests/store/permission-store.test.ts
 infoq-scaffold-frontend-react/tests/utils/auth.test.ts
 infoq-scaffold-frontend-react/tests/utils/crypto.test.ts
+infoq-scaffold-frontend-react/tests/utils/modal.test.ts
 infoq-scaffold-frontend-react/tests/utils/realtime.test.ts
 infoq-scaffold-frontend-react/tests/utils/request.test.ts
 infoq-scaffold-frontend-react/tests/utils/scaffold-lang.test.ts

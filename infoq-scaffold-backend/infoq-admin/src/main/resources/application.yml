@@ -53,6 +53,27 @@ user:
 spring:
   application:
     name: infoq-scaffold-backend
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    wait-for-jobs-to-complete-on-shutdown: true
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: infoqQuartzScheduler
+            instanceId: AUTO
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            useProperties: false
+            misfireThreshold: 60000
+            tablePrefix: QRTZ_
   threads:
     # 开启虚拟线程 仅jdk21可用
     virtual:
@@ -212,3 +233,29 @@ websocket:
   path: /resource/websocket
   # 设置访问源地址
   allowedOrigins: '*'
+
+--- # Quartz 托管任务
+infoq:
+  quartz:
+    # 是否启用 Quartz 托管任务能力
+    enabled: true
+    # 托管任务默认组名前缀，避免误处理非本系统维护的 Job
+    managedGroupPrefix: MANAGED_
+    bootstrap:
+      # 是否在应用启动期执行任务 reconcile
+      reconcile-enabled: true
+      # 是否仅在生产环境启用受控保护逻辑
+      production-guard-enabled: false
+      # 是否记录启动期 reconcile 已执行的部署级 marker
+      marker-enabled: false
+      # 启动期 reconcile 执行完成后的 Redis 部署级 marker key 前缀
+      marker-prefix: infoq:quartz:bootstrap:applied
+      # 当前部署批次唯一标识；推荐格式为 版本号-日期-序号，例如 2.1.0-20260427-001
+      # 生产环境开启受控 reconcile 时必须给同一批部署节点注入同一个 deploy-id
+      deploy-id:
+      # 启动期 reconcile 使用的全局分布式锁 key 前缀
+      lock-key: infoq:quartz:bootstrap-reconcile
+      # 获取启动期 reconcile 全局锁的等待时间，单位毫秒
+      lock-acquire-timeout: 3000
+      # 启动期 reconcile 全局锁过期时间，单位毫秒；-1 表示交由 redisson 自动续期
+      lock-expire: -1

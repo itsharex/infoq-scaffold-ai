@@ -1,10 +1,12 @@
-import { lazy, type LazyExoticComponent, type ComponentType } from 'react';
+import { type ComponentType, lazy, type LazyExoticComponent } from 'react';
 
 const NotFoundPage = lazy(() => import('@/pages/error/404'));
 
 const componentMap: Record<string, LazyExoticComponent<ComponentType>> = {
   'index': lazy(() => import('@/pages/index')),
   'monitor/cache/index': lazy(() => import('@/pages/monitor/cache/index')),
+  'monitor/job/index': lazy(() => import('@/pages/monitor/job/index')),
+  'monitor/jobLog/index': lazy(() => import('@/pages/monitor/jobLog/index')),
   'monitor/loginInfo/index': lazy(() => import('@/pages/monitor/loginInfo/index')),
   'monitor/online/index': lazy(() => import('@/pages/monitor/online/index')),
   'monitor/operLog/index': lazy(() => import('@/pages/monitor/operLog/index')),

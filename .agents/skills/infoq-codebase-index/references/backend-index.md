@@ -1,13 +1,8 @@
-# infoq-scaffold-backend 索引
-仅在任务需要定位 backend 文件或类时阅读此文件。
-
-## 目录
-
-- 文件路径列表
-
-## 文件路径列表
+# infoq-scaffold-backend index
+Read this file only when the task targets backend file or class lookup.
 
 infoq-scaffold-backend/.editorconfig
+infoq-scaffold-backend/AGENTS.md
 infoq-scaffold-backend/infoq-admin/Dockerfile
 infoq-scaffold-backend/infoq-admin/pom.xml
 infoq-scaffold-backend/infoq-admin/src/main/java/cc/infoq/admin/SysAdminApplication.java
@@ -92,8 +87,13 @@ infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/commo
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/utils/regex/RegexValidator.java
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/utils/sql/SqlUtil.java
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/AddGroup.java
+infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/DataScopeGroup.java
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/EditGroup.java
+infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/GrantGroup.java
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/QueryGroup.java
+infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/ResetPwdGroup.java
+infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/StatusGroup.java
+infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/UpdateByKeyGroup.java
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/dicts/DictPattern.java
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/dicts/DictPatternValidator.java
 infoq-scaffold-backend/infoq-core/infoq-core-common/src/main/java/cc/infoq/common/validate/enumd/EnumPattern.java
@@ -129,6 +129,8 @@ infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysDeptBo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysDictDataBo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysDictTypeBo.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysJobBo.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysJobLogBo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysLoginInfoBo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysMenuBo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/bo/SysNoticeBo.java
@@ -146,6 +148,8 @@ infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysDept.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysDictData.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysDictType.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysJob.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysJobLog.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysLoginInfo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysMenu.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/entity/SysNotice.java
@@ -171,6 +175,8 @@ infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysDeptVo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysDictDataVo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysDictTypeVo.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysJobLogVo.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysJobVo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysLoginInfoVo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysMenuVo.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/domain/vo/SysNoticeVo.java
@@ -190,6 +196,8 @@ infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysDeptMapper.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysDictDataMapper.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysDictTypeMapper.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysJobLogMapper.java
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysJobMapper.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysLoginInfoMapper.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysMenuMapper.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/java/cc/infoq/system/mapper/SysNoticeMapper.java
@@ -209,6 +217,8 @@ infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/syst
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysDeptMapper.xml
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysDictDataMapper.xml
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysDictTypeMapper.xml
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysJobLogMapper.xml
+infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysJobMapper.xml
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysLoginInfoMapper.xml
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysMenuMapper.xml
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/main/resources/mapper/system/SysNoticeMapper.xml
@@ -228,12 +238,13 @@ infoq-scaffold-backend/infoq-core/infoq-core-data/src/test/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/test/java/cc/infoq/system/domain/entity/SysMenuTest.java
 infoq-scaffold-backend/infoq-core/infoq-core-data/src/test/java/cc/infoq/system/mapper/MapperDefaultMethodTest.java
 infoq-scaffold-backend/infoq-core/pom.xml
-infoq-scaffold-backend/infoq-modules/infoq-system/Dockerfile
 infoq-scaffold-backend/infoq-modules/infoq-system/pom.xml
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/login/AuthController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/login/CaptchaController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/login/IndexController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/monitor/CacheController.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/monitor/SysJobController.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/monitor/SysJobLogController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/monitor/SysLoginInfoController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/monitor/SysOperLogController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/monitor/SysUserOnlineController.java
@@ -252,6 +263,7 @@ infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/system/SysUserController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/listener/SysUserImportListener.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/listener/UserActionListener.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/runner/SchedulerApplicationRunner.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/runner/SystemApplicationRunner.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/AuthStrategy.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysClientService.java
@@ -260,6 +272,8 @@ infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysDeptService.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysDictDataService.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysDictTypeService.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysJobLogService.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysJobService.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysLoginInfoService.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysLoginService.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysMenuService.java
@@ -274,12 +288,15 @@ infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/SysUserService.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/EmailAuthStrategy.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/PasswordAuthStrategy.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SchedulerNoopTaskHandler.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysClientServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysConfigServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysDataScopeServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysDeptServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysDictDataServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysDictTypeServiceImpl.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysJobLogServiceImpl.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysJobServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysLoginInfoServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysLoginServiceImpl.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/impl/SysMenuServiceImpl.java
@@ -318,6 +335,7 @@ infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/controller/system/SysProfileControllerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/controller/system/SysRoleControllerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/controller/system/SysUserControllerTest.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/domain/ValidationGroupsTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/listener/SysUserImportListenerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/listener/UserActionListenerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/mapper/MapperDefaultMethodTest.java
@@ -327,6 +345,7 @@ infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/mapper/xml/SysMenuMapperXmlIntegrationTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/mapper/xml/SysPostRoleMapperXmlIntegrationTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/mapper/xml/SysUserMapperXmlIntegrationTest.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/runner/SchedulerApplicationRunnerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/runner/SystemApplicationRunnerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/service/AuthStrategyTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/service/impl/EmailAuthStrategyTest.java
@@ -512,6 +531,20 @@ infoq-scaffold-backend/infoq-plugin/infoq-plugin-oss/src/main/java/cc/infoq/comm
 infoq-scaffold-backend/infoq-plugin/infoq-plugin-oss/src/test/java/cc/infoq/common/oss/core/OssClientTest.java
 infoq-scaffold-backend/infoq-plugin/infoq-plugin-oss/src/test/java/cc/infoq/common/oss/enums/AccessPolicyTypeTest.java
 infoq-scaffold-backend/infoq-plugin/infoq-plugin-oss/src/test/java/cc/infoq/common/oss/factory/OssFactoryTest.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/pom.xml
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/config/QuartzAutoConfiguration.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzConcurrentJob.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzDisallowConcurrentJob.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzJob.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzJobExecutor.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzKeyBuilder.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzTaskDispatcher.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzTaskDispatcherImpl.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzTaskHandler.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/core/ManagedQuartzTaskPayload.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/java/cc/infoq/common/quartz/properties/QuartzManagedProperties.java
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+infoq-scaffold-backend/infoq-plugin/infoq-plugin-quartz/src/test/java/cc/infoq/common/quartz/core/ManagedQuartzTaskDispatcherImplTest.java
 infoq-scaffold-backend/infoq-plugin/infoq-plugin-redis/pom.xml
 infoq-scaffold-backend/infoq-plugin/infoq-plugin-redis/src/main/java/cc/infoq/common/redis/annotation/RateLimiter.java
 infoq-scaffold-backend/infoq-plugin/infoq-plugin-redis/src/main/java/cc/infoq/common/redis/annotation/RepeatSubmit.java

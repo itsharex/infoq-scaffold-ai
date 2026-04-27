@@ -30,6 +30,7 @@
 - React 19 + Ant Design 管理端
 - uni-app + Vue 3 小程序端
 - Taro + React 小程序端
+- 根 `doc/` 正文真值源与 `infoq-scaffold-docs` 文档站展示层
 - 根级与工作区级 `AGENTS.md`
 - `OpenSpec` 规格与变更目录
 - 项目级 MCP 配置与使用文档
@@ -61,6 +62,7 @@ infoq-scaffold-ai
 ├── infoq-scaffold-frontend-react
 ├── infoq-scaffold-frontend-weapp-vue
 ├── infoq-scaffold-frontend-weapp-react
+├── infoq-scaffold-docs
 ├── script
 ├── sql
 └── doc
@@ -89,6 +91,7 @@ infoq-scaffold-ai
 - React 管理端规则：[`infoq-scaffold-frontend-react/AGENTS.md`](./infoq-scaffold-frontend-react/AGENTS.md)
 - Vue 小程序规则：[`infoq-scaffold-frontend-weapp-vue/AGENTS.md`](./infoq-scaffold-frontend-weapp-vue/AGENTS.md)
 - React 小程序规则：[`infoq-scaffold-frontend-weapp-react/AGENTS.md`](./infoq-scaffold-frontend-weapp-react/AGENTS.md)
+- 文档站规则：[`infoq-scaffold-docs/AGENTS.md`](./infoq-scaffold-docs/AGENTS.md)
 
 ### 2. `.agents/skills`
 
@@ -314,6 +317,7 @@ bash script/bin/deploy-frontend.sh deploy
 - React 管理端：`pnpm run test` + `pnpm run build:prod`
 - Vue 小程序端：`pnpm run typecheck` + `pnpm run test` + `pnpm run build:weapp:dev`
 - React 小程序端：`pnpm run test` + `pnpm run lint` + `pnpm run build:weapp:dev`
+- 文档站：`cd infoq-scaffold-docs && pnpm run docs:sync && pnpm run docs:check-links && pnpm run build`
 
 如果改动影响浏览器运行态、登录、路由守卫、页面渲染或小程序 DevTools 打开流程，建议额外使用对应的 React 或 Vue 运行态 verification skill。
 
@@ -327,6 +331,8 @@ bash script/bin/deploy-frontend.sh deploy
 
 ## 文档导航
 
+- 项目文档中心：[`doc/README.md`](./doc/README.md)
+- 文档站展示层：[`infoq-scaffold-docs/README.md`](./infoq-scaffold-docs/README.md)
 - 协作体系：
   - [`doc/agents-guide.md`](./doc/agents-guide.md)
   - [`doc/skills-guide.md`](./doc/skills-guide.md)

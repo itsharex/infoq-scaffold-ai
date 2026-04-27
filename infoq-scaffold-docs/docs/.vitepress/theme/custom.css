@@ -1,0 +1,206 @@
+:root {
+  --vp-c-brand-1: #0f766e;
+  --vp-c-brand-2: #0b6a62;
+  --vp-c-brand-3: #0a5e58;
+  --vp-c-brand-soft: rgba(15, 118, 110, 0.14);
+  --vp-c-text-1: #172033;
+  --vp-c-text-2: #4f596f;
+  --vp-c-text-3: #6a7285;
+  --vp-c-bg: #f4f1e8;
+  --vp-c-bg-alt: #fffaf0;
+  --vp-c-bg-elv: #fffdf8;
+  --vp-c-bg-soft: #f7f2e7;
+  --vp-c-border: rgba(23, 32, 51, 0.12);
+  --vp-c-divider: rgba(23, 32, 51, 0.08);
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(135deg, #0f766e 0%, #155eef 48%, #c2410c 100%);
+  --vp-home-hero-image-background-image: radial-gradient(circle at top left, rgba(21, 94, 239, 0.18), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.18), transparent 42%);
+  --vp-home-hero-image-filter: blur(42px);
+}
+
+html,
+body {
+  background:
+    linear-gradient(90deg, rgba(23, 32, 51, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(23, 32, 51, 0.03) 1px, transparent 1px),
+    var(--vp-c-bg);
+  background-size: 34px 34px, 34px 34px, auto;
+}
+
+body {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.VPNavBar {
+  background: rgba(255, 253, 248, 0.82);
+  backdrop-filter: blur(14px);
+}
+
+.VPNavBar.has-sidebar .content-body,
+.VPNavBar .content-body {
+  background: transparent;
+}
+
+.VPHero .name,
+.VPDoc h1,
+.VPDoc h2,
+.VPDoc h3,
+.VPFeature .title,
+.iq-link-card strong,
+.iq-highlight h2 {
+  font-family: "IBM Plex Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.VPHero {
+  padding-top: 36px !important;
+}
+
+.VPHero .container {
+  padding: 34px;
+  border-radius: 28px;
+  border: 1px solid rgba(23, 32, 51, 0.08);
+  background:
+    radial-gradient(circle at top left, rgba(21, 94, 239, 0.14), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.16), transparent 36%),
+    linear-gradient(145deg, #fffdf7 0%, #f6f0e1 100%);
+  box-shadow: 0 20px 60px rgba(23, 32, 51, 0.1);
+}
+
+.VPFeature {
+  border: 1px solid rgba(23, 32, 51, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 34px rgba(23, 32, 51, 0.06);
+}
+
+.VPDoc .content-container,
+.VPDoc.has-aside .content-container {
+  max-width: 860px;
+}
+
+.VPDoc .aside {
+  padding-left: 22px;
+}
+
+.VPDoc .aside-outline {
+  border-left-color: rgba(23, 32, 51, 0.1);
+}
+
+.VPDoc .aside-outline .outline-link.active {
+  color: var(--vp-c-brand-1);
+}
+
+.VPContent.is-home {
+  background: transparent;
+}
+
+.vp-doc a {
+  text-underline-offset: 0.18em;
+}
+
+.iq-home-note,
+.iq-highlight,
+.iq-link-card,
+.iq-source-note {
+  border: 1px solid rgba(23, 32, 51, 0.08);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 34px rgba(23, 32, 51, 0.06);
+}
+
+.iq-home-note {
+  margin-top: 26px;
+  padding: 22px 24px;
+}
+
+.iq-home-note p:last-child {
+  margin-bottom: 0;
+}
+
+.iq-highlight {
+  margin-top: 24px;
+  padding: 24px 26px;
+  background: linear-gradient(145deg, rgba(21, 94, 239, 0.08), rgba(15, 118, 110, 0.1));
+}
+
+.iq-highlight h2 {
+  margin: 0 0 10px;
+  font-size: 28px;
+}
+
+.iq-step-grid,
+.iq-page-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.iq-step-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.iq-page-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.iq-step {
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px dashed rgba(23, 32, 51, 0.16);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.iq-step strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.iq-step p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  line-height: 1.75;
+}
+
+.iq-link-card {
+  display: block;
+  padding: 20px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.iq-link-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(15, 118, 110, 0.22);
+  box-shadow: 0 18px 40px rgba(23, 32, 51, 0.1);
+}
+
+.iq-link-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.iq-link-card p,
+.iq-source-note p {
+  margin: 0;
+  color: var(--vp-c-text-2);
+  line-height: 1.75;
+}
+
+.iq-source-note {
+  margin-top: 24px;
+  padding: 18px 20px;
+  background: rgba(255, 253, 248, 0.82);
+}
+
+@media (max-width: 960px) {
+  .iq-step-grid,
+  .iq-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .VPHero .container {
+    padding: 26px 20px;
+  }
+}
+

@@ -16,8 +16,10 @@
 package cc.infoq.common.redis.manager;
 
 import cc.infoq.common.redis.utils.RedisUtils;
+import org.redisson.api.LocalCachedMapCacheOptions;
 import org.redisson.api.RMap;
 import org.redisson.api.RMapCache;
+import org.redisson.api.options.LocalCachedMapOptions;
 import org.redisson.spring.cache.CacheConfig;
 import org.redisson.spring.cache.RedissonCache;
 import org.springframework.boot.convert.DurationStyle;
@@ -26,11 +28,13 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@link org.springframework.cache.CacheManager} implementation
@@ -43,6 +47,9 @@ import java.util.concurrent.ConcurrentMap;
  *
  */
 public class PlusSpringCacheManager implements CacheManager {
+
+    private static final int DEFAULT_LOCAL_CACHE_SIZE = 1000;
+    private static final long DEFAULT_LOCAL_CACHE_TTL_MILLIS = TimeUnit.SECONDS.toMillis(30);
 
     private boolean dynamic = true;
 
@@ -150,19 +157,18 @@ public class PlusSpringCacheManager implements CacheManager {
         }
 
         if (config.getMaxIdleTime() == 0 && config.getTTL() == 0 && config.getMaxSize() == 0) {
-            return createMap(name, config, local);
+            return createMap(name, local);
         }
 
         return createMapCache(name, config, local);
     }
 
-    private Cache createMap(String name, CacheConfig config, int local) {
-        RMap<Object, Object> map = RedisUtils.getClient().getMap(name);
+    private Cache createMap(String name, int local) {
+        RMap<Object, Object> map = local == 1
+            ? RedisUtils.getClient().getLocalCachedMap(createLocalCachedMapOptions(name))
+            : RedisUtils.getClient().getMap(name);
 
         Cache cache = new RedissonCache(map, allowNullValues);
-        if (local == 1) {
-            cache = new CaffeineCacheDecorator(name, cache);
-        }
         if (transactionAware) {
             cache = new TransactionAwareCacheDecorator(cache);
         }
@@ -174,12 +180,11 @@ public class PlusSpringCacheManager implements CacheManager {
     }
 
     private Cache createMapCache(String name, CacheConfig config, int local) {
-        RMapCache<Object, Object> map = RedisUtils.getClient().getMapCache(name);
+        RMapCache<Object, Object> map = local == 1
+            ? RedisUtils.getClient().getLocalCachedMapCache(name, createLocalCachedMapCacheOptions())
+            : RedisUtils.getClient().getMapCache(name);
 
         Cache cache = new RedissonCache(map, config, allowNullValues);
-        if (local == 1) {
-            cache = new CaffeineCacheDecorator(name, cache);
-        }
         if (transactionAware) {
             cache = new TransactionAwareCacheDecorator(cache);
         }
@@ -190,6 +195,30 @@ public class PlusSpringCacheManager implements CacheManager {
             map.setMaxSize(config.getMaxSize());
         }
         return cache;
+    }
+
+    private LocalCachedMapOptions<Object, Object> createLocalCachedMapOptions(String name) {
+        return LocalCachedMapOptions.<Object, Object>name(name)
+            .cacheProvider(LocalCachedMapOptions.CacheProvider.CAFFEINE)
+            .storeMode(LocalCachedMapOptions.StoreMode.LOCALCACHE_REDIS)
+            .syncStrategy(LocalCachedMapOptions.SyncStrategy.INVALIDATE)
+            .reconnectionStrategy(LocalCachedMapOptions.ReconnectionStrategy.CLEAR)
+            .evictionPolicy(LocalCachedMapOptions.EvictionPolicy.LRU)
+            .cacheSize(DEFAULT_LOCAL_CACHE_SIZE)
+            .timeToLive(Duration.ofMillis(DEFAULT_LOCAL_CACHE_TTL_MILLIS))
+            .expirationEventPolicy(LocalCachedMapOptions.ExpirationEventPolicy.SUBSCRIBE_WITH_KEYEVENT_PATTERN);
+    }
+
+    private LocalCachedMapCacheOptions<Object, Object> createLocalCachedMapCacheOptions() {
+        return LocalCachedMapCacheOptions.<Object, Object>defaults()
+            .cacheProvider(LocalCachedMapCacheOptions.CacheProvider.CAFFEINE)
+            .storeMode(LocalCachedMapCacheOptions.StoreMode.LOCALCACHE_REDIS)
+            .syncStrategy(LocalCachedMapCacheOptions.SyncStrategy.INVALIDATE)
+            .reconnectionStrategy(LocalCachedMapCacheOptions.ReconnectionStrategy.CLEAR)
+            .evictionPolicy(LocalCachedMapCacheOptions.EvictionPolicy.LRU)
+            .cacheSize(DEFAULT_LOCAL_CACHE_SIZE)
+            .timeToLive(DEFAULT_LOCAL_CACHE_TTL_MILLIS)
+            .useKeyEventsPattern(true);
     }
 
     @Override

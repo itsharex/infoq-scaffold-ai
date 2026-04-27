@@ -263,6 +263,8 @@ infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/controller/system/SysUserController.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/listener/SysUserImportListener.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/listener/UserActionListener.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/runner/QuartzBootstrapCoordinator.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/runner/QuartzBootstrapMarkerStore.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/runner/SchedulerApplicationRunner.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/runner/SystemApplicationRunner.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/main/java/cc/infoq/system/service/AuthStrategy.java
@@ -345,6 +347,7 @@ infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/mapper/xml/SysMenuMapperXmlIntegrationTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/mapper/xml/SysPostRoleMapperXmlIntegrationTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/mapper/xml/SysUserMapperXmlIntegrationTest.java
+infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/runner/QuartzBootstrapCoordinatorTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/runner/SchedulerApplicationRunnerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/runner/SystemApplicationRunnerTest.java
 infoq-scaffold-backend/infoq-modules/infoq-system/src/test/java/cc/infoq/system/service/AuthStrategyTest.java

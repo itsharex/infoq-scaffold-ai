@@ -11,43 +11,44 @@ import org.springframework.boot.ApplicationArguments;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 
 @Tag("dev")
 class WebSocketTopicListenerTest {
 
     @Test
-    @DisplayName("run: should route targeted websocket message only to existing sessions")
-    void runShouldRouteTargetedMessageToExistingSessions() throws Exception {
-        AtomicReference<Consumer<WebSocketMessageDto>> consumerRef = new AtomicReference<>();
+    @DisplayName("run: should subscribe both global topic and current node topic")
+    void runShouldSubscribeGlobalAndNodeTopics() throws Exception {
+        try (MockedStatic<WebSocketUtils> webSocketUtils = mockStatic(WebSocketUtils.class)) {
+            WebSocketTopicListener listener = new WebSocketTopicListener();
 
+            listener.run(mock(ApplicationArguments.class));
+
+            webSocketUtils.verify(() -> WebSocketUtils.subscribeMessage(any()));
+            webSocketUtils.verify(() -> WebSocketUtils.subscribeNodeMessage(any()));
+            assertEquals(-1, listener.getOrder());
+        }
+    }
+
+    @Test
+    @DisplayName("dispatchMessage: should route targeted websocket message only to existing local users")
+    void dispatchMessageShouldRouteTargetedMessageToExistingSessions() {
         try (MockedStatic<WebSocketUtils> webSocketUtils = mockStatic(WebSocketUtils.class);
              MockedStatic<WebSocketSessionHolder> sessionHolder = mockStatic(WebSocketSessionHolder.class)) {
-
-            webSocketUtils.when(() -> WebSocketUtils.subscribeMessage(any())).thenAnswer(invocation -> {
-                Consumer<WebSocketMessageDto> consumer = invocation.getArgument(0);
-                consumerRef.set(consumer);
-                return null;
-            });
             sessionHolder.when(() -> WebSocketSessionHolder.existSession(1L)).thenReturn(true);
             sessionHolder.when(() -> WebSocketSessionHolder.existSession(2L)).thenReturn(false);
 
             WebSocketTopicListener listener = new WebSocketTopicListener();
-            listener.run(mock(ApplicationArguments.class));
-
-            Consumer<WebSocketMessageDto> consumer = consumerRef.get();
-            assertNotNull(consumer);
-
             WebSocketMessageDto dto = new WebSocketMessageDto();
             dto.setSessionKeys(List.of(1L, 2L));
             dto.setMessage("hello");
-            consumer.accept(dto);
+
+            listener.dispatchMessage(dto);
 
             webSocketUtils.verify(() -> WebSocketUtils.sendMessage(1L, "hello"));
             webSocketUtils.verify(() -> WebSocketUtils.sendMessage(2L, "hello"), never());
@@ -55,33 +56,20 @@ class WebSocketTopicListenerTest {
     }
 
     @Test
-    @DisplayName("run: should broadcast websocket message when session keys are empty")
-    void runShouldBroadcastWhenSessionKeysEmpty() throws Exception {
-        AtomicReference<Consumer<WebSocketMessageDto>> consumerRef = new AtomicReference<>();
-
+    @DisplayName("dispatchMessage: should broadcast websocket message when session keys are empty")
+    void dispatchMessageShouldBroadcastWhenSessionKeysEmpty() {
         try (MockedStatic<WebSocketUtils> webSocketUtils = mockStatic(WebSocketUtils.class);
              MockedStatic<WebSocketSessionHolder> sessionHolder = mockStatic(WebSocketSessionHolder.class)) {
-
-            webSocketUtils.when(() -> WebSocketUtils.subscribeMessage(any())).thenAnswer(invocation -> {
-                Consumer<WebSocketMessageDto> consumer = invocation.getArgument(0);
-                consumerRef.set(consumer);
-                return null;
-            });
             sessionHolder.when(WebSocketSessionHolder::getSessionsAll).thenReturn(Set.of(10L, 11L));
 
             WebSocketTopicListener listener = new WebSocketTopicListener();
-            listener.run(mock(ApplicationArguments.class));
-
-            Consumer<WebSocketMessageDto> consumer = consumerRef.get();
-            assertNotNull(consumer);
-
             WebSocketMessageDto dto = new WebSocketMessageDto();
             dto.setMessage("broadcast");
-            consumer.accept(dto);
+
+            listener.dispatchMessage(dto);
 
             webSocketUtils.verify(() -> WebSocketUtils.sendMessage(10L, "broadcast"));
             webSocketUtils.verify(() -> WebSocketUtils.sendMessage(11L, "broadcast"));
-            assertEquals(-1, listener.getOrder());
         }
     }
 }

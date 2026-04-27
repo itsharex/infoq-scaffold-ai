@@ -104,7 +104,7 @@ infoq-scaffold-ai
 - Vue 家族运行态验证：`infoq-vue-runtime-verification`
 - React 家族单测：`infoq-react-unit-test-patterns`
 - Vue 家族单测：`infoq-vue-unit-test-patterns`
-- 后端冒烟与登录校验：`infoq-backend-smoke-test`、`infoq-login-success-check`
+- 后端冒烟、双机集群 smoke 与登录校验：`infoq-backend-smoke-test`、`infoq-login-success-check`
 - OpenSpec 与项目参考：`infoq-openspec-delivery`、`infoq-project-reference`
 
 React 家族和 Vue 家族 skill 会通过 `references/admin` 与 `references/weapp` 区分客户端，但不再保留共享底座型 skill 目录。

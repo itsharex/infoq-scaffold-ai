@@ -114,12 +114,15 @@ cp infoq-scaffold-backend/infoq-admin/target/infoq-admin.jar /infoq/server/app/
 - `sa-token.jwt-secret-key`
 - `api-decrypt` 的示例密钥
 - 如启用邮件、OSS、SSE、WebSocket，对应配置也要同步确认
+- `infoq.quartz.bootstrap.deploy-id` 是否已固定为当前发布批次值，当前仓库默认写在 [infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml](https://github.com/luckykuang/infoq-scaffold-ai/blob/main/infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml) 中，例如 `2.1.0-20260427-001`
 
 如果服务器目录不是 `/infoq/server/temp`，同步修改：
 
 ```yaml
 spring.servlet.multipart.location: /your/path/server/temp
 ```
+
+如果同一版本需要再次发布，请直接更新 `infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml` 中的 `infoq.quartz.bootstrap.deploy-id`，再重新构建和发布；不要再通过环境变量单独拼接这一值。
 
 ### 3.4 初始化数据库
 
@@ -155,6 +158,7 @@ nohup java \
 说明：
 
 - `SPRING_CONFIG_ADDITIONAL_LOCATION` 的作用与 Compose 中的运行方式保持一致
+- `infoq.quartz.bootstrap.deploy-id` 默认已经写在 `infoq-admin` 的生产配置里；如果同一版本在同一天需要再次部署，请先更新该值，再重新构建和发布
 - 如果你不使用 `nohup`，也可以用 `systemd` 或 `supervisor` 托管
 
 ### 3.6 使用 systemd 托管

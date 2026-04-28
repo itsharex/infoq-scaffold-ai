@@ -50,6 +50,7 @@ export INFOQ_DEPLOY_ROOT=/tmp/infoq-deploy
 
 其中 `${INFOQ_DEPLOY_ROOT:-/infoq}/server/config/application-prod.yml` 会在首次执行 `bash script/bin/infoq.sh prepare` 时自动生成一份 Docker Compose 默认模板。
 `bash script/bin/infoq.sh deploy` 会在启动 MySQL / Redis 后等待依赖就绪，并在检测到 `infoq` 库缺表时自动导入 `sql/infoq_scaffold_2.0.0.sql`。
+当前仓库的 Quartz bootstrap `deploy-id` 已固定写入 `infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml`，因此脚本化部署不再依赖额外的环境变量拼接；如果同一版本需要再次发布，请先更新该文件中的值，再重新构建发布包。
 
 ## 2. 首次部署后端
 
@@ -76,6 +77,9 @@ bash script/bin/infoq.sh stop
 
 - 首次空数据目录启动时，MySQL 容器会自动执行 `sql/infoq_scaffold_2.0.0.sql`
 - 如果数据目录已存在，但 `infoq` 库表未初始化，`deploy` / `start` 也会补导一次 SQL
+- `deploy` 只负责准备宿主机目录、构建后端、启动依赖服务并拉起 `infoq-admin`，不会临时拼接 Quartz deploy-id
+- `start` 与 `restart` 只会复用现有容器环境，不会改动生产配置中的 Quartz deploy-id
+- 如果同一版本在同一天需要再次发布，请先更新 `infoq-admin` 生产配置里的 `infoq.quartz.bootstrap.deploy-id`，再重新构建和发布
 
 ## 3. 首次部署前端
 
@@ -127,6 +131,11 @@ bash script/bin/deploy-frontend.sh start
 - `http://host/react/`
 - `http://host/prod-api/`
 
+说明：
+
+- `bash script/bin/infoq.sh start` 适用于“启动已有容器”，不会触发新的部署批次。
+- 如果你是发布新包、希望生产环境重新执行一次受控 Quartz reconcile，应先更新 `infoq-admin` 生产配置里的 `infoq.quartz.bootstrap.deploy-id`，再重新构建和发布。
+
 ## 5. 日常停止步骤
 
 建议先停前端和网关，再停后端与基础服务：
@@ -176,3 +185,4 @@ docker compose -f script/docker/docker-compose.yml logs -f infoq-admin
 ```
 
 直接使用 `docker compose` 时，建议保证 `${INFOQ_DEPLOY_ROOT:-/infoq}/mysql/data` 为空目录，以便 MySQL 首次启动时自动执行初始化 SQL。
+如果是多节点部署，同一批节点应使用同一份 `infoq-admin` 生产配置；如果同一版本在同一天需要重复部署，请先更新 `infoq.quartz.bootstrap.deploy-id` 再重新构建和发布。

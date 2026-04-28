@@ -291,8 +291,9 @@ bash script/bin/infoq.sh deploy
 
 说明：
 
-- `bash script/bin/infoq.sh deploy` 会为本次部署生成并注入 `INFOQ_QUARTZ_BOOTSTRAP_DEPLOY_ID`，默认格式为 `版本号-日期-序号`，例如 `2.1.0-20260427-001`，用于保证生产环境 `sysJobService.init()` 每次部署只执行一次。
-- `bash script/bin/infoq.sh start` / `restart` 只会复用现有容器环境，不会生成新的部署批次 ID。
+- `bash script/bin/infoq.sh deploy` 直接使用后端生产配置里的 `infoq.quartz.bootstrap.deploy-id`；如果同一个版本不是多次发布，就保持这个值不变。
+- 如果同一个版本需要再次发布，先更新 `infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml` 里的 `infoq.quartz.bootstrap.deploy-id`，再重新构建和发布。
+- `bash script/bin/infoq.sh start` / `restart` 只会复用现有容器环境，不会改动生产配置中的 `infoq.quartz.bootstrap.deploy-id`。
 
 ### 前端与网关
 

@@ -10,7 +10,6 @@ Group=infoq
 WorkingDirectory=/infoq/server/app
 Environment="SPRING_PROFILES_ACTIVE=prod"
 Environment="SPRING_CONFIG_ADDITIONAL_LOCATION=file:/infoq/server/config/"
-Environment="INFOQ_QUARTZ_BOOTSTRAP_DEPLOY_ID=2.1.0-20260427-001"
 ExecStart=/usr/bin/java -Djava.security.egd=file:/dev/./urandom -Dserver.port=9090 -XX:+HeapDumpOnOutOfMemoryError -Xms512m -Xmx1024m -jar /infoq/server/app/infoq-admin.jar
 SuccessExitStatus=143
 Restart=always

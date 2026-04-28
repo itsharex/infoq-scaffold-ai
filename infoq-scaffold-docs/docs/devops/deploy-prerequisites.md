@@ -130,6 +130,7 @@ outline: [2, 3]
 - `spring.servlet.multipart.location`
 - `sa-token.jwt-secret-key`
 - `api-decrypt` 公私钥
+- `infoq.quartz.bootstrap.deploy-id` 是否已固定为当前发布批次值，当前仓库默认写在 [infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml](https://github.com/luckykuang/infoq-scaffold-ai/blob/main/infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml) 中，例如 `2.1.0-20260427-001`
 - 邮件、OSS 或其他插件相关配置
 
 主要配置来源：
@@ -139,6 +140,7 @@ outline: [2, 3]
 - Compose 覆盖模板：[script/docker/server/application-prod.yml](https://github.com/luckykuang/infoq-scaffold-ai/blob/main/script/docker/server/application-prod.yml)
 
 生产环境不要直接保留仓库内默认密钥、默认数据库密码和示例邮箱配置。
+如果同一版本需要再次发布，请直接更新 `infoq-scaffold-backend/infoq-admin/src/main/resources/application-prod.yml` 中的 `infoq.quartz.bootstrap.deploy-id`，再重新构建和发布；不要再通过环境变量临时拼接同名值。
 
 ### 5.2 前端配置
 

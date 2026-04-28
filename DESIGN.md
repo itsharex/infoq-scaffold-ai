@@ -1,239 +1,128 @@
----
-version: alpha
-name: InfoQ Scaffold AI Cohere Foundation
-description: Cohere-inspired enterprise editorial design system adapted for InfoQ Scaffold AI across admin dashboards, docs surfaces, and weapp/mobile views, with shared light and dark semantic tokens.
-colors:
-  light:
-    bg-canvas: "#f6f6f2"
-    bg-page: "#ffffff"
-    bg-muted: "#eeece7"
-    band-green: "#003c33"
-    band-navy: "#071829"
-    band-ink: "#17171c"
-    surface-base: "#ffffff"
-    surface-subtle: "#f7f5f0"
-    text-primary: "#212121"
-    text-secondary: "#5f6470"
-    text-tertiary: "#93939f"
-    border-default: "#d9d9dd"
-    action-primary: "#17171c"
-    action-link: "#1863dc"
-    action-focus: "#4c6ee6"
-    accent-editorial: "#ff7759"
-    accent-editorial-soft: "#ffad9b"
-    success: "#1e7f5a"
-    warning: "#b96322"
-    error: "#b30000"
-  dark:
-    bg-canvas: "#0f1318"
-    bg-page: "#131922"
-    bg-muted: "#1b2230"
-    band-green: "#003c33"
-    band-navy: "#071829"
-    band-ink: "#17171c"
-    surface-base: "#171d26"
-    surface-subtle: "#1d2430"
-    text-primary: "#f4f6fa"
-    text-secondary: "#c1c8d3"
-    text-tertiary: "#95a1b3"
-    border-default: "#303948"
-    action-primary: "#ffffff"
-    action-link: "#7db1ff"
-    action-focus: "#8eb6ff"
-    accent-editorial: "#ff8a71"
-    accent-editorial-soft: "#ffc0b1"
-    success: "#75c195"
-    warning: "#f0ad5f"
-    error: "#ff8b8b"
-typography:
-  display:
-    fontFamily: "\"Space Grotesk\", \"Noto Sans SC\", \"PingFang SC\", sans-serif"
-  body:
-    fontFamily: "\"IBM Plex Sans\", \"Noto Sans SC\", \"PingFang SC\", sans-serif"
-  mono:
-    fontFamily: "\"IBM Plex Mono\", \"JetBrains Mono\", monospace"
-rounded:
-  xs: 4px
-  sm: 8px
-  md: 16px
-  lg: 22px
-  xl: 30px
-  pill: 32px
-spacing:
-  xxs: 2px
-  xs: 6px
-  sm: 8px
-  md: 12px
-  lg: 16px
-  xl: 24px
-  xxl: 32px
-  section: 80px
----
+# Design System: Cohere Editorial Design
 
-## Overview
+本脚手架采用 **Cohere 风格的编辑感设计 (Editorial Design)**。这种风格强调极简主义、高对比度排版、宽裕的呼吸感空间以及细腻的交互反馈，旨在为后台管理系统提供如同精品期刊般的阅读与操作体验。
 
-This design system keeps the parts of Cohere that fit this repository: white editorial canvases, dark enterprise product bands, soft stone cards, restrained borders, coral editorial tags, blue research links, and large but controlled display typography. It does not copy Cohere's marketing pages. It adapts the visual language for three real product surfaces in this repo:
+## 1. 核心设计原则 (Design Principles)
 
-- admin dashboards
-- docs and collaboration landing pages
-- weapp/mobile home and profile pages
+- **极简主义 (Minimalism)**: 移除不必要的装饰，专注于内容。
+- **编辑感排版 (Editorial Typography)**: 通过字体大小、粗细和间距建立清晰的信息层级。
+- **呼吸感空间 (Airy Spacing)**: 慷慨的留白，防止界面拥挤。
+- **细腻交互 (Subtle Interaction)**: 柔和的阴影切换与平滑的过渡动画 (0.3s ease)。
 
-The system must work in both light and dark mode. Light is the default reading and data-entry surface. Dark is a supported shell mode that keeps white or soft information islands when clarity matters.
+## 2. 色彩系统 (Color Palette)
 
-## Visual Theme & Atmosphere
+系统支持动态主题切换，核心色彩基于 Ant Design 6 的 Token 系统并进行了编辑感定制。
 
-- Build a trustworthy enterprise AI mood, not a startup landing-page mood.
-- Use whitespace and section bands as hierarchy, not heavy shadows.
-- Keep most UI surfaces flat. Save gradients and saturated color for hero media, capability bands, or curated illustration slots.
-- Make cards rounded and confident, but never cute or bubbly.
-- Let docs feel editorial, admin feel operational, and weapp feel tactile, while sharing the same semantic token family.
+### 2.1 模式基准 (Theme Modes)
 
-## Color Palette & Roles
+| 资源 / 模式 | Light Mode (默认) | Dark Mode |
+| :--- | :--- | :--- |
+| **Layout Background** | `#f5f7fb` | `#141414` (Antd Default Dark) |
+| **Container Background** | `#ffffff` | `#1f1f1f` |
+| **Primary Text** | `#303133` | `rgba(255, 255, 255, 0.88)` |
+| **Regular Text** | `#606266` | `rgba(255, 255, 255, 0.65)` |
+| **Border Color** | `#e4e7ed` | `rgba(255, 255, 255, 0.15)` |
+| **Table Header BG** | `#f8f8f9` | `#28282a` |
 
-### Shared Rules
+### 2.2 导航系统专用色 (Navigation)
 
-- `action-primary` is the single strongest action color.
-- `accent-editorial` is reserved for taxonomy, labels, chips, and small warm highlights.
-- `action-link` is for inline links, research-like metadata, and docs navigation emphasis.
-- `band-green`, `band-navy`, and `band-ink` are large sectional backgrounds, not generic widget colors.
+导航项 (Nav Items) 统一采用 `8px` 圆角。
 
-### Light Mode
+| 导航元素 | Light Theme (Shell) | Dark Theme (Shell) |
+| :--- | :--- | :--- |
+| **Menu Background** | `#ffffff` | `#1f2d3d` |
+| **Menu Text** | `#303133` | `rgba(255, 255, 255, 0.85)` |
+| **Hover Background** | `#f5f7fa` | `#263445` |
+| **Selected Background** | `#ecf5ff` | `var(--current-color)` |
+| **Selected Text** | `var(--current-color)` | `#ffffff` |
 
-- `bg-canvas` / `bg-page`: off-white and white page structure
-- `bg-muted` / `surface-subtle`: soft stone neutral surfaces for summary cards, secondary panels, and docs cards
-- `text-primary`: near-black readable body text
-- `border-default`: thin rule system for tables, forms, and section separators
-- `action-primary`: near-black pill CTA
-- `accent-editorial`: coral chips and editorial markers
+### 2.3 品牌与语义 (Brand & Semantics)
+- **Primary Color**: `#409eff` (品牌蓝，支持运行时自定义)
+- **Success**: `#67c23a` | **Warning**: `#e6a23c` | **Danger**: `#f56c6c`
 
-### Dark Mode
+## 3. 排版系统 (Typography)
 
-- `bg-canvas` / `bg-page`: deep charcoal-blue shell
-- `surface-base` / `surface-subtle`: dark layered cards with visible borders
-- `text-primary`: soft white, not harsh pure white everywhere
-- `action-primary`: white pill CTA on dark shells
-- `action-link`: lighter blue for readable link emphasis
-- `accent-editorial`: softened coral for filters and topical labels
+### 3.1 字体栈
+```css
+font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+```
 
-## Typography Rules
+### 3.2 规范
+- **标题**: 加粗 (`700`)，使用深炭灰。
+- **标签**: 表单 Label 统一加粗 (`700`)。
+- **间距**: 列表行高通常为 `1.4` 至 `1.6`。
 
-### Font Families
+## 4. 布局与容器 (Layout & Containers)
 
-- Display: `"Space Grotesk", "Noto Sans SC", "PingFang SC", sans-serif`
-- Body/UI: `"IBM Plex Sans", "Noto Sans SC", "PingFang SC", sans-serif`
-- Mono: `"IBM Plex Mono", "JetBrains Mono", monospace`
+### 4.1 页面容器 (.app-container)
+- 标准内边距: `20px`。
 
-### Type Scale
+### 4.2 面板与搜索栏 (.panel, .search)
+- **视觉特征**: 
+  - 边框: `1px solid #e4e7ed`
+  - 圆角: `0.75rem` (12px)
+  - 背景: `#ffffff`
+- **状态反馈**: 
+  - Hover 时产生柔和阴影: `box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1)`
 
-- `display-xl`: 64px / 1.02 / 400 / `-0.04em`
-- `display-lg`: 48px / 1.08 / 400 / `-0.03em`
-- `heading-xl`: 36px / 1.16 / 400 / `-0.02em`
-- `heading-lg`: 28px / 1.22 / 400 / `-0.01em`
-- `heading-md`: 22px / 1.3 / 500
-- `body-lg`: 18px / 1.55 / 400
-- `body`: 16px / 1.6 / 400
-- `body-sm`: 14px / 1.55 / 400
-- `label`: 12px / 1.4 / 500 / `0.04em`
-- `mono-label`: 12px / 1.45 / 400 / `0.08em`
+### 4.3 标签栏 (TagsViewBar)
+- 位于 Header 下方的窄条，用于快速切换历史页面。
+- 激活状态使用品牌色填充，非激活状态保持淡雅。
 
-### Usage Rules
+## 5. 组件规范 (Components)
 
-- Only docs hero sections may use `display-xl`.
-- Admin pages should usually top out at `display-lg` or `heading-xl`.
-- Weapp should top out at `heading-lg`.
-- Avoid heavy bold weights. Use scale, spacing, and contrast first.
+### 5.1 按钮 (Buttons)
+- **Plain 模式**: 推荐在非主操作时使用 Plain 模式（白底带边框），保持页面清爽。
+- **圆角**: 统一 `8px`。
 
-## Component Stylings
+### 5.2 表格 (Tables)
+- **Header**: 背景色 `#f8f8f9`，文字色 `#515a6e`，加粗。
+- **单元格**: 紧凑但清晰，移除多余的纵向分割线。
 
-### Buttons
+### 5.3 表单 (Forms)
+- **配置**: 关闭冒号显示 (`colon: false`)。
+- **Label**: 位于输入框左侧或上方，统一右对齐且加粗。
 
-- `button-primary`: pill, strong fill, minimal chrome, 32px radius
-- `button-secondary`: text-first or light outline, never competing with the primary button
-- `button-chip`: used for filters, taxonomy, and compact segmented controls
+## 6. 页面动效与交互体验 (Page Effects & UX)
 
-### Cards
+本系统不仅追求视觉的编辑感，更通过细腻的动效提升操作的确定感与流畅度。
 
-- `card-data`: 8px-16px radius, thin borders, low shadow, used for admin summaries and list containers
-- `card-media`: 22px radius, used for docs hero media, login visuals, and featured mobile cards
-- `card-stone`: soft neutral surface used for secondary highlights and docs/workbench cards
+### 6.1 全局进度反馈 (Loading Progress)
+- **nprogress**: 在路由跳转与大数据量加载时，顶部显示细窄的品牌色进度条，消除等待焦虑。
 
-### Forms
+### 6.2 沉浸式认证页面 (Immersive Auth)
+- **AuthPageShell**: 登录与注册页面采用独立于主框架的沉浸式布局，强调视觉重心。
+- **表单交互**: 
+  - 输入框 Prefix 图标采用中性灰 (`#bfbfbf`)，减少干扰。
+  - 按钮加载状态 (`loading`): 提交时按钮文字平滑切换为 Loading 图标，提供即时反馈。
 
-- Inputs stay rectangular or softly rounded with clear borders.
-- In dark shells, forms may sit on lighter islands for clarity.
-- Focus states must use `action-focus`, not ad hoc glows.
+### 6.3 页面缓存与平滑切换
+- **Keep-Alive**: 支持多标签页状态保持，切换标签时无闪烁加载，维持用户操作上下文。
+- **字间距微调**: 关键标题 (如首页 H2) 应用 `letter-spacing: 0.2px`，增强编辑排版的精致感。
 
-### Navigation
+## 7. 暗黑模式 (Dark Mode)
 
-- Admin: left nav + top utility bar + content shell
-- Docs: broad top nav with focused CTA and editorial entry cards
-- Weapp: stable bottom nav with large touch targets and short labels
+脚手架原生支持暗黑模式，通过 `html[data-theme-mode='dark']` 切换。
+- **背景**: 自动调整为深色调，减少高频对比，保护视力。
+- **对比度**: 保持文字与背景间的足够对比度，符合 WCAG 标准。
 
-## Layout Principles
+## 8. 移动端设计 (Mobile & Mini-program)
 
-- Default from a white page or a deep enterprise band, not a mid-tone wash.
-- Separate sections with space and rule lines before adding more boxes.
-- Use 3-column grids on desktop only when the content actually benefits from side-by-side scanning.
-- Tables and lists should feel editorial and precise, not boxed-in dashboards.
-- Mobile surfaces collapse to one column cleanly. No hidden complexity.
+移动端设计在延续编辑感的同时，针对触摸交互和小屏显示进行了优化。
 
-## Scene Adaptation
+### 8.1 核心特征
+- **背景**: 使用更柔和的背景色 `#f7f8fa`。
+- **圆角**: 采用适中的圆角 `12rpx` (6px)，保持精致且犀利的视觉张力。
+- **阴影**: 使用极柔和的投影 `0 4rpx 20rpx rgba(0, 0, 0, 0.04)`，模拟物理层级而不增加视觉负担。
 
-### Admin
+### 8.2 关键组件
+- **卡片 (.card-container, .record-card-modern)**: 
+  - 侧边状态条: 使用 `status-accent` 提供直观的状态反馈。
+  - 呼吸感: 内边距统一采用 `32rpx`，确保文字不拥挤。
+- **状态标签 (Status Tags)**: 药丸形状，配合浅色背景与深色文字。
+- **悬浮按钮 (FAB)**: 使用品牌渐变色，增强视觉吸引力，并提供明确的主操作入口。
 
-- Default to light for data-heavy pages.
-- Use dark bands for dashboard headers, login surfaces, capability summaries, or empty states.
-- Preserve Ant Design and Element Plus interaction semantics; style through tokens and containers, not imitation widgets.
+## 9. 响应式与适配
 
-### Docs
-
-- Light-first reading experience.
-- Use dark or green hero/capability bands to create atmosphere, then return to a white editorial canvas.
-- Coral belongs to tags, category chips, and collaboration highlights, not broad backgrounds.
-
-### Weapp
-
-- Mobile-first card stack with dark hero band + light content cards.
-- Preserve strong touch targets and predictable bottom navigation.
-- Dark mode should still keep information islands distinct from the shell.
-
-## Depth & Elevation
-
-- Use borders, surface shifts, and corner radii as the main depth system.
-- Shadows stay subtle and reserved for overlays, hero media, and device-frame previews.
-- Avoid turning every section into a floating card cluster.
-
-## Do's and Don'ts
-
-### Do
-
-- Use white or near-white as the default reading surface.
-- Use deep green and dark navy as sectional bands.
-- Keep CTAs pill-shaped and singular.
-- Keep docs more editorial than dashboard-like.
-- Keep weapp compact, tactile, and easy to scan.
-
-### Don't
-
-- Do not use coral as a generic CTA color.
-- Do not fill normal UI surfaces with gradients.
-- Do not make admin pages look like a marketing landing page.
-- Do not flatten dark mode into one undifferentiated black slab.
-- Do not bypass the existing component libraries with parallel fake design-system components.
-
-## Responsive Behavior
-
-- `<425px`: one-column layout, compact nav, full-width CTA behavior
-- `425-768px`: primary mobile and weapp range
-- `768-1024px`: two-column transitional layouts where useful
-- `1024-1440px`: primary desktop admin and docs layout range
-- `1440px+`: more whitespace, not necessarily more columns
-
-## Agent Prompt Guide
-
-- Start with a white canvas or a deep green/navy band.
-- Use one primary pill CTA and one secondary text action.
-- For admin, show operational hierarchy: nav, summary, table, action.
-- For docs, show editorial hierarchy: hero, reading path, entry cards, governance.
-- For weapp, show tactile hierarchy: hero band, notice, quick grid, profile, bottom nav.
-- Keep rounded media confident, borders thin, and color accents disciplined.
+- **桌面端**: 侧边栏支持折叠，在不同分辨率下自动调整内容宽度。
+- **移动端**: 自动切换为抽屉式导航，卡片布局由多列转为单列，优化触控热区。

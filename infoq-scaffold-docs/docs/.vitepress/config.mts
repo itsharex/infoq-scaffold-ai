@@ -9,7 +9,7 @@ export default defineConfig({
   lastUpdated: true,
   ignoreDeadLinks: [/^\/examples\//, /^\/images\//],
   head: [
-    ['meta', { name: 'theme-color', content: '#0f766e' }],
+    ['meta', { name: 'theme-color', content: '#409eff' }],
     ['meta', { name: 'keywords', content: 'InfoQ, Scaffold, Docs, VitePress, OpenSpec, AGENTS' }]
   ],
   themeConfig: {

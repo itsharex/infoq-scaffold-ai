@@ -3,6 +3,7 @@ package cc.infoq.common.websocket.config;
 import cc.infoq.common.websocket.config.properties.WebSocketProperties;
 import cc.infoq.common.websocket.handler.PlusWebSocketHandler;
 import cc.infoq.common.websocket.interceptor.PlusWebSocketInterceptor;
+import cc.infoq.common.websocket.listener.WebSocketClusterLifecycle;
 import cc.infoq.common.websocket.listener.WebSocketTopicListener;
 import cn.hutool.core.util.StrUtil;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -59,5 +60,10 @@ public class WebSocketConfig {
     @Bean
     public WebSocketTopicListener topicListener() {
         return new WebSocketTopicListener();
+    }
+
+    @Bean
+    public WebSocketClusterLifecycle clusterLifecycle() {
+        return new WebSocketClusterLifecycle();
     }
 }

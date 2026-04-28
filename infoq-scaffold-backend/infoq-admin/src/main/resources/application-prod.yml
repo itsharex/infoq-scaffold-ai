@@ -3,6 +3,17 @@ spring.servlet.multipart.location: /infoq/server/temp
 
 --- # 数据源配置
 spring:
+  quartz:
+    # 生产环境不覆盖已有 Quartz 任务定义，避免多节点重复改写调度中心
+    overwrite-existing-jobs: false
+    properties:
+      org:
+        quartz:
+          jobStore:
+            # 生产环境按 Quartz 集群模式运行
+            isClustered: true
+            # Quartz 集群节点心跳上报间隔，单位毫秒
+            clusterCheckinInterval: 15000
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     # 动态数据源文档 https://www.kancloud.cn/tracy5546/dynamic-datasource/content
@@ -95,6 +106,19 @@ redisson:
     tcpNoDelay: true
     # 发布和订阅连接池大小
     subscriptionConnectionPoolSize: 50
+
+infoq:
+  quartz:
+    bootstrap:
+      # 生产环境允许在每次部署时受控执行一次 reconcile
+      reconcile-enabled: true
+      # 生产环境启用全局互斥与环境保护逻辑
+      production-guard-enabled: true
+      # 生产环境记录部署级 marker，确保同一 deploy-id 只执行一次 reconcile
+      marker-enabled: true
+      # 当前部署批次唯一标识；推荐格式为 版本号-日期-序号，例如 2.1.0-20260427-001
+      # 同一次部署的所有节点必须注入相同的 deploy-id
+      deploy-id: ${project.version}-20260427-001
 
 --- # mail 邮件发送
 mail:

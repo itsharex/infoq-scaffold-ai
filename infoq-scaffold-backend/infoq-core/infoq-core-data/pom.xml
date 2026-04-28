@@ -32,6 +32,10 @@
             <groupId>cc.infoq</groupId>
             <artifactId>infoq-plugin-excel</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cc.infoq</groupId>
+            <artifactId>infoq-plugin-jackson</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

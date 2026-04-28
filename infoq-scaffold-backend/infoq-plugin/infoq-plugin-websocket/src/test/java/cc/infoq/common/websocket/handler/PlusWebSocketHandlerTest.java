@@ -3,6 +3,7 @@ package cc.infoq.common.websocket.handler;
 import cc.infoq.common.domain.model.LoginUser;
 import cc.infoq.common.websocket.dto.WebSocketMessageDto;
 import cc.infoq.common.websocket.holder.WebSocketSessionHolder;
+import cc.infoq.common.websocket.utils.WebSocketClusterUtils;
 import cc.infoq.common.websocket.utils.WebSocketUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,9 +65,40 @@ class PlusWebSocketHandlerTest {
         when(session.getAttributes()).thenReturn(Map.of(LOGIN_USER_KEY, loginUser));
         when(session.isOpen()).thenReturn(true);
 
-        handler.afterConnectionEstablished(session);
+        try (MockedStatic<WebSocketClusterUtils> clusterUtils = mockStatic(WebSocketClusterUtils.class)) {
+            handler.afterConnectionEstablished(session);
 
-        assertTrue(WebSocketSessionHolder.existSession(100L));
+            assertTrue(WebSocketSessionHolder.existSession(100L));
+            assertEquals(1, WebSocketSessionHolder.sessionCount(100L));
+            clusterUtils.verify(() -> WebSocketClusterUtils.registerUser(100L));
+        }
+    }
+
+    @Test
+    @DisplayName("afterConnectionEstablished: should keep multiple sessions for the same user")
+    void afterConnectionEstablishedShouldKeepMultipleSessionsForSameUser() throws Exception {
+        PlusWebSocketHandler handler = new PlusWebSocketHandler();
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUserId(101L);
+        loginUser.setUserType("sys_user");
+
+        WebSocketSession sessionA = mock(WebSocketSession.class);
+        when(sessionA.getId()).thenReturn("s-a");
+        when(sessionA.getAttributes()).thenReturn(Map.of(LOGIN_USER_KEY, loginUser));
+        when(sessionA.isOpen()).thenReturn(true);
+
+        WebSocketSession sessionB = mock(WebSocketSession.class);
+        when(sessionB.getId()).thenReturn("s-b");
+        when(sessionB.getAttributes()).thenReturn(Map.of(LOGIN_USER_KEY, loginUser));
+        when(sessionB.isOpen()).thenReturn(true);
+
+        try (MockedStatic<WebSocketClusterUtils> clusterUtils = mockStatic(WebSocketClusterUtils.class)) {
+            handler.afterConnectionEstablished(sessionA);
+            handler.afterConnectionEstablished(sessionB);
+
+            assertEquals(2, WebSocketSessionHolder.sessionCount(101L));
+            clusterUtils.verify(() -> WebSocketClusterUtils.registerUser(101L), org.mockito.Mockito.times(2));
+        }
     }
 
     @Test
@@ -119,6 +151,7 @@ class PlusWebSocketHandlerTest {
         loginUser.setUserId(300L);
         loginUser.setUserType("sys_user");
         WebSocketSession oldSession = mock(WebSocketSession.class);
+        when(oldSession.getId()).thenReturn("s-3");
         when(oldSession.isOpen()).thenReturn(true);
         WebSocketSessionHolder.addSession(300L, oldSession);
 
@@ -126,9 +159,43 @@ class PlusWebSocketHandlerTest {
         when(session.getId()).thenReturn("s-3");
         when(session.getAttributes()).thenReturn(Map.of(LOGIN_USER_KEY, loginUser));
 
-        handler.afterConnectionClosed(session, CloseStatus.NORMAL);
+        try (MockedStatic<WebSocketClusterUtils> clusterUtils = mockStatic(WebSocketClusterUtils.class)) {
+            handler.afterConnectionClosed(session, CloseStatus.NORMAL);
 
-        assertFalse(WebSocketSessionHolder.existSession(300L));
+            assertFalse(WebSocketSessionHolder.existSession(300L));
+            clusterUtils.verify(() -> WebSocketClusterUtils.unregisterUser(300L));
+        }
+    }
+
+    @Test
+    @DisplayName("afterConnectionClosed: should keep sibling sessions and avoid premature unregister")
+    void afterConnectionClosedShouldKeepSiblingSessions() throws Exception {
+        PlusWebSocketHandler handler = new PlusWebSocketHandler();
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUserId(301L);
+        loginUser.setUserType("sys_user");
+
+        WebSocketSession sessionA = mock(WebSocketSession.class);
+        when(sessionA.getId()).thenReturn("s-a");
+        when(sessionA.isOpen()).thenReturn(true);
+        WebSocketSessionHolder.addSession(301L, sessionA);
+
+        WebSocketSession sessionB = mock(WebSocketSession.class);
+        when(sessionB.getId()).thenReturn("s-b");
+        when(sessionB.isOpen()).thenReturn(true);
+        WebSocketSessionHolder.addSession(301L, sessionB);
+
+        WebSocketSession closingSession = mock(WebSocketSession.class);
+        when(closingSession.getId()).thenReturn("s-a");
+        when(closingSession.getAttributes()).thenReturn(Map.of(LOGIN_USER_KEY, loginUser));
+
+        try (MockedStatic<WebSocketClusterUtils> clusterUtils = mockStatic(WebSocketClusterUtils.class)) {
+            handler.afterConnectionClosed(closingSession, CloseStatus.NORMAL);
+
+            assertTrue(WebSocketSessionHolder.existSession(301L));
+            assertEquals(1, WebSocketSessionHolder.sessionCount(301L));
+            clusterUtils.verifyNoInteractions();
+        }
     }
 
     @Test

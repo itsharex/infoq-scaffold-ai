@@ -353,7 +353,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <argLine>@{surefireArgLine} -Dfile.encoding=UTF-8 -Djdk.attach.allowAttachSelf=true -XX:+StartAttachListener</argLine>
+                    <argLine>@{surefireArgLine} -Xshare:off -Dfile.encoding=UTF-8 -Djdk.attach.allowAttachSelf=true -XX:+StartAttachListener</argLine>
                     <!-- 根据打包环境执行对应的@Tag测试方法 -->
                     <groups>${profiles.active}</groups>
                     <!-- 排除标签 -->

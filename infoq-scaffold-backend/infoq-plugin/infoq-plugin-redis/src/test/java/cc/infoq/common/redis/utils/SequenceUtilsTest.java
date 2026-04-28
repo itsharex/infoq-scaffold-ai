@@ -82,6 +82,7 @@ class SequenceUtilsTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     @DisplayName("date/dateTime wrapper methods: should cover deprecated and convenience overloads")
     void dateAndDateTimeWrapperMethodsShouldWork() {
         when(idGenerator.nextId()).thenReturn(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L);

@@ -8,6 +8,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
 JAR_REL_PATH="infoq-scaffold-backend/infoq-admin/target/infoq-admin.jar"
 PORT="${SMOKE_PORT:-18080}"
 HOST="${SMOKE_HOST:-127.0.0.1}"
+SPRING_PROFILE="${SMOKE_SPRING_PROFILES_ACTIVE:-local}"
 ROLE_ID="${SMOKE_ROLE_ID:-3}"
 DICT_TYPE="${SMOKE_DICT_TYPE:-sys_yes_no}"
 CLIENT_ID="${SMOKE_CLIENT_ID:-e5cd7e4891bf95d1d19206ce24a7b32e}"
@@ -28,6 +29,7 @@ Options:
   --keep-server              Keep backend process alive after checks.
   --port <port>              Server port (default: 18080).
   --host <host>              Server host (default: 127.0.0.1).
+  --profile <name>           Spring profile (default: local).
   --role-id <id>             Role ID for role menu/dept checks (default: 3).
   --dict-type <type>         Dict type check target (default: sys_yes_no).
   --client-id <id>           Client ID for login (default: e5cd...).
@@ -55,6 +57,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --host)
       HOST="$2"
+      shift 2
+      ;;
+    --profile)
+      SPRING_PROFILE="$2"
       shift 2
       ;;
     --role-id)
@@ -102,6 +108,18 @@ BASE_URL="http://${HOST}:${PORT}"
 LOG_FILE="/tmp/infoq-smoke-${PORT}-$(date +%s).log"
 SERVER_PID=""
 
+is_server_ready() {
+  local health_code=""
+  health_code="$(curl -s -o /dev/null -w '%{http_code}' "${BASE_URL}/actuator/health" || true)"
+  if [[ "${health_code}" == "200" || "${health_code}" == "401" ]]; then
+    return 0
+  fi
+
+  local root_code=""
+  root_code="$(curl -s -o /dev/null -w '%{http_code}' "${BASE_URL}/" || true)"
+  [[ "${root_code}" == "200" ]]
+}
+
 cleanup() {
   if [[ -n "${SERVER_PID}" && "${KEEP_SERVER}" -eq 0 ]]; then
     kill "${SERVER_PID}" >/dev/null 2>&1 || true
@@ -127,13 +145,14 @@ if [[ ! -f "${JAR_PATH}" ]]; then
   exit 1
 fi
 
-echo "[smoke] starting server on ${BASE_URL}"
+echo "[smoke] starting server on ${BASE_URL} with profile=${SPRING_PROFILE}"
+SPRING_PROFILES_ACTIVE="${SPRING_PROFILE}" \
 nohup java -jar "${JAR_PATH}" --server.port="${PORT}" --captcha.enable=false >"${LOG_FILE}" 2>&1 &
 SERVER_PID=$!
 
 ready=0
 for _ in $(seq 1 60); do
-  if curl -fsS "${BASE_URL}/auth/code" >/dev/null 2>&1; then
+  if is_server_ready; then
     ready=1
     break
   fi

@@ -3,6 +3,7 @@ package cc.infoq.common.websocket.handler;
 import cc.infoq.common.domain.model.LoginUser;
 import cc.infoq.common.websocket.dto.WebSocketMessageDto;
 import cc.infoq.common.websocket.holder.WebSocketSessionHolder;
+import cc.infoq.common.websocket.utils.WebSocketClusterUtils;
 import cc.infoq.common.websocket.utils.WebSocketUtils;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
             return;
         }
         WebSocketSessionHolder.addSession(loginUser.getUserId(), new ConcurrentWebSocketSessionDecorator(session, 10 * 1000, 64000));
+        WebSocketClusterUtils.registerUser(loginUser.getUserId());
         log.info("[connect] sessionId: {},userId:{},userType:{}", session.getId(), loginUser.getUserId(), loginUser.getUserType());
     }
 
@@ -106,7 +108,10 @@ public class PlusWebSocketHandler extends AbstractWebSocketHandler {
             log.info("[disconnect] invalid token received. sessionId: {}", session.getId());
             return;
         }
-        WebSocketSessionHolder.removeSession(loginUser.getUserId());
+        WebSocketSessionHolder.removeSession(loginUser.getUserId(), session.getId());
+        if (!WebSocketSessionHolder.existSession(loginUser.getUserId())) {
+            WebSocketClusterUtils.unregisterUser(loginUser.getUserId());
+        }
         log.info("[disconnect] sessionId: {},userId:{},userType:{}", session.getId(), loginUser.getUserId(), loginUser.getUserType());
     }
 

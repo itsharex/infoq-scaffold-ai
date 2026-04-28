@@ -3,6 +3,7 @@ package cc.infoq.common.websocket.config;
 import cc.infoq.common.websocket.config.properties.WebSocketProperties;
 import cc.infoq.common.websocket.handler.PlusWebSocketHandler;
 import cc.infoq.common.websocket.interceptor.PlusWebSocketInterceptor;
+import cc.infoq.common.websocket.listener.WebSocketClusterLifecycle;
 import cc.infoq.common.websocket.listener.WebSocketTopicListener;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -82,6 +83,7 @@ class WebSocketConfigTest {
         assertInstanceOf(PlusWebSocketInterceptor.class, config.handshakeInterceptor());
         assertInstanceOf(PlusWebSocketHandler.class, config.webSocketHandler());
         assertInstanceOf(WebSocketTopicListener.class, config.topicListener());
+        assertInstanceOf(WebSocketClusterLifecycle.class, config.clusterLifecycle());
         assertNotNull(config.topicListener());
     }
 }

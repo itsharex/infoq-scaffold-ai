@@ -24,27 +24,26 @@ public class WebSocketTopicListener implements ApplicationRunner, Ordered {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // 订阅WebSocket消息
-        WebSocketUtils.subscribeMessage((message) -> {
-            log.info("WebSocket主题订阅收到消息session keys={} message={}", message.getSessionKeys(), message.getMessage());
-            // 如果key不为空就按照key发消息 如果为空就群发
-            if (CollUtil.isNotEmpty(message.getSessionKeys())) {
-                message.getSessionKeys().forEach(key -> {
-                    if (WebSocketSessionHolder.existSession(key)) {
-                        WebSocketUtils.sendMessage(key, message.getMessage());
-                    }
-                });
-            } else {
-                WebSocketSessionHolder.getSessionsAll().forEach(key -> {
-                    WebSocketUtils.sendMessage(key, message.getMessage());
-                });
-            }
-        });
+        WebSocketUtils.subscribeMessage(this::dispatchMessage);
+        WebSocketUtils.subscribeNodeMessage(this::dispatchMessage);
         log.info("初始化WebSocket主题订阅监听器成功");
     }
 
     @Override
     public int getOrder() {
         return -1;
+    }
+
+    void dispatchMessage(cc.infoq.common.websocket.dto.WebSocketMessageDto message) {
+        log.info("WebSocket主题订阅收到消息session keys={} message={}", message.getSessionKeys(), message.getMessage());
+        if (CollUtil.isNotEmpty(message.getSessionKeys())) {
+            message.getSessionKeys().forEach(key -> {
+                if (WebSocketSessionHolder.existSession(key)) {
+                    WebSocketUtils.sendMessage(key, message.getMessage());
+                }
+            });
+            return;
+        }
+        WebSocketSessionHolder.getSessionsAll().forEach(key -> WebSocketUtils.sendMessage(key, message.getMessage()));
     }
 }

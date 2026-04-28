@@ -3,7 +3,6 @@ package cc.infoq.common.websocket.utils;
 import cc.infoq.common.redis.utils.RedisUtils;
 import cc.infoq.common.websocket.dto.WebSocketMessageDto;
 import cc.infoq.common.websocket.holder.WebSocketSessionHolder;
-import cn.hutool.core.collection.CollUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +12,9 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static cc.infoq.common.websocket.constant.WebSocketConstants.WEB_SOCKET_TOPIC;
@@ -35,8 +35,8 @@ public class WebSocketUtils {
      * @param message    要发送的消息内容
      */
     public static void sendMessage(Long sessionKey, String message) {
-        WebSocketSession session = WebSocketSessionHolder.getSessions(sessionKey);
-        sendMessage(session, message);
+        Collection<WebSocketSession> sessions = WebSocketSessionHolder.getSessions(sessionKey);
+        sessions.forEach(session -> sendMessage(session, message));
     }
 
     /**
@@ -49,30 +49,34 @@ public class WebSocketUtils {
     }
 
     /**
+     * 订阅当前节点的 WebSocket 定向消息。
+     *
+     * @param consumer 消费函数
+     */
+    public static void subscribeNodeMessage(Consumer<WebSocketMessageDto> consumer) {
+        RedisUtils.subscribe(WebSocketClusterUtils.currentNodeTopic(), WebSocketMessageDto.class, consumer);
+    }
+
+    /**
      * 发布WebSocket订阅消息
      *
      * @param webSocketMessage 要发布的WebSocket消息对象
      */
     public static void publishMessage(WebSocketMessageDto webSocketMessage) {
-        List<Long> unsentSessionKeys = new ArrayList<>();
-        // 当前服务内session,直接发送消息
-        for (Long sessionKey : webSocketMessage.getSessionKeys()) {
-            if (WebSocketSessionHolder.existSession(sessionKey)) {
-                WebSocketUtils.sendMessage(sessionKey, webSocketMessage.getMessage());
-                continue;
-            }
-            unsentSessionKeys.add(sessionKey);
+        Map<String, List<Long>> routedSessionKeys = WebSocketClusterUtils.routeSessionKeysByNode(webSocketMessage.getSessionKeys());
+        if (routedSessionKeys.isEmpty()) {
+            log.info("WebSocket定向消息未命中在线节点, session keys={}", webSocketMessage.getSessionKeys());
+            return;
         }
-        // 不在当前服务内session,发布订阅消息
-        if (CollUtil.isNotEmpty(unsentSessionKeys)) {
-            WebSocketMessageDto broadcastMessage = new WebSocketMessageDto();
-            broadcastMessage.setMessage(webSocketMessage.getMessage());
-            broadcastMessage.setSessionKeys(unsentSessionKeys);
-            RedisUtils.publish(WEB_SOCKET_TOPIC, broadcastMessage, consumer -> {
-                log.info(" WebSocket发送主题订阅消息topic:{} session keys:{} message:{}",
-                    WEB_SOCKET_TOPIC, unsentSessionKeys, webSocketMessage.getMessage());
+        routedSessionKeys.forEach((nodeId, sessionKeys) -> {
+            WebSocketMessageDto routedMessage = new WebSocketMessageDto();
+            routedMessage.setMessage(webSocketMessage.getMessage());
+            routedMessage.setSessionKeys(sessionKeys);
+            RedisUtils.publish(WebSocketClusterUtils.nodeTopic(nodeId), routedMessage, consumer -> {
+                log.info("WebSocket发送节点主题订阅消息topic:{} session keys:{} message:{}",
+                    WebSocketClusterUtils.nodeTopic(nodeId), sessionKeys, webSocketMessage.getMessage());
             });
-        }
+        });
     }
 
     /**

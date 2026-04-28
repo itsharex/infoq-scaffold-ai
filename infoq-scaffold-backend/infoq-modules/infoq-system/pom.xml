@@ -55,6 +55,10 @@
             <groupId>cc.infoq</groupId>
             <artifactId>infoq-plugin-sse</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cc.infoq</groupId>
+            <artifactId>infoq-plugin-quartz</artifactId>
+        </dependency>
         <!-- 可选插件: 默认关闭, 需要时通过配置开启 -->
         <dependency>
             <groupId>cc.infoq</groupId>

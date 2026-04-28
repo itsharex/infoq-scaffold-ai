@@ -11,7 +11,9 @@ const config = {
   loginCandidates: process.env.LOGIN_CANDIDATES || 'dept:666666,owner:666666,admin:123456',
   rsaPublicKey:
     process.env.RSA_PUBLIC_KEY ||
-    'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKoR8mX0rGKLqzcWmOzbfj64K8ZIgOdHnzkXSOVOZbFu/TJhZ7rFAN+eaGkl3C4buccQd/EjEsj9ir7ijT7h96MCAwEAAQ=='
+    'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKoR8mX0rGKLqzcWmOzbfj64K8ZIgOdHnzkXSOVOZbFu/TJhZ7rFAN+eaGkl3C4buccQd/EjEsj9ir7ijT7h96MCAwEAAQ==',
+  printToken: process.env.PRINT_TOKEN === '1',
+  printUserId: process.env.PRINT_USER_ID === '1'
 };
 
 function logPass(name, detail = '') {
@@ -56,6 +58,17 @@ async function parseResponseAsJson(response) {
     return JSON.parse(text);
   } catch {
     return { _raw: text };
+  }
+}
+
+function decodeJwtPayload(token) {
+  if (!token || !token.includes('.')) {
+    return {};
+  }
+  try {
+    return JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString('utf8'));
+  } catch {
+    return {};
   }
 }
 
@@ -151,11 +164,12 @@ async function loginAndGetToken() {
       const code = result?.body?.code;
       const token = result?.body?.data?.access_token || result?.body?.data?.accessToken;
       if (result.res.status === 200 && code === 200 && token) {
+        const payload = decodeJwtPayload(token);
         logPass(
           'POST /auth/login',
           `mode=${result.mode}, user=${account.username}, token_len=${String(token).length}`
         );
-        return { token, username: account.username };
+        return { token, username: account.username, userId: payload.userId || '' };
       }
       attempts.push(
         `${account.username}/${account.password} (${result.mode}) => http=${result.res.status}, code=${code}, msg=${result?.body?.msg || ''}`
@@ -217,8 +231,14 @@ async function main() {
     `[INFO] smoke target: ${config.baseUrl}, roleId=${config.roleId}, dictType=${config.dictType}`
   );
   await checkPublicEndpoints();
-  const { token, username } = await loginAndGetToken();
+  const { token, username, userId } = await loginAndGetToken();
   await checkProtectedEndpoints(token);
+  if (config.printToken) {
+    console.log(`TOKEN=${token}`);
+  }
+  if (config.printUserId && userId) {
+    console.log(`USER_ID=${userId}`);
+  }
   console.log(`[INFO] smoke completed with login user: ${username}`);
 }
 

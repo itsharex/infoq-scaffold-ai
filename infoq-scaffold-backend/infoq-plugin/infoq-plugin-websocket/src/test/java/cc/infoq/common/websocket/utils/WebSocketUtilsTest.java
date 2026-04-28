@@ -1,5 +1,6 @@
 package cc.infoq.common.websocket.utils;
 
+import cc.infoq.common.redis.utils.RedisUtils;
 import cc.infoq.common.utils.SpringUtils;
 import cc.infoq.common.websocket.dto.WebSocketMessageDto;
 import cc.infoq.common.websocket.holder.WebSocketSessionHolder;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
@@ -21,7 +23,10 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -37,24 +42,24 @@ import static org.mockito.Mockito.when;
 class WebSocketUtilsTest {
 
     private static RedissonClient redissonClient;
-    private static RTopic topic;
+    private static final Map<String, RTopic> TOPICS = new HashMap<>();
 
     @BeforeAll
     static void initSpringContext() {
-        redissonClient = mock(RedissonClient.class);
-        topic = mock(RTopic.class);
-        when(redissonClient.getTopic(anyString())).thenReturn(topic);
-
+        RedissonClient redissonClientBean = mock(RedissonClient.class);
         GenericApplicationContext context = new GenericApplicationContext();
-        context.registerBean(RedissonClient.class, () -> redissonClient);
+        context.registerBean(RedissonClient.class, () -> redissonClientBean);
         context.refresh();
         new SpringUtils().setApplicationContext(context);
+        redissonClient = RedisUtils.getClient();
     }
 
     @BeforeEach
     void resetRedisMocks() {
-        reset(redissonClient, topic);
-        when(redissonClient.getTopic(anyString())).thenReturn(topic);
+        reset(redissonClient);
+        TOPICS.clear();
+        when(redissonClient.getTopic(anyString())).thenAnswer(invocation ->
+            TOPICS.computeIfAbsent(invocation.getArgument(0), key -> mock(RTopic.class)));
     }
 
     @AfterEach
@@ -64,15 +69,22 @@ class WebSocketUtilsTest {
     }
 
     @Test
-    @DisplayName("sendMessage(sessionKey): should delegate to session and send text message")
-    void sendMessageBySessionKeyShouldDelegateToSession() throws IOException {
-        WebSocketSession session = mock(WebSocketSession.class);
-        when(session.isOpen()).thenReturn(true);
-        WebSocketSessionHolder.addSession(1L, session);
+    @DisplayName("sendMessage(sessionKey): should fan out to all local sessions of the same user")
+    void sendMessageBySessionKeyShouldFanOutToAllSessions() throws IOException {
+        WebSocketSession sessionA = mock(WebSocketSession.class);
+        when(sessionA.getId()).thenReturn("a");
+        when(sessionA.isOpen()).thenReturn(true);
+        WebSocketSession sessionB = mock(WebSocketSession.class);
+        when(sessionB.getId()).thenReturn("b");
+        when(sessionB.isOpen()).thenReturn(true);
+        WebSocketSessionHolder.addSession(1L, sessionA);
+        WebSocketSessionHolder.addSession(1L, sessionB);
 
         WebSocketUtils.sendMessage(1L, "hello");
 
-        verify(session).sendMessage(Mockito.argThat((WebSocketMessage<?> message) ->
+        verify(sessionA).sendMessage(Mockito.argThat((WebSocketMessage<?> message) ->
+            message instanceof TextMessage text && "hello".equals(text.getPayload())));
+        verify(sessionB).sendMessage(Mockito.argThat((WebSocketMessage<?> message) ->
             message instanceof TextMessage text && "hello".equals(text.getPayload())));
     }
 
@@ -95,39 +107,53 @@ class WebSocketUtilsTest {
     }
 
     @Test
-    @DisplayName("publishMessage: should send local sessions and publish unsent sessions")
-    void publishMessageShouldSendLocalAndPublishUnsent() throws IOException {
-        WebSocketSession local = mock(WebSocketSession.class);
-        when(local.isOpen()).thenReturn(true);
-        WebSocketSessionHolder.addSession(1L, local);
-
+    @DisplayName("publishMessage: should publish grouped users to node topics")
+    void publishMessageShouldPublishGroupedUsersToNodeTopics() {
         WebSocketMessageDto dto = new WebSocketMessageDto();
-        dto.setMessage("broadcast");
+        dto.setMessage("cluster");
         dto.setSessionKeys(List.of(1L, 2L));
 
-        WebSocketUtils.publishMessage(dto);
+        Map<String, List<Long>> routed = new LinkedHashMap<>();
+        routed.put("node-a", List.of(1L));
+        routed.put("node-b", List.of(1L, 2L));
 
-        verify(local).sendMessage(Mockito.argThat((WebSocketMessage<?> message) ->
-            message instanceof TextMessage text && "broadcast".equals(text.getPayload())));
+        try (MockedStatic<WebSocketClusterUtils> clusterUtils = Mockito.mockStatic(WebSocketClusterUtils.class)) {
+            clusterUtils.when(() -> WebSocketClusterUtils.routeSessionKeysByNode(List.of(1L, 2L))).thenReturn(routed);
+            clusterUtils.when(() -> WebSocketClusterUtils.nodeTopic("node-a")).thenReturn("global:websocket:node:node-a");
+            clusterUtils.when(() -> WebSocketClusterUtils.nodeTopic("node-b")).thenReturn("global:websocket:node:node-b");
 
-        ArgumentCaptor<WebSocketMessageDto> publishCaptor = ArgumentCaptor.forClass(WebSocketMessageDto.class);
-        verify(topic).publish(publishCaptor.capture());
-        assertEquals(List.of(2L), publishCaptor.getValue().getSessionKeys());
-        assertEquals("broadcast", publishCaptor.getValue().getMessage());
+            WebSocketUtils.publishMessage(dto);
+
+            ArgumentCaptor<WebSocketMessageDto> captor = ArgumentCaptor.forClass(WebSocketMessageDto.class);
+            verify(TOPICS.get("global:websocket:node:node-a")).publish(captor.capture());
+            assertEquals("cluster", captor.getValue().getMessage());
+            assertEquals(List.of(1L), captor.getValue().getSessionKeys());
+
+            ArgumentCaptor<WebSocketMessageDto> secondCaptor = ArgumentCaptor.forClass(WebSocketMessageDto.class);
+            verify(TOPICS.get("global:websocket:node:node-b")).publish(secondCaptor.capture());
+            assertEquals("cluster", secondCaptor.getValue().getMessage());
+            assertEquals(List.of(1L, 2L), secondCaptor.getValue().getSessionKeys());
+        }
     }
 
     @Test
-    @DisplayName("publishAll/subscribeMessage: should delegate to redis utilities")
-    void publishAllAndSubscribeMessageShouldDelegateToRedisUtils() {
+    @DisplayName("publishAll/subscribeMessage/subscribeNodeMessage: should delegate to redis utilities")
+    void publishAndSubscribeShouldDelegateToRedisUtils() {
         Consumer<WebSocketMessageDto> consumer = message -> {
         };
 
-        WebSocketUtils.publishAll("all");
-        WebSocketUtils.subscribeMessage(consumer);
+        try (MockedStatic<WebSocketClusterUtils> clusterUtils = Mockito.mockStatic(WebSocketClusterUtils.class)) {
+            clusterUtils.when(WebSocketClusterUtils::currentNodeTopic).thenReturn("global:websocket:node:test-node");
 
-        ArgumentCaptor<WebSocketMessageDto> publishCaptor = ArgumentCaptor.forClass(WebSocketMessageDto.class);
-        verify(topic).publish(publishCaptor.capture());
-        assertEquals("all", publishCaptor.getValue().getMessage());
-        verify(topic).addListener(Mockito.eq(WebSocketMessageDto.class), any());
+            WebSocketUtils.publishAll("all");
+            WebSocketUtils.subscribeMessage(consumer);
+            WebSocketUtils.subscribeNodeMessage(consumer);
+
+            ArgumentCaptor<WebSocketMessageDto> captor = ArgumentCaptor.forClass(WebSocketMessageDto.class);
+            verify(TOPICS.get("global:websocket")).publish(captor.capture());
+            assertEquals("all", captor.getValue().getMessage());
+            verify(TOPICS.get("global:websocket")).addListener(Mockito.eq(WebSocketMessageDto.class), any());
+            verify(TOPICS.get("global:websocket:node:test-node")).addListener(Mockito.eq(WebSocketMessageDto.class), any());
+        }
     }
 }

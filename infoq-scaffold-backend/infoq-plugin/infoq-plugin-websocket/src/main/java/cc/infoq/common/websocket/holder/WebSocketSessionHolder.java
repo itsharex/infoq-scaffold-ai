@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebSocketSessionHolder {
 
-    private static final Map<Long, WebSocketSession> USER_SESSION_MAP = new ConcurrentHashMap<>();
+    private static final Map<Long, Map<String, WebSocketSession>> USER_SESSION_MAP = new ConcurrentHashMap<>();
 
     /**
      * 将WebSocket会话添加到用户会话Map中
@@ -28,8 +30,28 @@ public class WebSocketSessionHolder {
      * @param session    要添加的WebSocket会话
      */
     public static void addSession(Long sessionKey, WebSocketSession session) {
-        removeSession(sessionKey);
-        USER_SESSION_MAP.put(sessionKey, session);
+        if (session == null) {
+            return;
+        }
+        addSession(sessionKey, session.getId(), session);
+    }
+
+    /**
+     * 将 WebSocket 会话添加到指定用户下，支持同一用户保留多个会话。
+     *
+     * @param sessionKey 用户标识
+     * @param sessionId  当前会话 ID
+     * @param session    会话对象
+     */
+    public static void addSession(Long sessionKey, String sessionId, WebSocketSession session) {
+        if (sessionKey == null || sessionId == null || session == null) {
+            return;
+        }
+        Map<String, WebSocketSession> sessions = USER_SESSION_MAP.computeIfAbsent(sessionKey, key -> new ConcurrentHashMap<>());
+        WebSocketSession previous = sessions.put(sessionId, session);
+        if (previous != null && previous != session) {
+            closeSession(previous, sessionKey, sessionId);
+        }
     }
 
     /**
@@ -38,14 +60,30 @@ public class WebSocketSessionHolder {
      * @param sessionKey 要移除的会话键
      */
     public static void removeSession(Long sessionKey) {
-        WebSocketSession session = USER_SESSION_MAP.remove(sessionKey);
-        if (session == null) {
+        Map<String, WebSocketSession> sessions = USER_SESSION_MAP.remove(sessionKey);
+        if (sessions == null) {
             return;
         }
-        try {
-            session.close(CloseStatus.BAD_DATA);
-        } catch (Exception e) {
-            log.warn("WebSocket会话关闭失败, sessionKey={}", sessionKey, e);
+        sessions.forEach((sessionId, session) -> closeSession(session, sessionKey, sessionId));
+    }
+
+    /**
+     * 从用户会话表中移除单个会话，不主动关闭连接，适用于连接关闭回调阶段。
+     *
+     * @param sessionKey 用户标识
+     * @param sessionId  会话 ID
+     */
+    public static void removeSession(Long sessionKey, String sessionId) {
+        if (sessionKey == null || sessionId == null) {
+            return;
+        }
+        Map<String, WebSocketSession> sessions = USER_SESSION_MAP.get(sessionKey);
+        if (sessions == null) {
+            return;
+        }
+        sessions.remove(sessionId);
+        if (sessions.isEmpty()) {
+            USER_SESSION_MAP.remove(sessionKey, sessions);
         }
     }
 
@@ -55,8 +93,12 @@ public class WebSocketSessionHolder {
      * @param sessionKey 要获取的会话键
      * @return 与给定会话键对应的WebSocket会话，如果不存在则返回null
      */
-    public static WebSocketSession getSessions(Long sessionKey) {
-        return USER_SESSION_MAP.get(sessionKey);
+    public static Collection<WebSocketSession> getSessions(Long sessionKey) {
+        Map<String, WebSocketSession> sessions = USER_SESSION_MAP.get(sessionKey);
+        if (sessions == null || sessions.isEmpty()) {
+            return java.util.List.of();
+        }
+        return new ArrayList<>(sessions.values());
     }
 
     /**
@@ -75,6 +117,26 @@ public class WebSocketSessionHolder {
      * @return 如果存在对应的会话键，则返回true；否则返回false
      */
     public static Boolean existSession(Long sessionKey) {
-        return USER_SESSION_MAP.containsKey(sessionKey);
+        Map<String, WebSocketSession> sessions = USER_SESSION_MAP.get(sessionKey);
+        return sessions != null && !sessions.isEmpty();
+    }
+
+    /**
+     * 获取指定用户当前本地连接数
+     *
+     * @param sessionKey 用户标识
+     * @return 当前连接数量
+     */
+    public static int sessionCount(Long sessionKey) {
+        Map<String, WebSocketSession> sessions = USER_SESSION_MAP.get(sessionKey);
+        return sessions == null ? 0 : sessions.size();
+    }
+
+    private static void closeSession(WebSocketSession session, Long sessionKey, String sessionId) {
+        try {
+            session.close(CloseStatus.NORMAL);
+        } catch (Exception e) {
+            log.warn("WebSocket会话关闭失败, sessionKey={}, sessionId={}", sessionKey, sessionId, e);
+        }
     }
 }

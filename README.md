@@ -104,7 +104,7 @@ infoq-scaffold-ai
 - Vue 家族运行态验证：`infoq-vue-runtime-verification`
 - React 家族单测：`infoq-react-unit-test-patterns`
 - Vue 家族单测：`infoq-vue-unit-test-patterns`
-- 后端冒烟与登录校验：`infoq-backend-smoke-test`、`infoq-login-success-check`
+- 后端冒烟、双机集群 smoke 与登录校验：`infoq-backend-smoke-test`、`infoq-login-success-check`
 - OpenSpec 与项目参考：`infoq-openspec-delivery`、`infoq-project-reference`
 
 React 家族和 Vue 家族 skill 会通过 `references/admin` 与 `references/weapp` 区分客户端，但不再保留共享底座型 skill 目录。
@@ -285,6 +285,11 @@ pnpm run verify:local
 ```bash
 bash script/bin/infoq.sh deploy
 ```
+
+说明：
+
+- `bash script/bin/infoq.sh deploy` 会为本次部署生成并注入 `INFOQ_QUARTZ_BOOTSTRAP_DEPLOY_ID`，默认格式为 `版本号-日期-序号`，例如 `2.1.0-20260427-001`，用于保证生产环境 `sysJobService.init()` 每次部署只执行一次。
+- `bash script/bin/infoq.sh start` / `restart` 只会复用现有容器环境，不会生成新的部署批次 ID。
 
 ### 前端与网关
 

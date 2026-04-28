@@ -143,6 +143,13 @@
                 <artifactId>infoq-plugin-sse</artifactId>
                 <version>${revision}</version>
             </dependency>
+
+            <!-- Quartz 模块 -->
+            <dependency>
+                <groupId>cc.infoq</groupId>
+                <artifactId>infoq-plugin-quartz</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
